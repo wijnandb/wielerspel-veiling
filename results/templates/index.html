@@ -1,11 +1,18 @@
-{% extends results/base.html %}
+{% extends "base.html" %}
 
 {% block content %}
 
-Beginpagina.
 
-Hier komt waarschijnlijk de stand.
+<p>Ploegleiders: {{ num_ploegleiders }}</p>
+<p>Renners: {{ num_riders }}</p>
 
-Nu alleen nog maar deze statische tekst.
+<p>Races: {{ num_races }}</p>
+
+<p>Verkochte renners: {{ num_sold_riders }}</p>
+
+<p>Edities: {{ num_editions }}</p>
+
+
+
 
 {% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+            <h1>Races</h1>
+            <br/><br/>
+            {% if race_list %}
+                <ul>
+                    {% for race in race_list %}
+
+                        {{ race.startdate }}<h5><a href="{{ race.get_absolute_url }}">{{ race }}</a></h5>
+
+                    {% endfor %}
+
+                </ul>
+            {% else %}
+                <p>Geen races aanwezig.</p>
+            {% endif %}
+
+{% endblock %}

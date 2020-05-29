@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+            <h1>Ploegleiders</h1>
+            <br/><br/>
+            {% if ploegleider_list %}
+                <ul>
+                    {% for ploegleider in ploegleider_list %}
+
+                        <h5><a href="{{ ploegleider.get_absolute_url }}"></a>{{ ploegleider }}</h5>
+Hier willen we de behaalde punten nog toevoegen, net als de behaalde JPP.
+
+Onder de stand een link naar de laatste uitslagen.
+
+Ploegleiders clickable naar hun ploeg.
+
+
+
+                    {% endfor %}
+
+                </ul>
+            {% else %}
+                <p>Geen ploegleiders aanwezig.</p>
+            {% endif %}
+
+{% endblock %}
