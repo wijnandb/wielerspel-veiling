@@ -1,4 +1,6 @@
+/*
 TRUNCATE results_Rider RESTART IDENTITY CASCADE;
+*/
 
 INSERT INTO results_Rider (name, cqriderid, nationality_id) VALUES ('ROGLIC Primoz', 20719, 'SLO');
 INSERT INTO results_Rider (name, cqriderid, nationality_id) VALUES ('ALAPHILIPPE Julian', 18610, 'FRA');

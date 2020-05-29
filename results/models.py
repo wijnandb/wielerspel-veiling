@@ -118,9 +118,9 @@ class Edition(models.Model):
 
 
 class Verkocht(models.Model):
-    rider = models.ForeignKey(Rider, on_delete=models.CASCADE)
+    rider = models.ForeignKey(Rider, to_field='cqriderid', on_delete=models.CASCADE)
     ploegleider = models.ForeignKey(Ploegleider, on_delete=models.CASCADE)
-    editie = models.ForeignKey(Edition, on_delete=models.CASCADE)
+    editie = models.ForeignKey(Edition, to_field='year', on_delete=models.CASCADE)
     price = models.IntegerField(default=0)
     punten = models.FloatField(default=0)
     jpp = models.IntegerField(default=0)
