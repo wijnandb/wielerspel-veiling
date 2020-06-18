@@ -6,9 +6,9 @@
 
   <div style="margin-left:20px;margin-top:20px">
     <dl class="row">
-      {% for rider in ploegleider.virtualteam_set.all %}
-        <dt class="col-sm-5"><a href="{% url 'rider-detail' book.pk %}">{{ rider }}</a></dt>
-        <dd class="col-sm-5"> {{ virtualteam.price }}</dd>
+      {% for rider in ploegleider.verkocht_set.all %}
+        <dt class="col-sm-5"><a href="{% url 'rider-detail' rider.pk %}">{{ rider }}</a></dt>
+        <dd class="col-sm-5"> {{ verkocht.price }}</dd>
       {% endfor %}
     </dl>
 

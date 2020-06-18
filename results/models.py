@@ -2,25 +2,12 @@ from django.db import models
 from django.urls import reverse
 
 
-class Country(models.Model):
-    country = models.CharField(default="unknown", max_length=60)
-    alpha2 = models.CharField(default="", max_length=2, unique=True)
-    alpha3 = models.CharField(default="", max_length=3, unique=True)
-
-    def __str__(self):
-        return self.country
-
-    class Meta:
-        verbose_name_plural = "Countries"
-        ordering = ['country']
-
-
 class Rider(models.Model):
-    name= models.CharField(max_length=100)
-    birthday= models.DateField(null=True, blank=True)
-    cqriderid= models.IntegerField(unique=True)
-    uciid=models.IntegerField(null=True, blank=True)
-    nationality=models.ForeignKey(Country, to_field='alpha3', db_constraint=False, on_delete=models.SET_NULL, null=True)
+    name = models.CharField(max_length=100)
+    birthday = models.DateField(null=True, blank=True)
+    cqriderid = models.IntegerField(unique=True)
+    uciid = models.IntegerField(null=True, blank=True)
+    nationality = models.CharField(max_length=3, blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -47,7 +34,7 @@ class Category(models.Model):
 
 
 class RacePoints(models.Model):
-#    editie = models.ForeignKey(Edition, to_field='year', default="2019")
+    editie = models.PositiveIntegerField(default=2020)
     category = models.ForeignKey(Category, to_field='category', on_delete=models.CASCADE)
     ranking = models.CharField(max_length=50)
     points = models.FloatField(default=0)
@@ -61,6 +48,9 @@ class RacePoints(models.Model):
         """Returns the url to access a particular instance of the model."""
         return reverse('racepoints-detail', args=[str(self.id)])
 
+    def __str__(self):
+        return self.category, self.ranking
+
 
 class Race(models.Model):
     name = models.CharField(max_length=100)
@@ -68,7 +58,7 @@ class Race(models.Model):
     enddate = models.DateField(blank=True, null=True)
     category = models.ForeignKey(Category, to_field='category', on_delete=models.SET_NULL, null=True)
     cqraceid = models.IntegerField(default=0, unique=True)
-    country = models.ForeignKey(Country, to_field='alpha3', on_delete=models.SET_NULL, null=True, blank=True)
+    country = models.CharField(max_length=3, blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -107,20 +97,10 @@ class Ploegleider(models.Model):
         return reverse('ploegleider-detail', args=[str(self.id)])
 
 
-class Edition(models.Model):
-    year = models.CharField(max_length=4, unique=True)
-
-    def __str__(self):
-        return self.year
-
-    class Meta:
-        ordering = ['-year']
-
-
 class Verkocht(models.Model):
     rider = models.ForeignKey(Rider, to_field='cqriderid', on_delete=models.CASCADE)
     ploegleider = models.ForeignKey(Ploegleider, on_delete=models.CASCADE)
-    editie = models.ForeignKey(Edition, to_field='year', on_delete=models.CASCADE)
+    editie = models.PositiveIntegerField(default=2020)
     price = models.IntegerField(default=0)
     punten = models.FloatField(default=0)
     jpp = models.IntegerField(default=0)
@@ -132,3 +112,6 @@ class Verkocht(models.Model):
     class Meta:
         ordering = ['-price']
         verbose_name_plural = 'Verkochte renners'
+
+    def __str__(self):
+        return str(self.rider)

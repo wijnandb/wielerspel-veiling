@@ -6,16 +6,16 @@
 
   <div style="margin-left:20px;margin-top:20px">
     <dl class="row">
-        <dt class="col-sm-4">UCI_id: {{ rider.UCI_id }}</dt>
-        <dd class="col-sm-4">CQranking pagina: <a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.CQranking_id }}">{{ rider.CQranking_id }}</a></dd>
+        <dt class="col-sm-4">UCI_id: {{ rider.uciid }}</dt>
+        <dd class="col-sm-4">CQranking pagina: <a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}">{{ rider.cqriderid }}</a></dd>
         <dd class="col-sm-4"> {{ rider.nationality }}</dd>
     </dl>
-{% for result in rider.race_set.all %}
-  <dl class="row">
-    <dt class="col-sm-3">{{ result.startdate }}</dt>
-    <dd class="col-sm-3">{{ result.rank }}</dd>
-    <dd class="col-sm-3">{{ result.name }} ({{ result.category }})</dd>
-  </dl>
-{% endfor %}
+    {% for result in rider.race_set.all %}
+      <dl class="row">
+        <dt class="col-sm-3">{{ result.startdate }}</dt>
+        <dd class="col-sm-3">{{ result.rank }}</dd>
+        <dd class="col-sm-3">{{ result.name }} ({{ result.category }})</dd>
+      </dl>
+    {% endfor %}
   </div>
 {% endblock %}

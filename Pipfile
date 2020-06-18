@@ -28,6 +28,8 @@ virtualenv-clone = "==0.5.1"
 whitenoise = "==5.0.1"
 wrapt = "==1.11.1"
 Django = "==3.0.6"
+django-import-export = "*"
+pandas = "*"
 
 [requires]
 python_version = "3.7"

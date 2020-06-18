@@ -1,6 +1,6 @@
 TRUNCATE results_Race RESTART IDENTITY CASCADE;
 
-
+/*
 INSERT INTO results_Race (name, startdate, enddate, category_id, cqraceid) VALUES ('Trofeo Ses Salines - Felanitx', '31-01-2019', '31-01-2019', '1.1', 34493);
 INSERT INTO results_Race (name, startdate, enddate, category_id, cqraceid) VALUES ('Trofeo Andratx - Lloseta', '01-02-2019', '01-02-2019', '1.1', 34494);
 INSERT INTO results_Race (name, startdate, enddate, category_id, cqraceid) VALUES ('Trofeo Tramuntana', '02-02-2019', '02-02-2019', '1.1', 34496);
@@ -137,3 +137,4 @@ INSERT INTO results_Race (name, startdate, enddate, category_id, cqraceid) VALUE
 INSERT INTO results_Race (name, startdate, enddate, category_id, cqraceid) VALUES ('UAE Tour', '24-02-2019', '02-03-2019', '2.WT3', 34768);
 INSERT INTO results_Race (name, startdate, enddate, category_id, cqraceid) VALUES ('Presidential Tour of Turkey', '16-04-2019', '21-04-2019', '2.WT3', 34926);
 INSERT INTO results_Race (name, startdate, enddate, category_id, cqraceid) VALUES ('Tour of California', '12-05-2019', '18-05-2019', '2.WT3', 35062);
+*/
