@@ -26,6 +26,8 @@ The results will be scraped, see the separate app "Scraping" fro more details. W
 consists of more than just the bare necessities and contains extra information about riders, connects races from one year to another and shows which team a rider
 belongs to.
 
+It would be nice to 
+
 ## Scraping
 The most important part of the results is which rider finishes in which position in what category race. This sounds obvious and it is, but it means we have 
 some options when it comes to the logic of our scraper. Each of the proposed scraping sites has an overview page per rider, detailing the results per year, like 
@@ -34,7 +36,8 @@ some options when it comes to the logic of our scraper. Each of the proposed scr
 This means we could simply scrape the results from the riders that are sold, looping over each rider in a team and getting the results. This would be good enough 
 for the first version.
 
+Before anythong else, we'll need a list of all current riders, so that's the first thing to get. 
+
 ## Points
-
-
-
+The number of points a rider earns for their teamcaptain depends on position and racecategory. An overview of points per racecategory can be found [on the game website](https://wielerspel.com/reglement-2020/). There will be little differences from year to year, so every year will have their own points table. This means a 
+model consisting of racecategory (FK), position (INT), Year (INT) plus the fields Points (decimal) and JPP (INT, these are Jackpotpoints).
