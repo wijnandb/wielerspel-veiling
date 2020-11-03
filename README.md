@@ -19,7 +19,23 @@ We might add a timestamp to this.
 On the [current website](https://wielerspel.com/veiling-de-ploegen/) there is a section with example pages:
 - available, [unsold riders](https://wielerspel.com/veiling-2021-niet-verkochte-renners/)
 - [sold riders](https://wielerspel.com/veiling-de-ploegen/), owned by a teamcaptain
-- [overview of situation during the auction](https://wielerspel.com/veiling-2021-overzicht-landen/): how many riders does each teamcaptain have, how much points have they spend, what is maximum bid on next rider
+- [overview of situation during the auction](https://wielerspel.com/veiling-2021-overzicht-landen/): how many riders does each teamcaptain have, how much points have they spend, what is maximum bid on next rider.
+
+The page with [unsold riders](https://wielerspel.com/veiling-2021-niet-verkochte-renners/) is a ListView of Riders, with the exclusion of the ones that are in the GameTeam table.
+
+The [sold riders](https://wielerspel.com/veiling-de-ploegen/) is a ListView of the Riders in the GameTeam table.
+
+The page [overview of situation during the auction](https://wielerspel.com/veiling-2021-overzicht-landen/) has two parts, for which we will create two separate pages:
+
+- overview does some calculations on the GameTeam table. Per User it counts the number of Riders (for that year!) and calculates the amount spend (total price for 
+Riders where User is User). Lastly, if the amount of Riders from User is <9, it calculates the maximum amount to spend on a Rider. The maximum amount to spend on a Rider is the maximum of Points left, so that a TeamCaptain can still buy 9 Riders. For example, when the Auction starts, this is equal to Points left (100) minus riders to buy (9) plus 1, equalling 92. 
+
+The reason a TeamCaptain only has to buy 9 Riders wheer the minimum number of Riders in a Team is 10, is because everybody gets to pick a free Rider at the end of
+the Auction.
+
+So I think the formula for maximum amount to spend on Next Rider is (Points left -/- Number of Riders to buy) + 1
+Number of Riders to Buy is 9 -/- Riders in Team. And only calcultae this when Riders in Team < 9.
+
 
 ## Results
 The results will be scraped, see the separate app "Scraping" fro more details. We intentionally have a separate app for storing the results, which ideally 
