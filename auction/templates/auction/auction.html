@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block css %}
+    <style>
+        .bid-active{
+            background:yellow;
+        }
+        .highest-bid{
+            background:blue;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-3">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <td>{% trans 'Team Captain' %}</td>
+                            <td>{% trans 'Amount' %}</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Josh</td>
+                            <td> $120 </td>
+                        </tr>
+                        <tr>
+                            <td>David</td>
+                            <td> $220 </td>
+                        </tr>
+                        <tr>
+                            <td>Samuel</td>
+                            <td> $20 </td>
+                        </tr>
+                        <tr>
+                            <td>Samuel</td>
+                            <td> $20 </td>
+                        </tr>
+                        <tr>
+                            <td>Samuel</td>
+                            <td> $20 </td>
+                        </tr>
+                        <tr>
+                            <td>Samuel</td>
+                            <td> $20 </td>
+                        </tr>
+                        <tr>
+                            <td>Samuel</td>
+                            <td> $20 </td>
+                        </tr>
+                        <tr>
+                            <td>Samuel</td>
+                            <td> $20 </td>
+                        </tr>
+                        <tr>
+                            <td>Samuel</td>
+                            <td> $20 </td>
+                        </tr>
+                        <tr>
+                            <td>Samuel</td>
+                            <td> $20 </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="d-flex justify-content-between">
+                <p>{{ order }} - Rider </p>
+                <p>{% trans 'Current Bid' %}: <span id="bidDisplay">0</span></p>
+            </div>
+            <table id="points" class="table table-bordered">
+
+            </table>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // Generate Bidding Platform
+            generateBidding()
+            // Detect td click
+            $('.td').click(function(){
+                // Save to a form of database
+                const getPrevActiveBid = $('td.bid-active')
+                getPrevActiveBid.removeClass('bid-active')
+                this.className = 'text-center td bid-active'
+                const val = this.dataset['td']
+                const display = document.querySelector('#bidDisplay')
+                display.innerHTML = val
+
+                console.log(val)
+            })
+
+
+
+
+        })
+        function generateBidding(){
+            const table = document.querySelector("#points")
+            const trow = "<tr>"
+            let points = ""
+            let num = 1
+            for(let counter=1;counter<=10; counter++){
+                let data = "<tr>";
+                for(let i=1;i<=10;i++){
+                    data += "<td class='text-center td' data-td='"+ num +"'>" + num + "</td>"
+                    num++
+                }
+                data += "</tr>"
+                points += data
+            }
+            table.innerHTML = "<tbody>" + points + "</tbody>";
+        }
+        function getCurrentBid(){
+            // Get current user bid from database
+
+        }
+        function setCurrentBid(){
+            // Set current user bid in database
+
+
+        }
+        function getHighestBid(){
+            // Get highest bid of all participant
+        }
+        function getUsersBid(){
+            // Get all users bid
+        }
+
+    </script>
+{% endblock %}

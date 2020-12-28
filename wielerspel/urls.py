@@ -21,6 +21,7 @@ from django.views.generic import RedirectView
 
 urlpatterns = [
     path('', RedirectView.as_view(url='/results/', permanent=True)),
+    path('', include('auction.urls')),
     path('results/', include('results.urls')),
     path('admin/', admin.site.urls),
 ]

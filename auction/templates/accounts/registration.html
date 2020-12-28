@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+    <div class="col-md-5 offset-3 border p-5 border-radius">
+        <h2 class="text-center"> {% trans 'Registration' %} </h2>
+        <hr>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>{% trans 'First Name' %}</label>
+                {{ form.first_name }}
+            </div>
+            <div class="form-group">
+                <label>{% trans 'Last Name' %}</label>
+                {{ form.last_name }}
+            </div>
+            <div class="form-group">
+                <label>{% trans 'Username' %}</label>
+                {{ form.username }}
+            </div>
+            <div class="form-group">
+                <label>{% trans 'email' %}</label>
+                {{ form.email }}
+            </div>
+            <div class="form-group">
+                <label>{% trans 'Password' %}</label>
+                {{ form.password }}
+            </div>
+            <div class="form-group">
+                <button class="btn btn-sm btn-success"> {% trans 'Register' %}</button>
+            </div>
+        </form>
+    </div>
+
+{% endblock content %}
