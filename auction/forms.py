@@ -38,3 +38,8 @@ class RegistrationForm(forms.ModelForm):
             raise forms.ValidationError('Username or email already exists. Please try another one')
 
         return clean_data
+
+
+class BidForm(forms.Form):
+    rider = forms.IntegerField()
+    amount = forms.IntegerField()

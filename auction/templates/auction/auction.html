@@ -81,21 +81,16 @@
     <script type="text/javascript">
         $(document).ready(function(){
             // Generate Bidding Platform
+            const riderID = {{ rider_id }}
             generateBidding()
+            getCurrentBid(riderID)
             // Detect td click
             $('.td').click(function(){
                 // Save to a form of database
-                const getPrevActiveBid = $('td.bid-active')
-                getPrevActiveBid.removeClass('bid-active')
-                this.className = 'text-center td bid-active'
-                const val = this.dataset['td']
-                const display = document.querySelector('#bidDisplay')
-                display.innerHTML = val
-
-                console.log(val)
+                const credit = this.dataset['td']
+                const currentBidObj = setCurrentBid(riderID, credit)
+                updateTableUI(this, credit)
             })
-
-
 
 
         })
@@ -115,17 +110,56 @@
             }
             table.innerHTML = "<tbody>" + points + "</tbody>";
         }
-        function getCurrentBid(){
+        function getCurrentBid(riderID){
             // Get current user bid from database
+            $.ajax({
+                url: `{% url "auction:get_current_bid" %}?rider_id=${riderID}`,
+                method: 'GET',
+                success: response => {
+                    const credit = response.msg
+                    $('.td').each(function(elem){
+                        if(this.dataset['td'] == credit){
+                            updateTableUI(this, credit)
+                        }
+                    })
+                },
+                error: err => {
+                    console.log(err)
+                }
 
+            })
         }
-        function setCurrentBid(){
+        function setCurrentBid(riderID, credit){
             // Set current user bid in database
-
+            $.ajax({
+                url: '{% url "auction:bidding" %}',
+                method: 'POST',
+                headers: {
+                    "X-CSRFToken": '{{ csrf_token }}',
+                },
+                data:{'rider': riderID, 'amount': credit},
+                success: response =>{
+                    console.log(response)
+                },
+                error: err =>{
+                    const error = err.responseJSON
+                    alert(error.msg)
+                }
+            })
 
         }
+        function updateTableUI(elem, credit){
+            console.log(elem)
+            const getPrevActiveBid = $('td.bid-active')
+            getPrevActiveBid.removeClass('bid-active')
+            elem.className = 'text-center td bid-active'
+            const display = document.querySelector('#bidDisplay')
+            display.innerHTML = credit
+        }
+
         function getHighestBid(){
             // Get highest bid of all participant
+
         }
         function getUsersBid(){
             // Get all users bid
