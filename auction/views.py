@@ -70,13 +70,12 @@ def bidding(request):
             if len(biddings) < 1:
                 """ Raise exception if queryset return 0 """
                 raise Bid.DoesNotExist
-            get_last_bid = biddings.latest('created')
-            print(get_last_bid.amount)
-            print(form.cleaned_data['amount'])
 
-            if get_last_bid.amount > form.cleaned_data['amount']:
+            get_last_bid = biddings.latest('created')
+
+            if get_last_bid.amount >= form.cleaned_data['amount']:
                 """ Raise exception once the new bid is lower than current bid for same user """
-                raise Exception("New bid must not be lower than the current bid")
+                raise Exception("New bid must not be lower than or equal to the current bid")
 
             new_bidding = Bid(rider_id=form.cleaned_data['rider'], team_captain=user, amount=form.cleaned_data['amount'])
         except Bid.DoesNotExist:
@@ -95,9 +94,33 @@ def bidding(request):
 def get_current(request):
     """ Get current bid number for a user """
     rider_id = request.GET.get('rider_id')
+    biddings = Bid.objects.filter(rider_id=rider_id, team_captain=request.user)
+    obj = biddings.latest("created")
+    return JsonResponse(status=200, data={'status': _('success'),
+                                          'msg': obj.amount})
+
+
+@login_required
+def get_highest(request):
+    """ Get highest bid """
+    rider_id = request.GET.get('rider_id')
     biddings = Bid.objects.filter(rider_id=rider_id)
     obj = biddings.latest("created")
     return JsonResponse(status=200, data={'status': _('success'),
                                           'msg': obj.amount})
 
+
+@login_required
+def biddings(request):
+    """ Get all bidding """
+    rider_id = request.GET.get('rider_id')
+    biddings = Bid.objects.filter(rider_id=rider_id).order_by('-created')
+    results = []
+    for bidding in biddings:
+        results.append({'name': bidding.team_captain.username,
+                        'amount': bidding.amount,
+                        'date': bidding.created})
+
+    return JsonResponse(status=200, data={'status': _('success'),
+                                          'data': results })
 

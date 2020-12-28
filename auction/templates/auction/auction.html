@@ -13,55 +13,13 @@
 {% block content %}
     <div class="row">
         <div class="col-md-3">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead class="bg-dark text-white">
-                        <tr>
-                            <td>{% trans 'Team Captain' %}</td>
-                            <td>{% trans 'Amount' %}</td>
-                        </tr>
+            <div class="table-responsive" style="height: 600px;overflow-y: scroll">
+                <table class="table table-striped">
+                    <thead>
+                    <tr></tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>Josh</td>
-                            <td> $120 </td>
-                        </tr>
-                        <tr>
-                            <td>David</td>
-                            <td> $220 </td>
-                        </tr>
-                        <tr>
-                            <td>Samuel</td>
-                            <td> $20 </td>
-                        </tr>
-                        <tr>
-                            <td>Samuel</td>
-                            <td> $20 </td>
-                        </tr>
-                        <tr>
-                            <td>Samuel</td>
-                            <td> $20 </td>
-                        </tr>
-                        <tr>
-                            <td>Samuel</td>
-                            <td> $20 </td>
-                        </tr>
-                        <tr>
-                            <td>Samuel</td>
-                            <td> $20 </td>
-                        </tr>
-                        <tr>
-                            <td>Samuel</td>
-                            <td> $20 </td>
-                        </tr>
-                        <tr>
-                            <td>Samuel</td>
-                            <td> $20 </td>
-                        </tr>
-                        <tr>
-                            <td>Samuel</td>
-                            <td> $20 </td>
-                        </tr>
+                    <tbody class="biddings-listing">
+
                     </tbody>
                 </table>
             </div>
@@ -84,17 +42,17 @@
             const riderID = {{ rider_id }}
             generateBidding()
             getCurrentBid(riderID)
+            setInterval(()=> getUsersBid(riderID), 1000)
             // Detect td click
             $('.td').click(function(){
                 // Save to a form of database
                 const credit = this.dataset['td']
-                const currentBidObj = setCurrentBid(riderID, credit)
-                updateTableUI(this, credit)
+                setCurrentBid(this, riderID, credit)
             })
-
 
         })
         function generateBidding(){
+            // Generate table
             const table = document.querySelector("#points")
             const trow = "<tr>"
             let points = ""
@@ -129,7 +87,7 @@
 
             })
         }
-        function setCurrentBid(riderID, credit){
+        function setCurrentBid(elem, riderID, credit){
             // Set current user bid in database
             $.ajax({
                 url: '{% url "auction:bidding" %}',
@@ -138,18 +96,17 @@
                     "X-CSRFToken": '{{ csrf_token }}',
                 },
                 data:{'rider': riderID, 'amount': credit},
-                success: response =>{
-                    console.log(response)
+                success: response => {
+                    updateTableUI(elem, credit)
                 },
                 error: err =>{
                     const error = err.responseJSON
                     alert(error.msg)
                 }
             })
-
         }
         function updateTableUI(elem, credit){
-            console.log(elem)
+            // Update table UI after detecting any changes in the UI
             const getPrevActiveBid = $('td.bid-active')
             getPrevActiveBid.removeClass('bid-active')
             elem.className = 'text-center td bid-active'
@@ -161,8 +118,28 @@
             // Get highest bid of all participant
 
         }
-        function getUsersBid(){
+        function getUsersBid(riderID){
             // Get all users bid
+            $.ajax({
+                url: '{% url "auction:biddings" %}',
+                data: {'rider_id': riderID},
+                method: 'GET',
+                success: response => {
+                    const tableBody = document.querySelector('.biddings-listing')
+
+                    const data = response.data
+                    tableBody.innerHTML = ""
+                    data.forEach(function (elem) {
+                        console.log(elem.name)
+                        tableBody.innerHTML += `<tr><td>${elem.name}</td><td>${elem.amount}</td></tr>`
+                    })
+                },
+                error: err =>{
+                    console.log(err)
+                    const error = err.responseJSON
+                    alert(error.msg)
+                }
+            })
         }
 
     </script>
