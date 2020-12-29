@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'import_export',
+    'auction'
 ]
 
 MIDDLEWARE = [
@@ -79,10 +80,10 @@ WSGI_APPLICATION = 'wielerspel.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'wielerspel2005',
-        'USER': 'postgres',
-        'PASSWORD': 'localpostgres',
-        'HOST': '127.0.0.1',
+        'NAME': 'wielerspel',
+        'USER': 'aladelekan',
+        'PASSWORD': 'olamilekan',
+        'HOST': 'LOCALHOST',
         'PORT': '5432',
     }
 }
