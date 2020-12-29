@@ -130,12 +130,10 @@
                     const data = response.data
                     tableBody.innerHTML = ""
                     data.forEach(function (elem) {
-                        console.log(elem.name)
                         tableBody.innerHTML += `<tr><td>${elem.name}</td><td>${elem.amount}</td></tr>`
                     })
                 },
                 error: err =>{
-                    console.log(err)
                     const error = err.responseJSON
                     alert(error.msg)
                 }
