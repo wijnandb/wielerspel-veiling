@@ -7,6 +7,7 @@ from django.views.generic import FormView, TemplateView
 from django.utils.translation import gettext as _
 from auction.forms import LoginForm, RegistrationForm, BidForm
 from auction.models import Bid
+from results.models import Rider
 
 
 class LoginView(FormView):
@@ -49,7 +50,9 @@ class AuctionView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['rider_id'] = self.kwargs['rider_id']
+        rider_id = self.kwargs['rider_id']
+        context['rider_id'] = rider_id
+        context['rider'] = Rider.objects.get(id=rider_id)
         return context
 
 @login_required
@@ -105,7 +108,7 @@ def get_highest(request):
     """ Get highest bid """
     rider_id = request.GET.get('rider_id')
     biddings = Bid.objects.filter(rider_id=rider_id)
-    obj = biddings.latest("created")
+    obj = biddings.highest("amount")
     return JsonResponse(status=200, data={'status': _('success'),
                                           'msg': obj.amount})
 
@@ -114,7 +117,7 @@ def get_highest(request):
 def biddings(request):
     """ Get all bidding """
     rider_id = request.GET.get('rider_id')
-    biddings = Bid.objects.filter(rider_id=rider_id).order_by('-created')
+    biddings = Bid.objects.filter(rider_id=rider_id).order_by('-amount')[:5]
     results = []
     for bidding in biddings:
         results.append({'name': bidding.team_captain.username,
@@ -123,4 +126,3 @@ def biddings(request):
 
     return JsonResponse(status=200, data={'status': _('success'),
                                           'data': results })
-

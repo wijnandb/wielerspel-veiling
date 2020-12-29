@@ -26,7 +26,7 @@
         </div>
         <div class="col-md-7">
             <div class="d-flex justify-content-between">
-                <p>{{ order }} - Rider </p>
+                <p>{{ rider }}</p>
                 <p>{% trans 'Current Bid' %}: <span id="bidDisplay">0</span></p>
             </div>
             <table id="points" class="table table-bordered">
@@ -57,7 +57,7 @@
             const trow = "<tr>"
             let points = ""
             let num = 1
-            for(let counter=1;counter<=10; counter++){
+            for(let counter=1;counter<=8; counter++){
                 let data = "<tr>";
                 for(let i=1;i<=10;i++){
                     data += "<td class='text-center td' data-td='"+ num +"'>" + num + "</td>"

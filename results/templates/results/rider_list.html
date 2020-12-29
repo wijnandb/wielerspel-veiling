@@ -9,7 +9,7 @@
                 <ul>
                     {% for rider in rider_list %}
 
-                        <h5><a href="{{ rider.get_absolute_url }}">{{ rider }}</a></h5>
+                        <h5><a href="{% url 'auction:auction' rider.id %}">{{ rider }}</a></h5>
 
                     {% endfor %}
 
