@@ -37,7 +37,6 @@ class RaceDetailView(generic.DetailView):
 
 class RiderListView(generic.ListView):
     model = Rider
-    paginate_by = 30
 
 
 class RiderDetailView(generic.DetailView):
