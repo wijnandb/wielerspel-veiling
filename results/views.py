@@ -39,6 +39,8 @@ class RaceDetailView(generic.DetailView):
 class RiderListView(generic.ListView):
     model = Rider
     # filter, show only riders that haven't been sold
+    def get_queryset(self):
+          return Rider.objects.filter(sold=False)
 
 class RiderDetailView(generic.DetailView):
     model = Rider
