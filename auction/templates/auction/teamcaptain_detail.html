@@ -4,6 +4,12 @@
 
   <h1>Ploegleider: {{ teamcaptain.user }} </h1>
 
+ aantal gekochte renners: {{ teamcaptain.teamsize }}
+ budget: {{ teamcaptain.amount_left }}
+ aantal renners nog kopen: {{ teamcaptain.riders_needed }}
+ maximaal bod: {{ teamcaptain.max_allowed_bid }}
+
+
   <div style="margin-left:20px;margin-top:20px">
     <dl class="row">
       {% for rider in teamcaptain.verkocht_set.all %}
