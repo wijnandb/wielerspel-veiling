@@ -3,11 +3,15 @@ from django.urls import reverse
 
 
 class Rider(models.Model):
-    name = models.CharField(max_length=100)
-    birthday = models.DateField(null=True, blank=True)
+    rank = models.IntegerField(null=True, blank=True)
+    prev = models.IntegerField(null=True, blank=True)
     cqriderid = models.IntegerField(unique=True)
-    uciid = models.IntegerField(null=True, blank=True)
+    ucicode = models.CharField(max_length=11, blank=True, null=True)
+    name = models.CharField(max_length=100)
+    team = models.CharField(max_length=3, blank=True, null=True)
     nationality = models.CharField(max_length=3, blank=True, null=True)
+    age = models.IntegerField(null=True, blank=True)
+    cqpoints = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -15,6 +19,9 @@ class Rider(models.Model):
     def get_absolute_url(self):
         """Returns the url to access a particular instance of the model."""
         return reverse('rider-detail', args=[str(self.id)])
+
+    class Meta:
+        ordering = ['rank']
 
 
 class Category(models.Model):

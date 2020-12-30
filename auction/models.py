@@ -20,3 +20,6 @@ class TeamCaptainStatus(models.Model):
     riders_needed = models.IntegerField(default=9)
     max_allowed_bid = models.IntegerField(default=92)
     team_captain = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "%s %s riders (need %s more) max bid: %s points left: %s" %(self.team_captain.username, self.team_size, self.riders_needed, self.max_allowed_bid, self.amount_left)

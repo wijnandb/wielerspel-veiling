@@ -6,16 +6,62 @@
             <h1>Renners</h1>
             <br/><br/>
             {% if rider_list %}
-                <ul>
-                    {% for rider in rider_list %}
-
-                        <h5><a href="{% url 'auction:auction' rider.id %}">{{ rider }}</a></h5>
-
-                    {% endfor %}
-
-                </ul>
+                <table class="table" id="renners">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Rank (prev)</th>
+                            <th>Renner (nat)</th>
+                            <th>Team</th>
+                            <th>CQriderid</th>
+                            <th>UCICode</th>
+                            <th>Leeftijd</th>
+                            <th>CQ points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rider in rider_list %}
+                            <tr>
+                                <td>{{ rider.rank }} ({{ rider.prev }})</td>
+                                <td><a href="{% url 'auction:auction' rider.id %}">{{ rider }}</a> ({{rider.nationality }})</td>
+                                <td>{{ rider.team }}</td>
+                                <td><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}" target="_blank">{{ rider.cqriderid }}</a></td>
+                                <td>{{ rider.ucicode }}</td>
+                                <td>{{ rider.age }}</td>
+                                <td>{{ rider.cqpoints }}</td>
+                            </tr>
+                        {% endfor %}
+                    <tbody></tbody>
+                </table>
             {% else %}
                 <p>Geen renners aanwezig.</p>
             {% endif %}
 
 {% endblock %}
+{% block js %}
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.22/datatables.min.js"></script>
+<script>
+    $(document).ready( function () {
+        $('#renners').DataTable( {
+            "language": {
+                "sProcessing": "Bezig...",
+                "sLengthMenu": "_MENU_ resultaten weergeven",
+                "sZeroRecords": "Geen resultaten gevonden",
+                "sInfo": "_START_ tot _END_ van _TOTAL_ resultaten",
+                "sInfoEmpty": "Geen resultaten om weer te geven",
+                "sInfoFiltered": " (gefilterd uit _MAX_ resultaten)",
+                "sInfoPostFix": "",
+                "sSearch": "Zoeken:",
+                "sEmptyTable": "Geen resultaten aanwezig in de tabel",
+                "sInfoThousands": ".",
+                "sLoadingRecords": "Een moment geduld aub - bezig met laden...",
+                "oPaginate": {
+                    "sFirst": "Eerste",
+                    "sLast": "Laatste",
+                    "sNext": "Volgende",
+                    "sPrevious": "Vorige"
+                },
+            }
+        } );
+    } );
+</script>
+{% endblock js %}
