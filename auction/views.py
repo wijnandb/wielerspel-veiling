@@ -95,7 +95,7 @@ def bidding(request):
 
 @login_required
 def get_current(request):
-    """ Get current bid number for a user """
+    """ Get current highest bid for a user """
     rider_id = request.GET.get('rider_id')
     biddings = Bid.objects.filter(rider_id=rider_id, team_captain=request.user)
     obj = biddings.latest("created")
@@ -108,9 +108,9 @@ def get_highest(request):
     """ 
         Get highest bid.
         The logic here dictates that the highest bid is one higher than the second highest bid,
-        unless ofcourse when second_highest == highest_bid. So it seems we want to get both the highest 
+        unless of course when second_highest == highest_bid. So it seems we want to get both the highest 
         and the second highest bid, check if highest > second_highest and then set 
-        highest == second_highest + 1 and return this amount
+        highest = second_highest + 1 and return this amount
     """
     rider_id = request.GET.get('rider_id')
     biddings = Bid.objects.filter(rider_id=rider_id)
@@ -142,9 +142,10 @@ def biddings(request):
                         'amount': second_highest.amount,
                         'date': second_highest.created})
     else:
-        results.append({'name': biddings.team_captain.username,
-                        'amount': biddings.amount,
-                        'date': biddings.created})
+        for bidding in biddings:
+            results.append({'name': bidding.team_captain.username,
+                        'amount': bidding.amount,
+                        'date': bidding.created})
 
     return JsonResponse(status=200, data={'status': _('success'),
                                           'data': results })
