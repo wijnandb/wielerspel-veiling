@@ -9,6 +9,8 @@ class Bid(models.Model):
     team_captain = models.ForeignKey(User, on_delete=models.CASCADE)
     rider = models.ForeignKey('results.Rider', on_delete=models.CASCADE, related_name='rider')
     amount = models.IntegerField()  # Thinking it should be a DecimalField
+    # @aladelekan: Only integers allowed, whole points as biddings. That's the rules,  
+    # otherwise you are totally right. Please remove once you have read this.
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -17,8 +19,9 @@ class Bid(models.Model):
 
 class TeamCaptain(models.Model):
     """ 
-    Information about the TeamCaptains, how many riders have they bought,
-    how much points left, what is max. bid
+    Information about the TeamCaptains: how many riders have they bought,
+    how much points do they have left, what is max. bid, how many riders 
+    do they still need to buy?
     """
     team_size = models.IntegerField(default=0)
     amount_left = models.IntegerField(default=100)
@@ -37,7 +40,7 @@ class ToBeAuctioned(models.Model):
     """
     team_captain = models.ForeignKey(User, on_delete=models.CASCADE)
     rider = models.ForeignKey('results.Rider', on_delete=models.CASCADE)
-    amount = models.IntegerField()  # Thinking it should be a DecimalField
+    amount = models.IntegerField()
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -105,7 +105,13 @@ def get_current(request):
 
 @login_required
 def get_highest(request):
-    """ Get highest bid """
+    """ 
+        Get highest bid.
+        The logic here dictates that the highest bid is one higher than the second highest bid,
+        unless ofcourse when second_highest == highest_bid. So it seems we want to get both the highest 
+        and the second highest bid, check if highest > second_highest and then set 
+        highest == second_highest + 1 and return this amount
+    """
     rider_id = request.GET.get('rider_id')
     biddings = Bid.objects.filter(rider_id=rider_id)
     obj = biddings.highest("amount")
@@ -115,14 +121,24 @@ def get_highest(request):
 
 @login_required
 def biddings(request):
-    """ Get all bidding """
+    """ 
+        Get all biddings. 
+        Actually, we don't want to get all biddings really. 
+        We want to get the highest biddings. Based on the second highest bid, we 
+        determine how high the highest bid should be.
+    """
     rider_id = request.GET.get('rider_id')
-    biddings = Bid.objects.filter(rider_id=rider_id).order_by('-amount')[:5]
+    highest_bid = Bid.objects.filter(rider_id=rider_id).order_by('-amount', 'created')[0]
+    second_highest = Bid.objects.filter(rider_id=rider_id).order_by('-amount', 'created')[1]
+    if highest_bid.amount > second_highest.amount:
+        highest_bid.amount = second_highest.amount+1
     results = []
-    for bidding in biddings:
-        results.append({'name': bidding.team_captain.username,
-                        'amount': bidding.amount,
-                        'date': bidding.created})
+    results.append({'name': highest_bid.team_captain.username,
+                    'amount': highest_bid.amount,
+                    'date': highest_bid.created})
+    results.append({'name': second_highest.team_captain.username,
+                    'amount': second_highest.amount,
+                    'date': second_highest.created})
 
     return JsonResponse(status=200, data={'status': _('success'),
                                           'data': results })
