@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.views.generic import FormView, TemplateView
 from django.utils.translation import gettext as _
 from auction.forms import LoginForm, RegistrationForm, BidForm
-from auction.models import Bid
+from auction.models import Bid, TeamCaptain
 from results.models import Rider
 
 class LoginView(FormView):
@@ -52,6 +52,7 @@ class AuctionView(TemplateView):
         rider_id = self.kwargs['rider_id']
         context['rider_id'] = rider_id
         context['rider'] = Rider.objects.get(id=rider_id)
+        context['ploegleiders'] = TeamCaptain.objects.all()
         return context
 
 
@@ -149,3 +150,4 @@ def biddings(request):
 
     return JsonResponse(status=200, data={'status': _('success'),
                                           'data': results })
+

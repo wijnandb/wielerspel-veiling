@@ -13,10 +13,10 @@
 {% block content %}
     <div class="row">
         <div class="col-md-3">
-            <div class="table-responsive" style="height: 600px;overflow-y: scroll">
+            <div class="table-responsive" style="height: 200px;">
                 <table class="table table-striped">
                     <thead>
-                    <tr></tr>
+                    <tr><td>Ploegleider</td><td>Bod</td></tr>
                     </thead>
                     <tbody class="biddings-listing">
 
@@ -24,14 +24,36 @@
                 </table>
             </div>
         </div>
-        <div class="col-md-7">
+        <div class="col-md-6">
             <div class="d-flex justify-content-between">
-                <p>{{ rider }}</p>
+                <p><h1><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}" target="_blank">{{ rider }}</a></h1></p>
                 <!--p>{% trans 'Current price' %}: <span id="CurrentPriceDisplay">0</span></p-->
                 <p>{% trans 'Your Bid' %}: <span id="bidDisplay">0</span></p>
             </div>
             <table id="points" class="table table-bordered">
 
+            </table>
+        </div>
+        <div class="col-md-3">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <td></td>
+                    <td>ploeg</td>
+                    <td>max</td>
+                    <td>over</td>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for ploegleider in ploegleiders %}
+                        <tr>
+                            <td>{{ ploegleider.user }}</td>
+                            <td>{{ ploegleider.team_size }}</td>
+                            <td>{{ ploegleider.max_allowed_bid }}</td>
+                            <td>{{ ploegleider.amount_left }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
             </table>
         </div>
     </div>

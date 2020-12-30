@@ -32,6 +32,10 @@ class TeamCaptain(models.Model):
     def __str__(self):
         return "%s heeft %s renners (nog %s nodig). Max toegestaan bod: %s. Punten over: %s" %(self.user, self.team_size, self.riders_needed, self.max_allowed_bid, self.amount_left)
 
+    class Meta:
+        ordering = ['-amount_left', '-user']
+
+
 class ToBeAuctioned(models.Model):
     """
     The wishlist for each Teamcaptain. A rider can be on the wishlist of 
