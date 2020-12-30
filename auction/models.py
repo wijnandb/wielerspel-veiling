@@ -45,3 +45,18 @@ class ToBeAuctioned(models.Model):
 
     def __str__(self):
         return "%s wil %s aanbieden voor %s" %(self.team_captain, self.rider, self.amount)
+
+
+class Joker(models.Model):
+    """
+    TeamCaptains can have a "Joker" placed on three riders they have had in
+    previos year(s). This allows them to buy that Rider for a lower amont than 
+    the other TeamCaptains. A Joker with a value of 0 allows them to buy the
+    rider for the highest amount the other TeamCaptains have bidded.
+    """
+    team_captain = models.ForeignKey(User, on_delete=models.CASCADE)
+    rider = models.ForeignKey('results.Rider', on_delete=models.CASCADE)
+    value = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "%s heeft een %s joker op %s" %(self.team_captain, self.value, self.rider.name)
