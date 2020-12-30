@@ -127,18 +127,24 @@ def biddings(request):
         We want to get the highest biddings. Based on the second highest bid, we 
         determine how high the highest bid should be.
     """
-    rider_id = request.GET.get('rider_id')
-    highest_bid = Bid.objects.filter(rider_id=rider_id).order_by('-amount', 'created')[0]
-    second_highest = Bid.objects.filter(rider_id=rider_id).order_by('-amount', 'created')[1]
-    if highest_bid.amount > second_highest.amount:
-        highest_bid.amount = second_highest.amount+1
     results = []
-    results.append({'name': highest_bid.team_captain.username,
-                    'amount': highest_bid.amount,
-                    'date': highest_bid.created})
-    results.append({'name': second_highest.team_captain.username,
-                    'amount': second_highest.amount,
-                    'date': second_highest.created})
+    rider_id = request.GET.get('rider_id')
+    biddings = Bid.objects.filter(rider_id=rider_id).order_by('-amount', 'created')
+    if len(biddings) > 1:
+        highest_bid = biddings[0]
+        second_highest = biddings[1]
+        if highest_bid.amount > second_highest.amount:
+            highest_bid.amount = second_highest.amount+1
+        results.append({'name': highest_bid.team_captain.username,
+                        'amount': highest_bid.amount,
+                        'date': highest_bid.created})
+        results.append({'name': second_highest.team_captain.username,
+                        'amount': second_highest.amount,
+                        'date': second_highest.created})
+    else:
+        results.append({'name': biddings.team_captain.username,
+                        'amount': biddings.amount,
+                        'date': biddings.created})
 
     return JsonResponse(status=200, data={'status': _('success'),
                                           'data': results })
