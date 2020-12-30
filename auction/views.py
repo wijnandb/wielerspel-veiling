@@ -9,7 +9,6 @@ from auction.forms import LoginForm, RegistrationForm, BidForm
 from auction.models import Bid
 from results.models import Rider
 
-
 class LoginView(FormView):
     template_name = 'accounts/login.html'
     form_class = LoginForm
@@ -25,7 +24,7 @@ class LoginView(FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('index')
+        return reverse('results:index')
 
 
 class RegistrationView(FormView):
@@ -54,6 +53,7 @@ class AuctionView(TemplateView):
         context['rider_id'] = rider_id
         context['rider'] = Rider.objects.get(id=rider_id)
         return context
+
 
 @login_required
 def bidding(request):
