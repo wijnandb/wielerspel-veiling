@@ -39,10 +39,10 @@
     <script type="text/javascript">
         $(document).ready(function(){
             // Generate Bidding Platform
-            const riderID = {{ rider_id }}
-            generateBidding()
-            getCurrentBid(riderID)
-            setInterval(() => getUsersBid(riderID), 1000)
+            const riderID = {{ rider_id }},
+            generateBidding(),
+            getCurrentBid(riderID),
+            setInterval(() => getUsersBid(riderID), 1000),
             // Detect td click
             $('.td').click(function(){
                 // Save to a form of database
@@ -50,7 +50,7 @@
                 setCurrentBid(this, riderID, credit)
             })
 
-        })
+        ,}),
         function generateBidding(){
             // Generate table
             const table = document.querySelector("#points")

@@ -3,9 +3,10 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
+from auction.models import TeamCaptain
 
 
-from .models import Rider, Race, Ploegleider, Uitslag, Verkocht
+from .models import Rider, Race, Uitslag, Verkocht
 
 
 def index(request):
@@ -13,7 +14,7 @@ def index(request):
     # Generate counts of some of the main objects
     num_races = Race.objects.all().count()
     num_riders = Rider.objects.count()  # The 'all()' is implied by default.
-    num_ploegleiders = Ploegleider.objects.count()
+    num_ploegleiders = 15
     num_sold_riders = Verkocht.objects.count()
 
 
@@ -37,18 +38,18 @@ class RaceDetailView(generic.DetailView):
 
 class RiderListView(generic.ListView):
     model = Rider
-
+    # filter, show only riders that haven't been sold
 
 class RiderDetailView(generic.DetailView):
     model = Rider
 
 
 class PloegleiderListView(generic.ListView):
-    model = Ploegleider
+    model = TeamCaptain
 
 
 class PloegleiderDetailView(generic.DetailView):
-    model = Ploegleider
+    model = TeamCaptain
 
 
 class UitslagListView(generic.ListView):
@@ -66,4 +67,3 @@ class VerkochtListView(generic.ListView):
 
 class VerkochtDetailView(generic.DetailView):
     model = Verkocht
-    # I want to use cqriderid as PK

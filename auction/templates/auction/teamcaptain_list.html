@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+            <h1>Ploegleiders</h1>
+            <br/><br/>
+            {% if object_list %}
+                <table>
+                    <thead>
+                        <th>Ploegleider</th>
+                        <th># renners</th>
+                        <th>punten over</th>
+                        <th>max. bod</th>
+                    </thead>
+                    <tbody>
+                    {% for ploegleider in object_list %}
+                        <tr>
+                            <td><a href="{% url 'results:ploegleider-detail' ploegleider.pk %}">{{ ploegleider.user }}</a></td>
+                            <td>{{ ploegleider.team_size }}</td>
+                            <td>{{ ploegleider.amount_left }}</td>
+                            <td>{{ ploegleider.max_allowed_bid }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Geen ploegleiders aanwezig.</p>
+            {% endif %}
+
+{% endblock %}
