@@ -1,5 +1,7 @@
 from django.db import models
 from django.urls import reverse
+from django.contrib.auth.models import User
+from auction.models import TeamCaptain
 
 
 class Rider(models.Model):
@@ -85,32 +87,18 @@ class Uitslag(models.Model):
 
     class Meta:
         verbose_name_plural = 'Uitslagen'
-
-
-class Ploegleider(models.Model):
-    first_name = models.CharField(max_length=30, null=True, blank=True)
-    last_name = models.CharField(max_length=30, null=True, blank=True)
-    nickname = models.CharField(max_length=30, unique=True)
-    birthday = models.DateField(null=True, blank=True)
-
-    def __str__(self):
-        return self.nickname
-
-    class Meta:
-        ordering = ['-last_name']
-
-    def get_absolute_url(self):
-        """Returns the url to access a particular instance of the model."""
-        return reverse('ploegleider-detail', args=[str(self.id)])
-
+        
+        
 
 class Verkocht(models.Model):
-    rider = models.ForeignKey(Rider, to_field='cqriderid', on_delete=models.CASCADE)
-    ploegleider = models.ForeignKey(Ploegleider, on_delete=models.CASCADE)
-    editie = models.PositiveIntegerField(default=2020)
+    rider = models.ForeignKey(Rider, on_delete=models.CASCADE)
+    ploegleider = models.ForeignKey(TeamCaptain, on_delete=models.CASCADE)
+    editie = models.PositiveIntegerField(default=2021)
     price = models.IntegerField(default=0)
     punten = models.FloatField(default=0)
     jpp = models.IntegerField(default=0)
+
+    unique_together = [['rider', 'editie']]
 
     def get_absolute_url(self):
         """Returns the url to access a particular instance of the model."""
