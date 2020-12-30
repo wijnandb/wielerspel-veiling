@@ -1,16 +1,18 @@
 {% extends "base.html" %}
 
+
 {% block content %}
 
 
             <h1>Renners</h1>
             <br/><br/>
             {% if rider_list %}
-                <table class="table" id="renners">
-                    <thead class="thead-dark">
+                <table class="table" id="renners" data-page-length='25'>
+                    <thead>
                         <tr>
-                            <th>Rank (prev)</th>
-                            <th>Renner (nat)</th>
+                            <th>#</th>
+                            <th>Renner</th>
+                            <th>Land</th>
                             <th>Team</th>
                             <th>CQriderid</th>
                             <th>UCICode</th>
@@ -21,8 +23,9 @@
                     <tbody>
                         {% for rider in rider_list %}
                             <tr>
-                                <td>{{ rider.rank }} ({{ rider.prev }})</td>
-                                <td><a href="{% url 'auction:auction' rider.id %}">{{ rider }}</a> ({{rider.nationality }})</td>
+                                <td>{{ rider.rank }}</td>
+                                <td><a href="{% url 'auction:auction' rider.id %}">{{ rider }}</a></td>
+                                <td>{{rider.nationality }}</td>
                                 <td>{{ rider.team }}</td>
                                 <td><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}" target="_blank">{{ rider.cqriderid }}</a></td>
                                 <td>{{ rider.ucicode }}</td>
@@ -42,6 +45,8 @@
 <script>
     $(document).ready( function () {
         $('#renners').DataTable( {
+            //scrollY: 500,
+            //paging: false,
             "language": {
                 "sProcessing": "Bezig...",
                 "sLengthMenu": "_MENU_ resultaten weergeven",
