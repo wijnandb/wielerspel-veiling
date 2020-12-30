@@ -14,6 +14,7 @@ class Rider(models.Model):
     nationality = models.CharField(max_length=3, blank=True, null=True)
     age = models.IntegerField(null=True, blank=True)
     cqpoints = models.IntegerField(null=True, blank=True)
+    sold = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
