@@ -2,10 +2,10 @@
 {% load i18n %}
 {% block css %}
     <style>
-        .bid-active{
+        .user_bid{
             background:yellow;
         }
-        .highest-bid{
+        .current_price{
             background:blue;
         }
     </style>
@@ -39,14 +39,14 @@
     <script type="text/javascript">
         $(document).ready(function(){
             // Generate Bidding Platform
-            const riderID = {{ rider_id }}
+            const riderID = ({{ rider_id }})
             generateBidding()
             getCurrentBid(riderID)
             setInterval(() => getUsersBid(riderID), 1000)
             // Detect td click
             $('.td').click(function(){
                 // Save to a form of database
-                const credit = this.dataset['td']
+                const credit = (this.dataset['td'])
                 setCurrentBid(this, riderID, credit)
             })
 
@@ -107,15 +107,16 @@
         }
         function updateTableUI(elem, credit){
             // Update table UI after detecting any changes in the UI
-            const getPrevActiveBid = $('td.bid-active')
-            getPrevActiveBid.removeClass('bid-active')
-            elem.className = 'text-center td bid-active'
+            const getPrevActiveBid = $('td.user_bid')
+            getPrevActiveBid.removeClass('user_bid')
+            elem.className = 'text-center td user_bid'
             const display = document.querySelector('#bidDisplay')
             display.innerHTML = credit
         }
 
         function getHighestBid(){
-            // Get highest bid of all participant
+            // Get highest bid of all participants
+            // if 
 
         }
         function getUsersBid(riderID){
