@@ -1,7 +1,6 @@
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
-from auction.models import TeamCaptain
 
 
 class Rider(models.Model):
@@ -18,10 +17,6 @@ class Rider(models.Model):
 
     def __str__(self):
         return self.name
-
-    def get_absolute_url(self):
-        """Returns the url to access a particular instance of the model."""
-        return reverse('rider-detail', args=[str(self.id)])
 
     class Meta:
         ordering = ['rank']
@@ -88,26 +83,4 @@ class Uitslag(models.Model):
 
     class Meta:
         verbose_name_plural = 'Uitslagen'
-        
-        
 
-class Verkocht(models.Model):
-    rider = models.ForeignKey(Rider, on_delete=models.CASCADE)
-    ploegleider = models.ForeignKey(TeamCaptain, on_delete=models.CASCADE)
-    editie = models.PositiveIntegerField(default=2021)
-    price = models.IntegerField(default=0)
-    punten = models.FloatField(default=0)
-    jpp = models.IntegerField(default=0)
-
-    unique_together = [['rider', 'editie']]
-
-    def get_absolute_url(self):
-        """Returns the url to access a particular instance of the model."""
-        return reverse('verkochterenners-detail', args=[str(self.id)])
-
-    class Meta:
-        ordering = ['-price']
-        verbose_name_plural = 'Verkochte renners'
-
-    def __str__(self):
-        return str(self.rider)

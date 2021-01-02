@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.forms import TextInput
+from auction.models import VirtualTeam
 
 
 class LoginForm(forms.Form):
@@ -43,3 +44,7 @@ class RegistrationForm(forms.ModelForm):
 class BidForm(forms.Form):
     rider = forms.IntegerField()
     amount = forms.IntegerField()
+
+
+class BuyRider(forms.Form):
+    model = VirtualTeam

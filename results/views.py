@@ -6,7 +6,8 @@ from django.views.generic.detail import DetailView
 from auction.models import TeamCaptain
 
 
-from .models import Rider, Race, Uitslag, Verkocht
+from .models import Rider, Race, Uitslag
+from auction.models import Verkocht
 
 
 def index(request):

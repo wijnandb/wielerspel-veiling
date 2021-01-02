@@ -1,8 +1,14 @@
 from django.contrib import admin
-# Register your models here.
-from auction.models import Bid, TeamCaptain, ToBeAuctioned, Joker
+from import_export.admin import ImportExportModelAdmin
+from auction.models import Bid, TeamCaptain, ToBeAuctioned, Joker, Verkocht
+
+class VerkochtAdmin(ImportExportModelAdmin):
+    list_display = ('rider', 'ploegleider', 'price', 'punten', 'jpp')
+    list_filter = ('ploegleider', 'editie')
 
 admin.site.register(Bid)
 admin.site.register(TeamCaptain)
 admin.site.register(ToBeAuctioned)
 admin.site.register(Joker)
+admin.site.register(Verkocht, VerkochtAdmin)
+

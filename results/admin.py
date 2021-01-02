@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Rider, Category, RacePoints, Race, Verkocht, Uitslag
+from .models import Rider, Category, RacePoints, Race, Uitslag
 from import_export.admin import ImportExportModelAdmin
 from import_export import resources
 
@@ -15,11 +15,6 @@ class RiderAdmin(ImportExportModelAdmin):
     list_display = ('name', 'cqriderid', 'nationality')
     list_filter = ("nationality",)
     search_fields = ['name']
-
-
-class VerkochtAdmin(ImportExportModelAdmin):
-    list_display = ('rider', 'ploegleider', 'price', 'punten', 'jpp')
-    list_filter = ('ploegleider', 'editie')
 
 
 class UitslagAdmin(ImportExportModelAdmin):
@@ -40,5 +35,4 @@ admin.site.register(Category)
 admin.site.register(Rider, RiderAdmin)
 admin.site.register(RacePoints)
 admin.site.register(Race, RaceAdmin)
-admin.site.register(Verkocht, VerkochtAdmin)
 admin.site.register(Uitslag, UitslagAdmin)
