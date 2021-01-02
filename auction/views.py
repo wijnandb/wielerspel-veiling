@@ -3,10 +3,12 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.urls import reverse
+from django.views import generic
 from django.views.generic import FormView, TemplateView
+from django.views.generic.list import ListView
 from django.utils.translation import gettext as _
 from auction.forms import LoginForm, RegistrationForm, BidForm
-from auction.models import Bid, TeamCaptain
+from auction.models import Bid, TeamCaptain, ToBeAuctioned
 from results.models import Rider
 
 class LoginView(FormView):
@@ -40,11 +42,14 @@ class RegistrationView(FormView):
         return super().form_valid(form)
 
 
-class AuctionListView(TemplateView):
-    template_name = 'auction/auctions.html'
-
-
 class AuctionView(TemplateView):
+    """
+    This is the page where the actual auctioning takes place.
+    Stuff that is missing:
+    - get rider to be auctioned from AuctionOrder (could be a list, not necessarily a table)
+    - add Joker button
+    - show loggedin Teamcaptains
+    """
     template_name = 'auction/auction.html'
 
     def get_context_data(self, **kwargs):
@@ -78,7 +83,7 @@ def bidding(request):
             get_last_bid = biddings.latest('created')
 
             if get_last_bid.amount >= form.cleaned_data['amount']:
-                """ Raise exception once the new bid is lower than current bid for same user """
+                """ Raise exception once the new bid is lower than current bid highest bid """
                 raise Exception("New bid must not be lower than or equal to the current bid")
 
             new_bidding = Bid(rider_id=form.cleaned_data['rider'], team_captain=user, amount=form.cleaned_data['amount'])
@@ -115,10 +120,9 @@ def get_highest(request):
     """
     rider_id = request.GET.get('rider_id')
     biddings = Bid.objects.filter(rider_id=rider_id)
-    obj = biddings.highest("amount")
+    obj = biddings.recent("-created")
     return JsonResponse(status=200, data={'status': _('success'),
                                           'msg': obj.amount})
-
 
 @login_required
 def biddings(request):
@@ -129,6 +133,7 @@ def biddings(request):
         determine how high the highest bid should be.
     """
     results = []
+    highest = 1
     rider_id = request.GET.get('rider_id')
     biddings = Bid.objects.filter(rider_id=rider_id).order_by('-amount', 'created')
     if len(biddings) > 1:
@@ -136,6 +141,7 @@ def biddings(request):
         second_highest = biddings[1]
         if highest_bid.amount > second_highest.amount:
             highest_bid.amount = second_highest.amount+1
+        highest = highest_bid.amount
         results.append({'name': highest_bid.team_captain.username,
                         'amount': highest_bid.amount,
                         'date': highest_bid.created})
@@ -149,5 +155,14 @@ def biddings(request):
                         'date': bidding.created})
 
     return JsonResponse(status=200, data={'status': _('success'),
-                                          'data': results })
+                                          'data': results,
+                                          'highest': highest})
 
+
+class ToBeAuctionedListView(generic.ListView):
+    model = ToBeAuctioned
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['objects'] = ToBeAuctioned.objects.filter(team_captain=self.request.user)
+        return context

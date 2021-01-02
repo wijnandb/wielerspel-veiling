@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+    <div>
+        <h1>Geheime lijst van {{ user }}</h1>
+        <p>Dit zijn de renners die {{ user }} wil aanbieden. </p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Renner</th>
+                    <th>Openingsbod</th>
+                    <th>Actie</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in objects %}
+                    <tr>
+                        <td>{{ object.rider }}</td>
+                        <td>{{ object.amount }}</td>
+                        <td><a href=""></a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.forms import TextInput
-from auction.models import VirtualTeam
+from auction.models import VirtualTeam, ToBeAuctioned
 
 
 class LoginForm(forms.Form):
@@ -48,3 +48,7 @@ class BidForm(forms.Form):
 
 class BuyRider(forms.Form):
     model = VirtualTeam
+
+
+class AddToBeaAuctioned(forms.Form):
+    model = ToBeAuctioned

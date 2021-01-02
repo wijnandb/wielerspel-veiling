@@ -27,7 +27,7 @@
         <div class="col-md-6">
             <div class="d-flex justify-content-between">
                 <p><h1><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}" target="_blank">{{ rider }}</a></h1></p>
-                <!--p>{% trans 'Current price' %}: <span id="CurrentPriceDisplay">0</span></p-->
+                <p>{% trans 'Current price' %}: <span id="CurrentPriceDisplay">0</span></p>
                 <p>{% trans 'Your Bid' %}: <span id="bidDisplay">0</span></p>
             </div>
             <table id="points" class="table table-bordered">
@@ -137,11 +137,6 @@
             display.innerHTML = credit
         }
 
-        function getHighestBid(){
-            // Get highest bid of all participants
-            // if 
-
-        }
         function getUsersBid(riderID){
             // Get all users bid
             $.ajax({
@@ -150,8 +145,12 @@
                 method: 'GET',
                 success: response => {
                     const tableBody = document.querySelector('.biddings-listing')
-
+                    // data consists of all the biddings
                     const data = response.data
+                    // highest contains the highest bid, coming from db
+                    const high = response.highest
+                    const display = document.querySelector('#CurrentPriceDisplay')
+                    display.innerHTML = high
                     tableBody.innerHTML = ""
                     data.forEach(function (elem) {
                         tableBody.innerHTML += `<tr><td>${elem.name}</td><td>${elem.amount}</td></tr>`
@@ -159,7 +158,7 @@
                 },
                 error: err =>{
                     const error = err.responseJSON
-                    alert(error.msg)
+                    alert('getUsersbid error'+ error.msg)
                 }
             })
         }
