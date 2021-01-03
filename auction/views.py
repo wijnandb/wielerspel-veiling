@@ -7,6 +7,8 @@ from django.views import generic
 from django.views.generic import FormView, TemplateView
 from django.views.generic.list import ListView
 from django.utils.translation import gettext as _
+from datetime import datetime
+from django.contrib.humanize.templatetags.humanize import naturaltime
 from auction.forms import LoginForm, RegistrationForm, BidForm
 from auction.models import Bid, TeamCaptain, ToBeAuctioned
 from results.models import Rider
@@ -54,11 +56,42 @@ class AuctionView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
+        # Now I want to get the rider to be auctioned from the model ToBeAuctioned
         rider_id = self.kwargs['rider_id']
         context['rider_id'] = rider_id
         context['rider'] = Rider.objects.get(id=rider_id)
         context['ploegleiders'] = TeamCaptain.objects.all()
         return context
+
+@login_required
+def biddings(request):
+    """ 
+        Get all biddings. 
+    """
+    results = []
+    rider_id = request.GET.get('rider_id')
+    biddings = Bid.objects.filter(rider_id=rider_id).order_by('-created')
+
+    if biddings:
+        for bidding in biddings:
+            results.append({'name': bidding.team_captain.username,
+                        'amount': bidding.amount,
+                        'date': naturaltime(bidding.created)})
+
+        highestbid = Bid.objects.filter(rider_id=rider_id).order_by('-amount')[0]
+        highest = highestbid.amount
+        winner = highestbid.team_captain.username
+        timestamp = naturaltime(biddings[0].created)
+
+        return JsonResponse(status=200, data={'status': _('success'),
+                                            'data': results,
+                                            'highest': highest,
+                                            'winner': winner,
+                                            'latest': timestamp})
+    else:
+        return JsonResponse(status=200, data={'status': _('succes'),
+                                            'highest': 'Nog geen biedingen',
+                                            'winner': 'plaats een bod'})
 
 
 @login_required
@@ -72,25 +105,26 @@ def bidding(request):
                                                   'msg': form.errors})
         try:
             """
-            Fetch all bidding for a team captain and check each
-            credit if less than the new credit
+            Here we have to check if the bid is allowed. 
+            It cannot be lower or equal to the current highest bid
             """
-            biddings = Bid.objects.filter(rider_id=form.cleaned_data['rider'], team_captain=user)
+            biddings = Bid.objects.filter(rider_id=form.cleaned_data['rider']).order_by('-amount')
             if len(biddings) < 1:
                 """ Raise exception if queryset return 0 """
                 raise Bid.DoesNotExist
 
-            get_last_bid = biddings.latest('created')
+            get_highest_bid = biddings[0]
 
-            if get_last_bid.amount >= form.cleaned_data['amount']:
+            if get_highest_bid.amount >= form.cleaned_data['amount']:
                 """ Raise exception once the new bid is lower than current bid highest bid """
-                raise Exception("New bid must not be lower than or equal to the current bid")
+                raise Exception("Bod moet hoger zijn dan huidige hoogste bod")
 
             new_bidding = Bid(rider_id=form.cleaned_data['rider'], team_captain=user, amount=form.cleaned_data['amount'])
         except Bid.DoesNotExist:
             new_bidding = Bid(rider_id=form.cleaned_data['rider'], team_captain=user, amount=form.cleaned_data['amount'])
         except Exception as err:
-            return JsonResponse(status=400, data={'status': _('error'), 'msg': str(err) })
+            #return JsonResponse(status=400, data={'status': _('error'), 'msg': str(err) })
+            pass
 
         new_bidding.save()
 
@@ -103,8 +137,8 @@ def bidding(request):
 def get_current(request):
     """ Get current highest bid for a user """
     rider_id = request.GET.get('rider_id')
-    biddings = Bid.objects.filter(rider_id=rider_id, team_captain=request.user)
-    obj = biddings.latest("created")
+    biddings = Bid.objects.filter(rider_id=rider_id).order_by('-amount')
+    obj = biddings[0]
     return JsonResponse(status=200, data={'status': _('success'),
                                           'msg': obj.amount})
 
@@ -118,20 +152,6 @@ def get_highest(request):
         and the second highest bid, check if highest > second_highest and then set 
         highest = second_highest + 1 and return this amount
     """
-    rider_id = request.GET.get('rider_id')
-    biddings = Bid.objects.filter(rider_id=rider_id)
-    obj = biddings.recent("-created")
-    return JsonResponse(status=200, data={'status': _('success'),
-                                          'msg': obj.amount})
-
-@login_required
-def biddings(request):
-    """ 
-        Get all biddings. 
-        Actually, we don't want to get all biddings really. 
-        We want to get the highest biddings. Based on the second highest bid, we 
-        determine how high the highest bid should be.
-    """
     results = []
     highest = 1
     rider_id = request.GET.get('rider_id')
@@ -144,15 +164,37 @@ def biddings(request):
         highest = highest_bid.amount
         results.append({'name': highest_bid.team_captain.username,
                         'amount': highest_bid.amount,
-                        'date': highest_bid.created})
-        results.append({'name': second_highest.team_captain.username,
-                        'amount': second_highest.amount,
-                        'date': second_highest.created})
-    else:
-        for bidding in biddings:
+                        'date': naturaltime(highest_bid.created)})
+    return JsonResponse(status=200, data={'status': _('success'),
+                                          'data': results})
+
+@login_required
+def old_biddings(request):
+    """ 
+        Get all biddings. 
+        Actually, we don't want to get all biddings really. 
+        We want to get the highest and latest biddings. 
+        Based on the second highest bid, we determine how high the highest bid should be.
+    """
+    results = []
+    highest = 1
+    rider_id = request.GET.get('rider_id')
+    biddings = Bid.objects.filter(rider_id=rider_id).order_by('-amount', 'created')
+    #latest_bid = Bid.objects.filter(rider_id=rider_id).order_by('-created')[0]
+    #countdown = latest_bid.created
+    if len(biddings) > 1:
+        highest_bid = biddings[0]
+        second_highest = biddings[1]
+        if highest_bid.amount > second_highest.amount:
+            highest_bid.amount = second_highest.amount+1
+        highest = highest_bid.amount
+        results.append({'name': highest_bid.team_captain.username,
+                        'amount': highest_bid.amount,
+                        'date': naturaltime(highest_bid.created)})
+        for bidding in biddings[1:]:
             results.append({'name': bidding.team_captain.username,
                         'amount': bidding.amount,
-                        'date': bidding.created})
+                        'date': naturaltime(bidding.created)})
 
     return JsonResponse(status=200, data={'status': _('success'),
                                           'data': results,
@@ -166,3 +208,4 @@ class ToBeAuctionedListView(generic.ListView):
         context = super().get_context_data()
         context['objects'] = ToBeAuctioned.objects.filter(team_captain=self.request.user)
         return context
+
