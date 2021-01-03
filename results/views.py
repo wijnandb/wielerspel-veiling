@@ -6,7 +6,8 @@ from django.views.generic.detail import DetailView
 from auction.models import TeamCaptain
 
 
-from .models import Rider, Race, Uitslag, Verkocht
+from .models import Rider, Race, Uitslag
+from auction.models import Verkocht
 
 
 def index(request):
@@ -39,6 +40,8 @@ class RaceDetailView(generic.DetailView):
 class RiderListView(generic.ListView):
     model = Rider
     # filter, show only riders that haven't been sold
+    def get_queryset(self):
+          return Rider.objects.filter(sold=False)
 
 class RiderDetailView(generic.DetailView):
     model = Rider

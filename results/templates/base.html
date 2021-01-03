@@ -49,9 +49,9 @@
             <a class="nav-link" href="{% url 'results:riders' %}">{% trans 'Riders' %}</a>
           </li>
             {% if request.user.is_authenticated %}
-                <!--li class="nav-item">
-                    <a class="nav-link" href="{% url 'auction:bids' %}">{% trans 'Auction' %} </a>
-                </li--->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'auction:geheimelijst' %}">Geheime lijst</a>
+                </li>
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'auction:logout' %}">{{ user }}</a>
                 </li>

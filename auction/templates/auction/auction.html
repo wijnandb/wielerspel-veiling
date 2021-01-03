@@ -12,11 +12,20 @@
 {% endblock %}
 {% block content %}
     <div class="row">
-        <div class="col-md-3">
-            <div class="table-responsive" style="height: 200px;">
+        <div class="col-md-6">
+            <h1><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}" target="_blank">{{ rider }}</a></h1>
+        </div>
+        <div class="col-md-6">
+            <h1><span id="countdown">60</span></h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <h1><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}" target="_blank">{{ rider }}</a></h1>
+            <div class="table-responsive" style="height: 100%;">
                 <table class="table table-striped">
                     <thead>
-                    <tr><td>Ploegleider</td><td>Bod</td></tr>
+                    <tr><td>Ploegleider</td><td>Bod</td><td>Tijdstip</td></tr>
                     </thead>
                     <tbody class="biddings-listing">
 
@@ -26,20 +35,16 @@
         </div>
         <div class="col-md-6">
             <div class="d-flex justify-content-between">
-                <p><h1><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}" target="_blank">{{ rider }}</a></h1></p>
-                <!--p>{% trans 'Current price' %}: <span id="CurrentPriceDisplay">0</span></p-->
-                <p>{% trans 'Your Bid' %}: <span id="bidDisplay">0</span></p>
+                <h2><p>Hoogste bod: <span id="CurrentPriceDisplay">0</span> (<span id="winner"></span>)</p></h2>
             </div>
             <table id="points" class="table table-bordered">
 
             </table>
-        </div>
-        <div class="col-md-3">
             <table class="table table-striped">
                 <thead>
                 <tr>
                     <td></td>
-                    <td>ploeg</td>
+                    <td>renners</td>
                     <td>max</td>
                     <td>over</td>
                 </tr>
@@ -80,6 +85,8 @@
             const trow = "<tr>"
             let points = ""
             let num = 1
+            // here we want to limit the available numbers to be equal to 
+            // the maximum allowed bid
             for(let counter=1;counter<=8; counter++){
                 let data = "<tr>";
                 for(let i=1;i<=10;i++){
@@ -130,18 +137,13 @@
         }
         function updateTableUI(elem, credit){
             // Update table UI after detecting any changes in the UI
-            const getPrevActiveBid = $('td.user_bid')
-            getPrevActiveBid.removeClass('user_bid')
-            elem.className = 'text-center td user_bid'
-            const display = document.querySelector('#bidDisplay')
-            display.innerHTML = credit
+            //const getPrevActiveBid = $('td.user_bid')
+            //getPrevActiveBid.removeClass('user_bid')
+            //elem.className = 'text-center td user_bid'
+            //const display = document.querySelector('#bidDisplay')
+            //display.innerHTML = credit
         }
 
-        function getHighestBid(){
-            // Get highest bid of all participants
-            // if 
-
-        }
         function getUsersBid(riderID){
             // Get all users bid
             $.ajax({
@@ -150,18 +152,50 @@
                 method: 'GET',
                 success: response => {
                     const tableBody = document.querySelector('.biddings-listing')
-
+                    // data consists of all the biddings
                     const data = response.data
+                    // highest contains the highest bid, coming from db
+                    const high = response.highest
+                    const display = document.querySelector('#CurrentPriceDisplay')
+                    display.innerHTML = high
+                    const winner = response.winner
+                    const displaywinner = document.querySelector('#winner')
+                    displaywinner.innerHTML = winner
                     tableBody.innerHTML = ""
                     data.forEach(function (elem) {
-                        tableBody.innerHTML += `<tr><td>${elem.name}</td><td>${elem.amount}</td></tr>`
+                        tableBody.innerHTML += `<tr><td>${elem.name}</td><td>${elem.amount}</td><td>${elem.date}</td></tr>`
                     })
+                    countdowntimer(response.latest)
                 },
                 error: err =>{
                     const error = err.responseJSON
                     alert(error.msg)
                 }
             })
+        }
+
+        function countdowntimer(sincelastbid){
+            console.log (sincelastbid)
+            var countdownvalue = sincelastbid;
+            if (countdownvalue.startsWith('4')) {
+                var countdownvalue = "eenmaal....";
+            } else if (countdownvalue.startsWith('6')) {
+                var countdownvalue = "eenmaal....andermaal....";
+            } else if (countdownvalue.startsWith('8')) {
+                var countdownvalue = "VERKOCHT!!";
+                //aanroepen van verkocht functie
+            } else {
+                var countdownvalue = sincelastbid;
+            }  
+            var displaytimer = document.querySelector('#countdown')
+            displaytimer.innerHTML = countdownvalue
+        }
+
+        function buyRider(){
+            // get the highest bidder for the currently auctioned rider
+            // send the bid, the teamcaptain and the rider to a form
+            // on the backend, select a new rider to be auctioned
+            // refresh the page and start a new auction
         }
 
     </script>

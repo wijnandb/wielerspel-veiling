@@ -1,13 +1,13 @@
 from django.contrib.auth.views import LogoutView
 from django.urls import path
-from .views import LoginView, AuctionView, RegistrationView, AuctionListView, bidding, get_current, biddings, \
-    get_highest
+from .views import LoginView, AuctionView, RegistrationView, bidding, get_current, biddings, \
+    get_highest, ToBeAuctionedListView
 
 app_name = 'auction'
 
 urlpatterns = [
-    path('auction', AuctionListView.as_view(), name='bids'),
     path('auction/<rider_id>', AuctionView.as_view(), name='auction'),
+    path('geheimelijst', ToBeAuctionedListView.as_view(), name='geheimelijst'),
     path('bidding', bidding, name='bidding'),
     path('biddings', biddings, name='biddings'),
     path('bidding/current', get_current, name='get_current_bid'),
