@@ -6,7 +6,7 @@ from .views import LoginView, AuctionView, RegistrationView, bidding, get_curren
 app_name = 'auction'
 
 urlpatterns = [
-    path('auction/<rider_id>', AuctionView.as_view(), name='auction'),
+    path('auction', AuctionView.as_view(), name='auction'),
     path('geheimelijst', ToBeAuctionedListView.as_view(), name='geheimelijst'),
     path('bidding', bidding, name='bidding'),
     path('biddings', biddings, name='biddings'),

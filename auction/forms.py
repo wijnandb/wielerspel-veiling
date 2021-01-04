@@ -50,5 +50,5 @@ class BuyRider(forms.Form):
     model = VirtualTeam
 
 
-class AddToBeaAuctioned(forms.Form):
+class AddToBeAuctioned(forms.Form):
     model = ToBeAuctioned

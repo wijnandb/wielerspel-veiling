@@ -16,7 +16,7 @@
             <h1><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}" target="_blank">{{ rider }}</a> {% if rider.sold %} verkocht{% else %}beschikbaar{% endif %}</h1>
         </div>
         <div class="col-md-6">
-            <h1><span id="countdown">60</span></h1>
+            <h1><span id="countdown"></span></h1>
         </div>
     </div>
     <div class="row">
@@ -51,7 +51,7 @@
                 <tbody>
                     {% for ploegleider in ploegleiders %}
                         <tr>
-                            <td>{{ ploegleider.user }}</td>
+                            <td>{{ ploegleider.name }}</td>
                             <td>{{ ploegleider.team_size }}</td>
                             <td>{{ ploegleider.max_allowed_bid }}</td>
                             <td>{{ ploegleider.amount_left }}</td>
@@ -66,7 +66,8 @@
     <script type="text/javascript">
         $(document).ready(function(){
             // Generate Bidding Platform
-            const riderID = ({{ rider_id }})
+            var riderID = ({{ rider_id }})
+
             // I want to set a "sold" boolean to true one a rider is sold.
             // while sold = False, run everything here
             // probably also need an "up for auction" to be True
@@ -211,13 +212,14 @@
             displaytimer.innerHTML = countdownvalue
         }
 
-        function buyRider(){
+        function getWinner(riderID){
             // get the highest bidder for the currently auctioned rider
             // send the bid, the teamcaptain and the rider to a form
             // on the backend, select a new rider to be auctioned
             // refresh the page and start a new auction
             // so call a function with the rider_id, the rest of the information can
-            // be obtained from the 
+            // be obtained from the Bid model
+
         }
 
     </script>

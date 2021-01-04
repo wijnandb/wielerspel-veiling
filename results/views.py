@@ -7,7 +7,7 @@ from auction.models import TeamCaptain
 
 
 from .models import Rider, Race, Uitslag
-from auction.models import Verkocht
+from auction.models import VirtualTeam
 
 
 def index(request):
@@ -16,7 +16,7 @@ def index(request):
     num_races = Race.objects.all().count()
     num_riders = Rider.objects.count()  # The 'all()' is implied by default.
     num_ploegleiders = 15
-    num_sold_riders = Verkocht.objects.count()
+    num_sold_riders = VirtualTeam.objects.count()
 
 
 # Render the HTML template index.html with the data in the context variable.
@@ -64,9 +64,9 @@ class UitslagDetailView(generic.DetailView):
 
 
 class VerkochtListView(generic.ListView):
-    model = Verkocht
+    model = VirtualTeam
     # I need to be able to filter on Editie (=year)
 
 
 class VerkochtDetailView(generic.DetailView):
-    model = Verkocht
+    model = VirtualTeam

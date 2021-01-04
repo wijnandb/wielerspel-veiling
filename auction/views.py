@@ -8,9 +8,10 @@ from django.views.generic import FormView, TemplateView
 from django.views.generic.list import ListView
 from django.utils.translation import gettext as _
 from datetime import datetime
+from django.db.models import Count, Sum
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from auction.forms import LoginForm, RegistrationForm, BidForm
-from auction.models import Bid, TeamCaptain, ToBeAuctioned
+from auction.models import Bid, TeamCaptain, ToBeAuctioned, VirtualTeam
 from results.models import Rider
 
 class LoginView(FormView):
@@ -36,7 +37,7 @@ class RegistrationView(FormView):
     form_class = RegistrationForm
 
     def get_success_url(self):
-        return reverse('register')
+        return reverse('auction:register')
 
     def form_valid(self, form):
         form.save()
@@ -57,11 +58,15 @@ class AuctionView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         # Now I want to get the rider to be auctioned from the model ToBeAuctioned
-        rider_id = self.kwargs['rider_id']
+        rider = Rider.objects.filter(sold=False).first()
+        rider_id = rider.id
+        # this is how we used to do it:
+        #rider_id = self.kwargs['rider_id']
         context['rider_id'] = rider_id
         context['rider'] = Rider.objects.get(id=rider_id)
         context['ploegleiders'] = TeamCaptain.objects.all()
         return context
+
 
 @login_required
 def biddings(request):
@@ -209,13 +214,42 @@ class ToBeAuctionedListView(generic.ListView):
         context['objects'] = ToBeAuctioned.objects.filter(team_captain=self.request.user)
         return context
 
+def GetWinner(rider_id):
+    winner = Bid.objects.filter(rider=rider_id).order_by('-amount')[0]
+    BuyRider(winner.rider, winner.team_captain, winner.amount)
 
-def BuyRider(rider_id):
+
+def BuyRider(rider_id, teamcaptain, amount):
     """
     This has to take care of buying a rider.
-    To know which TeamCaptain has bought the rider, we check biddings
+    It isn't a view, should I store it somewhere else?
+    In GetWinner, we check Bid for the rider that has been sold.
     From biddings, we get the information about the price and who
-    bought the rider. We add the rider to the team of the TeamCaptain and 
-    calculate the new 
+    bought the rider. We add the rider to the VirtualTeam of the TeamCaptain and 
+    calculate the new values for remaining points, # riders and max. bid.
+
+    We need to check if winning TeamCaptain has a Joker, and if so, how
+    much it's worth.
     """
-    pass
+
+    # if rider_id exists in Joker and Joker.teamcaptain == teamcaptain,
+    # deduct Joker.value from amount
+    renner = VirtualTeam()
+    renner.rider = rider_id
+    renner.ploegleider = teamcaptain
+    renner.prijs = amount
+    renner.save()
+
+    # Now I want to calculate the remaining points, # of riders and max. bid
+    # call a different method?
+    CalculateTeamCaptain(teamcaptain)
+
+
+def CalculateTeamCaptain(teamcaptain):
+    values = VirtualTeam.objects.filter(ploegleider=teamcaptain)
+    renners = values.count()
+    punten = values.aggregate(Sum('price'))
+    return punten
+
+
+
