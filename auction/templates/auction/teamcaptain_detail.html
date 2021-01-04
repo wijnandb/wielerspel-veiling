@@ -12,7 +12,7 @@
 
   <div style="margin-left:20px;margin-top:20px">
     <dl class="row">
-      {% for rider in teamcaptain.verkocht_set.all %}
+      {% for rider in teamcaptain.virtualteam_set.all %}
         <dt class="col-sm-5"><a href="{% url 'results:rider-detail' rider.pk %}">{{ rider }}</a></dt>
         <dd class="col-sm-5"> {{ rider.price }}</dd>
       {% endfor %}

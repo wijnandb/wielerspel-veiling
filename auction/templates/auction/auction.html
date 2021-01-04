@@ -13,15 +13,14 @@
 {% block content %}
     <div class="row">
         <div class="col-md-6">
-            <h1><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}" target="_blank">{{ rider }}</a></h1>
+            <h1><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}" target="_blank">{{ rider }}</a> {% if rider.sold %} verkocht{% else %}beschikbaar{% endif %}</h1>
         </div>
         <div class="col-md-6">
-            <h1><span id="countdown">60</span></h1>
+            <h1><span id="countdown"></span></h1>
         </div>
     </div>
     <div class="row">
         <div class="col-md-6">
-            <h1><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}" target="_blank">{{ rider }}</a></h1>
             <div class="table-responsive" style="height: 100%;">
                 <table class="table table-striped">
                     <thead>
@@ -52,7 +51,7 @@
                 <tbody>
                     {% for ploegleider in ploegleiders %}
                         <tr>
-                            <td>{{ ploegleider.user }}</td>
+                            <td>{{ ploegleider.name }}</td>
                             <td>{{ ploegleider.team_size }}</td>
                             <td>{{ ploegleider.max_allowed_bid }}</td>
                             <td>{{ ploegleider.amount_left }}</td>
@@ -67,7 +66,11 @@
     <script type="text/javascript">
         $(document).ready(function(){
             // Generate Bidding Platform
-            const riderID = ({{ rider_id }})
+            var riderID = ({{ rider_id }})
+
+            // I want to set a "sold" boolean to true one a rider is sold.
+            // while sold = False, run everything here
+            // probably also need an "up for auction" to be True
             generateBidding()
             getCurrentBid(riderID)
             setInterval(() => getUsersBid(riderID), 1000)
@@ -177,25 +180,46 @@
         function countdowntimer(sincelastbid){
             console.log (sincelastbid)
             var countdownvalue = sincelastbid;
-            if (countdownvalue.startsWith('4')) {
-                var countdownvalue = "eenmaal....";
-            } else if (countdownvalue.startsWith('6')) {
-                var countdownvalue = "eenmaal....andermaal....";
-            } else if (countdownvalue.startsWith('8')) {
+            if (countdownvalue.startsWith('n')) {
+                var countdownvalue = "10";
+            } else if (countdownvalue.startsWith('10')) {
                 var countdownvalue = "VERKOCHT!!";
-                //aanroepen van verkocht functie
+            } else if (countdownvalue.startsWith('1')) {
+                var countdownvalue = "9";                
+            } else if (countdownvalue.startsWith('2')) {
+                var countdownvalue = "8";
+            } else if (countdownvalue.startsWith('3')) {
+                var countdownvalue = "7";
+            } else if (countdownvalue.startsWith('4')) {
+                var countdownvalue = "6";                
+            } else if (countdownvalue.startsWith('5')) {
+                var countdownvalue = "5";
+            } else if (countdownvalue.startsWith('6')) {
+                var countdownvalue = "4";
+            } else if (countdownvalue.startsWith('7')) {
+                var countdownvalue = "3";
+            } else if (countdownvalue.startsWith('8')) {
+                var countdownvalue = "eenmaal...";
+            } else if (countdownvalue.startsWith('9')) {
+                var countdownvalue = "andermaal...";
+
+            //    var sold = true
+            // call function buyRider(TeamCaptain, riderID, amount)
             } else {
-                var countdownvalue = sincelastbid;
+                var countdownvalue = '';
             }  
             var displaytimer = document.querySelector('#countdown')
             displaytimer.innerHTML = countdownvalue
         }
 
-        function buyRider(){
+        function getWinner(riderID){
             // get the highest bidder for the currently auctioned rider
             // send the bid, the teamcaptain and the rider to a form
             // on the backend, select a new rider to be auctioned
             // refresh the page and start a new auction
+            // so call a function with the rider_id, the rest of the information can
+            // be obtained from the Bid model
+
         }
 
     </script>

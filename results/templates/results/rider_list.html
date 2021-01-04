@@ -24,7 +24,7 @@
                         {% for rider in rider_list %}
                             <tr>
                                 <td>{{ rider.rank }}</td>
-                                <td><a href="{% url 'auction:auction' rider.id %}">{{ rider }}</a></td>
+                                <td><a href="{% url 'auction:auction' %}">{{ rider }}</a></td>
                                 <td>{{rider.nationality }}</td>
                                 <td>{{ rider.team }}</td>
                                 <td><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}" target="_blank">{{ rider.cqriderid }}</a></td>
