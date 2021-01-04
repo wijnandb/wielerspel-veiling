@@ -48,15 +48,33 @@ class ToBeAuctioned(models.Model):
     rider = models.ForeignKey(Rider, on_delete=models.CASCADE)
     amount = models.IntegerField()
     created = models.DateTimeField(auto_now_add=True)
+    #on_auction = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['created']
 
     def __str__(self):
-        return "%s wil %s aanbieden voor %s" %(self.team_captain, self.rider, self.amount)
+        return "%s biedt %s aan voor %s" %(self.team_captain, self.rider.name, self.amount)
+
+
+class AuctionOrder(models.Model):
+    """
+    We need to determine the order in which riders are being auctioned.
+    The TeamCaptains take turns proposing a rider to be auctioned.
+    After each auctioned rider, the order has to be changed: number 1
+    teamcaptain shifts to last order (count(teamcaptains)+1) and then each
+    order goes -1: order = order -1
+    Once a TeamCaptain doesn't have anymore points to spend, he gets 
+    taken of the list.
+    """
+    team_captain = models.ForeignKey(User, on_delete=models.CASCADE)
+    order = models.IntegerField()
 
 
 class Joker(models.Model):
     """
     TeamCaptains can have a "Joker" placed on three riders they have had in
-    previos year(s). This allows them to buy that Rider for a lower amont than 
+    previous year(s). This allows them to buy that Rider for a lower amount than 
     the other TeamCaptains. A Joker with a value of 0 allows them to buy the
     rider for the highest amount the other TeamCaptains have bidded.
     """

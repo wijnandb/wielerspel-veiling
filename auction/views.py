@@ -209,3 +209,13 @@ class ToBeAuctionedListView(generic.ListView):
         context['objects'] = ToBeAuctioned.objects.filter(team_captain=self.request.user)
         return context
 
+
+def BuyRider(rider_id):
+    """
+    This has to take care of buying a rider.
+    To know which TeamCaptain has bought the rider, we check biddings
+    From biddings, we get the information about the price and who
+    bought the rider. We add the rider to the team of the TeamCaptain and 
+    calculate the new 
+    """
+    pass
