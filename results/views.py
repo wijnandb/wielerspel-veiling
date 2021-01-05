@@ -14,11 +14,14 @@ from auction.models import VirtualTeam
 def index(request):
     """View function for home page of site."""
     # Generate counts of some of the main objects
-    num_riders = Rider.objects.count()  # The 'all()' is implied by default.
+    num_riders = Rider.objects.filter(sold=False).count()  # The 'all()' is implied by default.
     num_ploegleiders = User.objects.count()
     num_sold_riders = VirtualTeam.objects.count()
-    punten = VirtualTeam.objects.aggregate(Sum('price'))
-    punten_over = 1500 - punten['price__sum']
+    if num_sold_riders == 0:
+        punten_over = 1500
+    else:
+        punten = VirtualTeam.objects.aggregate(Sum('price'))
+        punten_over = 1500 - punten['price__sum']
 
 
 # Render the HTML template index.html with the data in the context variable.

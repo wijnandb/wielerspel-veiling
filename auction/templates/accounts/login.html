@@ -3,12 +3,12 @@
 
 {% block content %}
     <div class="col-md-5 offset-3 border p-5 border-radius">
-        <h2 class="text-center"> {% trans 'Registration' %} </h2>
+        <h2 class="text-center"> {% trans 'Login' %} </h2>
         <hr>
         <form method="POST">
             {% csrf_token %}
             <div class="form-group">
-                <label>{% trans 'email' %}</label>
+                <label>{% trans 'username' %}</label>
                 {{ form.username }}
             </div>
             <div class="form-group">
