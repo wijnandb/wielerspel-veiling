@@ -46,9 +46,5 @@ class BidForm(forms.Form):
     amount = forms.IntegerField()
 
 
-class BuyRider(forms.Form):
-    model = VirtualTeam
-
-
 class AddToBeAuctioned(forms.Form):
     model = ToBeAuctioned

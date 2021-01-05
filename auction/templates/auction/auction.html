@@ -207,7 +207,7 @@
             // call function buyRider(TeamCaptain, riderID, amount)
             } else {
                 countdownvalue = "VERKOCHT!!";
-                getWinner(riderID);
+                getWinner();
             }  
             var displaytimer = document.querySelector('#countdown')
             displaytimer.innerHTML = countdownvalue
@@ -217,30 +217,30 @@
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        function getWinner(riderID){
+        function getWinner() {
             // get the highest bidder for the currently auctioned rider
             // send the bid, the teamcaptain and the rider to a form
             // on the backend, select a new rider to be auctioned
             // refresh the page and start a new auction
             // so call a function with the rider_id, the rest of the information can
             // be obtained from the Bid model
-            /*$.ajax({
+            //$.ajax({
                 
-                method: 'POST',
-                headers: {
-                    "X-CSRFToken": '{{ csrf_token }}',
-                },
-                data:{'rider': riderID },
-
-                success: response => {
-                    await sleep(2000);
-                    location.reload(true);
-                },
-                error: err =>{
-                    const error = err.responseJSON
-                    alert(error.msg)
-                }
-            })  */
+            //    method: 'POST',
+            //    headers: {
+            //        "X-CSRFToken": '{{ csrf_token }}',
+            //    },
+            //    data:{'rider': riderID },
+            //
+            //    success: response => {
+            //await sleep(2000);
+            location.reload(true);
+            //    },
+            //    error: err =>{
+            //        const error = err.responseJSON
+            //        alert(error.msg)
+            //    }
+            //})
         }
 
     </script>

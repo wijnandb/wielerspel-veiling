@@ -124,4 +124,4 @@ class VirtualTeam(models.Model):
         verbose_name_plural = 'Sold riders'
 
     def __str__(self):
-        return "%s - %s -%s" %(self.rider, self.price, self.ploegleider)
+        return "%s - %s - %s" %(self.rider, self.price, self.ploegleider)
