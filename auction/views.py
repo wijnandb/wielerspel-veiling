@@ -8,6 +8,7 @@ from django.views.generic import FormView, TemplateView
 from django.views.generic.list import ListView
 from django.utils.translation import gettext as _
 from datetime import datetime
+import time
 from django.db.models import Count, Sum
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from auction.forms import LoginForm, RegistrationForm, BidForm
@@ -117,12 +118,12 @@ def bidding(request):
             if len(biddings) < 1:
                 """ Raise exception if queryset return 0 """
                 raise Bid.DoesNotExist
+            else:
+                get_highest_bid = biddings[0]
 
-            get_highest_bid = biddings[0]
-
-            if get_highest_bid.amount >= form.cleaned_data['amount']:
-                """ Raise exception once the new bid is lower than current bid highest bid """
-                raise Exception("Bod moet hoger zijn dan huidige hoogste bod")
+                if get_highest_bid.amount >= form.cleaned_data['amount']:
+                    """ Raise exception once the new bid is lower than current bid highest bid """
+                    raise Exception("Bod moet hoger zijn dan huidige hoogste bod")
 
             new_bidding = Bid(rider_id=form.cleaned_data['rider'], team_captain=user, amount=form.cleaned_data['amount'])
         except Bid.DoesNotExist:
@@ -143,7 +144,11 @@ def get_current(request):
     """ Get current highest bid for a user """
     rider_id = request.GET.get('rider_id')
     biddings = Bid.objects.filter(rider_id=rider_id).order_by('-amount')
-    obj = biddings[0]
+    if biddings:
+        obj = biddings[0]
+    else:
+        # if there are no biddings yet, put in a bidding of 0 to avoid errormessage
+        obj.amount = 0
     return JsonResponse(status=200, data={'status': _('success'),
                                           'msg': obj.amount})
 
@@ -173,83 +178,11 @@ def get_highest(request):
     return JsonResponse(status=200, data={'status': _('success'),
                                           'data': results})
 
-@login_required
-def old_biddings(request):
-    """ 
-        Get all biddings. 
-        Actually, we don't want to get all biddings really. 
-        We want to get the highest and latest biddings. 
-        Based on the second highest bid, we determine how high the highest bid should be.
-    """
-    results = []
-    highest = 1
-    rider_id = request.GET.get('rider_id')
-    biddings = Bid.objects.filter(rider_id=rider_id).order_by('-amount', 'created')
-    #latest_bid = Bid.objects.filter(rider_id=rider_id).order_by('-created')[0]
-    #countdown = latest_bid.created
-    if len(biddings) > 1:
-        highest_bid = biddings[0]
-        second_highest = biddings[1]
-        if highest_bid.amount > second_highest.amount:
-            highest_bid.amount = second_highest.amount+1
-        highest = highest_bid.amount
-        results.append({'name': highest_bid.team_captain.username,
-                        'amount': highest_bid.amount,
-                        'date': naturaltime(highest_bid.created)})
-        for bidding in biddings[1:]:
-            results.append({'name': bidding.team_captain.username,
-                        'amount': bidding.amount,
-                        'date': naturaltime(bidding.created)})
-
-    return JsonResponse(status=200, data={'status': _('success'),
-                                          'data': results,
-                                          'highest': highest})
-
 
 class ToBeAuctionedListView(generic.ListView):
     model = ToBeAuctioned
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['objects'] = ToBeAuctioned.objects.filter(team_captain=self.request.user)
+        context['renners'] = ToBeAuctioned.objects.filter(team_captain=self.request.user)
         return context
-
-def GetWinner(rider_id):
-    winner = Bid.objects.filter(rider=rider_id).order_by('-amount')[0]
-    BuyRider(winner.rider, winner.team_captain, winner.amount)
-
-
-def BuyRider(rider_id, teamcaptain, amount):
-    """
-    This has to take care of buying a rider.
-    It isn't a view, should I store it somewhere else?
-    In GetWinner, we check Bid for the rider that has been sold.
-    From biddings, we get the information about the price and who
-    bought the rider. We add the rider to the VirtualTeam of the TeamCaptain and 
-    calculate the new values for remaining points, # riders and max. bid.
-
-    We need to check if winning TeamCaptain has a Joker, and if so, how
-    much it's worth.
-    """
-
-    # if rider_id exists in Joker and Joker.teamcaptain == teamcaptain,
-    # deduct Joker.value from amount
-    renner = VirtualTeam()
-    renner.rider = rider_id
-    renner.ploegleider = teamcaptain
-    renner.prijs = amount
-    renner.save()
-
-    # Now I want to calculate the remaining points, # of riders and max. bid
-    # call a different method?
-    CalculateTeamCaptain(teamcaptain)
-
-
-def CalculateTeamCaptain(teamcaptain):
-    values = VirtualTeam.objects.filter(ploegleider=teamcaptain)
-    renners = values.count()
-    punten = values.aggregate(Sum('price'))
-    return punten
-
-
-

@@ -168,7 +168,7 @@
                     data.forEach(function (elem) {
                         tableBody.innerHTML += `<tr><td>${elem.name}</td><td>${elem.amount}</td><td>${elem.date}</td></tr>`
                     })
-                    countdowntimer(response.latest)
+                    countdowntimer(response.latest, riderID)
                 },
                 error: err =>{
                     const error = err.responseJSON
@@ -177,15 +177,15 @@
             })
         }
 
-        function countdowntimer(sincelastbid){
+        function countdowntimer(sincelastbid, riderID){
             console.log (sincelastbid)
             var countdownvalue = sincelastbid;
             if (countdownvalue.startsWith('n')) {
                 var countdownvalue = "10";
+            } else if (countdownvalue.startsWith('a')) {
+                var countdownvalue = "9";                
             } else if (countdownvalue.startsWith('10')) {
                 var countdownvalue = "VERKOCHT!!";
-            } else if (countdownvalue.startsWith('1')) {
-                var countdownvalue = "9";                
             } else if (countdownvalue.startsWith('2')) {
                 var countdownvalue = "8";
             } else if (countdownvalue.startsWith('3')) {
@@ -203,23 +203,44 @@
             } else if (countdownvalue.startsWith('9')) {
                 var countdownvalue = "andermaal...";
 
-            //    var sold = true
+            // var sold = true
             // call function buyRider(TeamCaptain, riderID, amount)
             } else {
-                var countdownvalue = '';
+                countdownvalue = "VERKOCHT!!";
+                getWinner();
             }  
             var displaytimer = document.querySelector('#countdown')
             displaytimer.innerHTML = countdownvalue
         }
 
-        function getWinner(riderID){
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function getWinner() {
             // get the highest bidder for the currently auctioned rider
             // send the bid, the teamcaptain and the rider to a form
             // on the backend, select a new rider to be auctioned
             // refresh the page and start a new auction
             // so call a function with the rider_id, the rest of the information can
             // be obtained from the Bid model
-
+            //$.ajax({
+                
+            //    method: 'POST',
+            //    headers: {
+            //        "X-CSRFToken": '{{ csrf_token }}',
+            //    },
+            //    data:{'rider': riderID },
+            //
+            //    success: response => {
+            //await sleep(2000);
+            location.reload(true);
+            //    },
+            //    error: err =>{
+            //        const error = err.responseJSON
+            //        alert(error.msg)
+            //    }
+            //})
         }
 
     </script>

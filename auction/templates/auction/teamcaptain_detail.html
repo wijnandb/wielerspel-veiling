@@ -2,21 +2,21 @@
 
 {% block content %}
 
-  <h1>Ploegleider: {{ teamcaptain.user }} </h1>
+  <h1>Ploegleider: {{ teamcaptain }} </h1>
 
- aantal gekochte renners: {{ teamcaptain.teamsize }}
+ aantal gekochte renners: {{ teamcaptain.teamsize }}<
  budget: {{ teamcaptain.amount_left }}
  aantal renners nog kopen: {{ teamcaptain.riders_needed }}
  maximaal bod: {{ teamcaptain.max_allowed_bid }}
 
 
   <div style="margin-left:20px;margin-top:20px">
-    <dl class="row">
+    <div class="row">
       {% for rider in teamcaptain.virtualteam_set.all %}
-        <dt class="col-sm-5"><a href="{% url 'results:rider-detail' rider.pk %}">{{ rider }}</a></dt>
-        <dd class="col-sm-5"> {{ rider.price }}</dd>
+        <div class="col-sm-5">!!<a href="{% url 'results:rider-detail' rider.pk %}">{{ rider.name }}</a></div>
+        <div class="col-sm-5">**{{ rider.price }}</div>
       {% endfor %}
-    </dl>
+    </div>
 
   </div>
 {% endblock %}
