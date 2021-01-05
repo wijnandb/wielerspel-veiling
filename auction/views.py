@@ -124,15 +124,19 @@ def bidding(request):
                 if get_highest_bid.amount >= form.cleaned_data['amount']:
                     """ Raise exception once the new bid is lower than current bid highest bid """
                     raise Exception("Bod moet hoger zijn dan huidige hoogste bod")
-
+                
             new_bidding = Bid(rider_id=form.cleaned_data['rider'], team_captain=user, amount=form.cleaned_data['amount'])
         except Bid.DoesNotExist:
             new_bidding = Bid(rider_id=form.cleaned_data['rider'], team_captain=user, amount=form.cleaned_data['amount'])
         except Exception as err:
             #return JsonResponse(status=400, data={'status': _('error'), 'msg': str(err) })
             pass
-
-        new_bidding.save()
+        """ Check if user is allowed to make this bid, if he has enough points remaining """
+        enough = TeamCaptain.objects.filter(user=user)
+        if TeamCaptain.objects.filter(user=user)[0].max_allowed_bid() >= form.cleaned_data['amount']:
+            new_bidding.save()
+        else:
+            pass
 
         return JsonResponse(status=200, data={'status': _('success'), 'msg': _('Bid successfully')})
     else:
@@ -144,13 +148,13 @@ def get_current(request):
     """ Get current highest bid for a user """
     rider_id = request.GET.get('rider_id')
     biddings = Bid.objects.filter(rider_id=rider_id).order_by('-amount')
-    if biddings:
-        obj = biddings[0]
+    if len(biddings) > 0:
+        amount = biddings[0].amount
     else:
         # if there are no biddings yet, put in a bidding of 0 to avoid errormessage
-        obj.amount = 0
+        amount = 0
     return JsonResponse(status=200, data={'status': _('success'),
-                                          'msg': obj.amount})
+                                          'msg': amount})
 
 
 @login_required
