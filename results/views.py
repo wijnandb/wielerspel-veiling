@@ -18,7 +18,7 @@ def index(request):
     num_ploegleiders = User.objects.count()
     num_sold_riders = VirtualTeam.objects.count()
     punten = VirtualTeam.objects.aggregate(Sum('price'))
-    punten_besteed = 1500- punten['price__sum']
+    punten_over = 1500 - punten['price__sum']
 
 
 # Render the HTML template index.html with the data in the context variable.
@@ -28,7 +28,7 @@ def index(request):
         context={'num_riders': num_riders,
                  'num_ploegleiders': num_ploegleiders,
                  'num_sold_riders': num_sold_riders, 
-                 'punten_besteed': punten_besteed})
+                 'punten_over': punten_over})
 
 
 class RaceListView(generic.ListView):

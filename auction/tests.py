@@ -3,8 +3,11 @@ from auction.views import GetWinner
 from auction.models import Bid, ToBeAuctioned, AuctionOrder, Joker, VirtualTeam
 
 
+"""
+Can't test GetWinner() anymore, because it now keeps running.
+"""
+# GetWinner()
 
-GetWinner()
 
 # first, get a rider to be auctioned
 
