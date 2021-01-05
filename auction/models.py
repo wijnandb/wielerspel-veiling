@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Sum, UniqueConstraint
 from results.models import Rider
 
 
@@ -10,17 +11,40 @@ class TeamCaptain(models.Model):
     do they still need to buy?
     """
     name = models.CharField(max_length=30, default='naam invoeren')
-    team_size = models.IntegerField(default=0)
-    amount_left = models.IntegerField(default=100)
-    riders_needed = models.IntegerField(default=9)
-    max_allowed_bid = models.IntegerField(default=92)
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
     def __str__(self):
         return self.name
 
+
+    @property
+    def team_size(self):
+        from auction.models import VirtualTeam
+        team_size = VirtualTeam.objects.filter(ploegleider=self.user).count()
+        return team_size
+    
+    def riders_needed(self):
+        if self.team_size < 9:
+            return (9-self.team_size)
+        else:
+            return self.team_size()
+
+    def amount_left(self):
+        from auction.models import VirtualTeam
+        spend = VirtualTeam.objects.filter(ploegleider=self.user).aggregate(Sum('price'))
+        if spend['price__sum'] == None:
+            spend['price__sum']=0    
+        amount_left = 100 - spend['price__sum']
+        return amount_left
+
+    def max_allowed_bid(self):
+        if self.team_size > 8:
+            return self.amount_left()
+        else:
+            return self.amount_left()-self.riders_needed()+1
+    
     class Meta:
-        ordering = ['-amount_left', '-name']
+        ordering = ['-name']
 
 
 class Bid(models.Model):
@@ -33,7 +57,7 @@ class Bid(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return "%s %s - %s" %(self.team_captain.name, self.rider.name, self.amount)
+        return "%s %s - %s" %(self.team_captain.username, self.rider.name, self.amount)
 
 
 
@@ -93,7 +117,7 @@ class VirtualTeam(models.Model):
     punten = models.FloatField(default=0)
     jpp = models.IntegerField(default=0)
 
-    unique_together = [['rider', 'editie']]
+    UniqueConstraint(fields=['rider', 'editie'], name='verkochte_renner') 
 
     class Meta:
         ordering = ['-price']

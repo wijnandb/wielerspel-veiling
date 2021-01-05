@@ -13,7 +13,7 @@ class RiderResource(resources.ModelResource):
 
 class RiderAdmin(ImportExportModelAdmin):
     list_display = ('name', 'cqriderid', 'nationality')
-    list_filter = ("nationality",)
+    list_filter = ("sold","nationality",)
     search_fields = ['name']
 
 
