@@ -1,22 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-  <h1>Ploegleider: {{ teamcaptain }} </h1>
-
- aantal gekochte renners: {{ teamcaptain.teamsize }}<
- budget: {{ teamcaptain.amount_left }}
- aantal renners nog kopen: {{ teamcaptain.riders_needed }}
- maximaal bod: {{ teamcaptain.max_allowed_bid }}
-
-
-  <div style="margin-left:20px;margin-top:20px">
-    <div class="row">
-      {% for rider in teamcaptain.virtualteam_set.all %}
-        <div class="col-sm-5">!!<a href="{% url 'results:rider-detail' rider.pk %}">{{ rider.name }}</a></div>
-        <div class="col-sm-5">**{{ rider.price }}</div>
-      {% endfor %}
+<div class="row">
+  <div class="col-sm-12">
+    <h1>Ploegleider: {{ teamcaptain }} </h1>
+    <div>
+      {% if teamcaptain.teamsize %}{{ teamcaptain.teamsize }} {% else %}0 {% endif %} renners, 
+      nog {{ teamcaptain.riders_needed }} kopen met {{ teamcaptain.amount_left }} punten, maximale bod: {{ teamcaptain.max_allowed_bid }}.<br/>
+      En dan nog de gratis renner natuurlijk.
     </div>
-
   </div>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    {% for rider in teamcaptain.virtualteam_set.all %}
+      <div class="col-sm-5">!!<a href="{% url 'results:rider-detail' rider.pk %}">{{ rider.name }}</a></div>
+      <div class="col-sm-5">**{{ rider.price }}</div>
+    {% endfor %}
+  </div>
+</div>
 {% endblock %}
