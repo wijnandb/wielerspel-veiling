@@ -13,7 +13,7 @@
 {% block content %}
     <div class="row">
         <div class="col-md-6">
-            <h1><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}" target="_blank">{{ rider }}</a> {% if rider.sold %} verkocht{% else %}beschikbaar{% endif %}</h1>
+            <h1><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}" target="_blank">{{ rider }}</a> {% if rider.sold %} verkocht{% else %} {% endif %}</h1>
         </div>
         <div class="col-md-6">
             <h1><span id="countdown"></span></h1>
@@ -168,7 +168,7 @@
                     data.forEach(function (elem) {
                         tableBody.innerHTML += `<tr><td>${elem.name}</td><td>${elem.amount}</td><td>${elem.date}</td></tr>`
                     })
-                    countdowntimer(response.latest, riderID)
+                    //countdowntimer(response.latest, riderID)
                 },
                 error: err =>{
                     const error = err.responseJSON
