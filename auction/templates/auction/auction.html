@@ -180,33 +180,17 @@
         function countdowntimer(sincelastbid, riderID){
             console.log (sincelastbid)
             var countdownvalue = sincelastbid;
-            if (countdownvalue.startsWith('n')) {
-                var countdownvalue = "10";
-            } else if (countdownvalue.startsWith('a')) {
-                var countdownvalue = "9";                
-            } else if (countdownvalue.startsWith('10')) {
+            if (countdownvalue.startsWith('20')) {
                 var countdownvalue = "VERKOCHT!!";
-            } else if (countdownvalue.startsWith('2')) {
-                var countdownvalue = "8";
-            } else if (countdownvalue.startsWith('3')) {
-                var countdownvalue = "7";
-            } else if (countdownvalue.startsWith('4')) {
-                var countdownvalue = "6";                
-            } else if (countdownvalue.startsWith('5')) {
-                var countdownvalue = "5";
-            } else if (countdownvalue.startsWith('6')) {
-                var countdownvalue = "4";
-            } else if (countdownvalue.startsWith('7')) {
-                var countdownvalue = "3";
-            } else if (countdownvalue.startsWith('8')) {
+            } else if (countdownvalue.startsWith('14')) {
                 var countdownvalue = "eenmaal...";
-            } else if (countdownvalue.startsWith('9')) {
+            } else if (countdownvalue.startsWith('17')) {
                 var countdownvalue = "andermaal...";
 
             // var sold = true
             // call function buyRider(TeamCaptain, riderID, amount)
             } else {
-                countdownvalue = "VERKOCHT!!";
+                countdownvalue = "";
                 getWinner();
             }  
             var displaytimer = document.querySelector('#countdown')
