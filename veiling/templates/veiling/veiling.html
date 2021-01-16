@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block css %}
+    <style>
+        .user_bid{
+            background:yellow;
+        }
+        .current_price{
+            background:blue;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-4">
+            <h1 id="rider">RENNER</h1>
+        </div>
+        <div class="col-md-3">
+            <h1 id="highest"></h1>
+        </div>
+        <div class="col-md-3">
+            <h2 id="highest_team_captain"></h2>
+        </div>
+        <div class="col-md-2">
+            <h1><span id="timer"></span></h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="table-responsive" style="height: 100%;">
+                <table class="table table-striped">
+                    <thead>
+                    <tr><td>Renner</td><td>Bod</td><td>ploegleider</td></tr>
+                    </thead>
+                    <tbody class="biddings-listing">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <table id="points" class="table table-bordered">
+                <tr>
+                    <td class='text-center td' data-td='1'> 1</td>
+                    <td class='text-center td' data-td='2'> 2</td>
+                    <td class='text-center td' data-td='3'> 3</td>
+                    <td class='text-center td' data-td='4'> 4</td>
+                    <td class='text-center td' data-td='5'> 5</td>
+                    <td class='text-center td' data-td='6'> 6</td>
+                    <td class='text-center td' data-td='7'> 7</td>
+                    <td class='text-center td' data-td='8'> 8</td>
+                    <td class='text-center td' data-td='9'> 9</td>
+                    <td class='text-center td' data-td='10'>10</td>
+                </tr>
+            </table>
+        </script>
+            </table>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <td></td>
+                    <td>renners</td>
+                    <td>max</td>
+                    <td>over</td>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for ploegleider in ploegleiders %}
+                        <tr>
+                            <td>{{ ploegleider.name }}</td>
+                            <td>{{ ploegleider.team_size }}</td>
+                            <td>{{ ploegleider.max_allowed_bid }}</td>
+                            <td>{{ ploegleider.amount_left }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // get rider on auction
+            var riderID = get_rider()
+
+            // I want to set a "sold" boolean to true one a rider is sold.
+            // while sold = False, run everything here
+            // probably also need an "up for auction" to be True
+            generateBidding()
+            //getCurrentBid()
+            setInterval(() => getUsersBid(), 1000)
+            // Detect td click
+            $('.td').click(function(){
+                // Save to a form of database
+                const credit = (this.dataset['td'])
+                setCurrentBid(this, credit)
+            })
+
+        })
+
+        function get_rider(){
+            $.ajax({
+                url: `{% url "veiling:get_rider_on_auction" %}`,
+                method: 'GET',
+                success: response => {
+                    const riderID = response.rider_id            
+                }
+            })
+
+        };
+
+        function generateBidding(){
+            // Generate table
+            const table = document.querySelector("#points")
+            const trow = "<tr>"
+            let points = ""
+            let num = 1
+            // here we want to limit the available numbers to be equal to 
+            // the maximum allowed bid
+            for(let counter=1;counter<=8; counter++){
+                let data = "<tr>";
+                for(let i=1;i<=10;i++){
+                    data += "<td class='text-center td' data-td='"+ num +"'>" + num + "</td>"
+                    num++
+                }
+                data += "</tr>"
+                points += data
+            }
+            table.innerHTML = "<tbody>" + points + "</tbody>";
+        };
+
+        function setCurrentBid(elem, credit){
+            // Set current user bid in database
+            $.ajax({
+                url: '{% url "veiling:bidding" %}',
+                method: 'POST',
+                headers: {
+                    "X-CSRFToken": '{{ csrf_token }}',
+                },
+                data:{'amount': credit},
+                success: response => {
+                    $('#timer').html(credit);
+                },
+                error: err =>{
+                    const error = err.responseJSON
+                    alert('setCurrentBid'+ error.msg)
+                }
+            })
+        };
+
+
+
+        function getUsersBid(){
+            // Get all users bid
+            $.ajax({
+                url: '{% url "veiling:biddings" %}',
+                //data: {'rider_id': riderID},
+                method: 'GET',
+                success: response => {
+                    const tableBody = document.querySelector('.biddings-listing')
+                    // data consists of all the biddings
+                    const data = response.data
+                    // highest contains the highest bid, coming from db
+                    $('#rider').html(response.on_auction);
+                    $('#highest').html(response.highest);
+                    $('#highest_team_captain').html(response.winner);
+
+                    tableBody.innerHTML = ""
+                    data.forEach(function (elem) {
+                        tableBody.innerHTML += `<tr><td>${elem.rider}</td><td>${elem.amount}</td><td>${elem.name}</td></tr>`
+                    })
+                    //countdowntimer(response.latest, riderID)
+                },
+                error: err =>{
+                    const error = err.responseJSON
+                    alert(error.msg)
+                }
+            })
+        }
+
+
+
+    </script>
+{% endblock %}
