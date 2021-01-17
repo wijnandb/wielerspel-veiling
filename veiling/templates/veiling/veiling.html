@@ -16,7 +16,7 @@
         <div class="col-md-5">
             <h1 id="rider">RENNER</h1>
         </div>
-        <div class="col-md-1 rounded-circle border border-primary user_bid text-center align-text-bottom">
+        <div class="col-md-1 border border-primary user_bid text-center align-text-bottom">
             <h1 id="highest"></h1>
         </div>
         <div class="col-md-3">
@@ -145,20 +145,14 @@
                     $('#highest_team_captain').html(response.winner);
                     $('.td').each(function(elem){
                         $(this).removeClass('current_price');
+                        $(this).removeClass('user_bid');
                         if(this.dataset['td'] == response.highest){
                             $(this).addClass('current_price');
                         }
                     })
                     
-                    //var time_left = response.timer;
-                    // here I could check on the value of "time_left"
-                    // if it starts with 'a ' or 'no' I show nothing
-                    // if it starts with '15' or '16' I show 'eenmaal'
-                    // if it starts with '17', '18' or '19' it shows 'andermaal'
-                    // and on '20' it shows 'verkocht'
-                    // add some flashing too
-                    //$('#timer').html(time_left);
-                    countdowntimer(response.timer)
+                    var time_left = response.timer;
+                    countdowntimer(time_left)
 
                     tableBody.innerHTML = ""
                     data.forEach(function (elem) {
@@ -181,33 +175,21 @@
         };
 
 
-        function countdowntimer(sincelastbid){
+        function countdowntimer(timeleft){
             //console.log (sincelastbid)
             //var countdownvalue = sincelastbid;
-            if (sincelastbid.startsWith('no')) {
+            if (timeleft > 7) {
                 // bieding geopend of nieuw bod! 
                 // Toon effect op prijs en ploegleider
-                var countdownvalue = "bod";
-            } else if (sincelastbid.startsWith('a')) {
-                var countdownvalue = "";
-            } else if (sincelastbid.startsWith('15')) {
-                var countdownvalue = "eenmaal...";
-            } else if (sincelastbid.startsWith('16')) {
-                var countdownvalue = "eenmaal...";
-            } else if (sincelastbid.startsWith('17')) {
+                var countdownvalue = timeleft;
+            } else if (timeleft > 3) {
+                var countdownvalue = "eenmaal";
+            } else if (timeleft > 0) {
                 var countdownvalue = "andermaal...";
-            } else if (sincelastbid.startsWith('18')) {
-                var countdownvalue = "andermaal...";
-            } else if (sincelastbid.startsWith('19')) {
-                var countdownvalue = "andermaal...";
-            } else if (sincelastbid.startsWith('20')) {
-                var countdownvalue = "VERKOCHT!!";
-            } else if (sincelastbid.startsWith('21')) {
-                var countdownvalue = "VERKOCHT!!";    
-            } else if (sincelastbid.startsWith('22')) {
-                var countdownvalue = "VERKOCHT!!";
+            } else if (timeleft > -20) {
+                var countdownvalue = "verkocht!";
             } else {
-                countdownvalue = '';
+                countdownvalue = timeleft;
             }  
             $('#timer').html(countdownvalue)
         };

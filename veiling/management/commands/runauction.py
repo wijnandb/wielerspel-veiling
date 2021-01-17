@@ -32,7 +32,7 @@ class Command(BaseCommand):
             # bidding should be closed and the rider goes to the
             # highest bidder. 
 
-            if verschil > 20.5:
+            if verschil > 20:
                 latestrider = latest[0].rider
                 print(latestrider.id)
                 if not VirtualTeam.objects.filter(rider=latestrider, editie=2021).exists():
@@ -59,7 +59,7 @@ class Command(BaseCommand):
                     print(f'{latestrider} is al verkocht')
 
             else:
-                print("Nog bezig met bieden")
+                print(f'Nog bezig met bieden op {latestrider}')
         else:
             print(f"Nog geen biedingen aanwezig")
         time.sleep(1)

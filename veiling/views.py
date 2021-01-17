@@ -55,7 +55,7 @@ def biddings(request):
     rider_name = rider_on_auction.name
     rider_id = rider_on_auction.id
 
-
+    #aantal biedingen tonen
     biddings = Bid.objects.order_by('-created')[:10]
     new_biddings = Bid.objects.filter(rider_id=rider_on_auction.id)
 
@@ -72,24 +72,28 @@ def biddings(request):
             highestbid = new_biddings.order_by('-amount').first()
             highest = highestbid.amount
             winner = highestbid.team_captain.username
-            timestamp = naturaltime(highestbid.created)
+            timestamp = highestbid.created
+            nu=datetime.now()
+            time_remaining = round(20 - (nu-timestamp).total_seconds())
+            #print(verschil)
+            #timestamp = naturaltime(highestbid.created)
 
             return JsonResponse(status=200, data={'status': _('success'),
                                                 'data': results,
                                                 'on_auction': rider_name,
                                                 'highest': highest,
                                                 'winner': winner,
-                                                'timer': timestamp})
+                                                'timer': time_remaining})
         else:
             # this is the case where we already have a sold rider
             # but no new biddings
             # we could show some info on the sold rider
             return JsonResponse(status=200, data={'status': _('succes'),
                                                 'data': results,
-                                                'highest': 'NEW',
+                                                'highest': '0',
                                                 'winner': 'plaats een bod',
                                                 'on_auction': rider_name,
-                                                'timer': 0})
+                                                'timer': 20})
 
     else:
         return JsonResponse(status=200, data={'status': _('succes'),
