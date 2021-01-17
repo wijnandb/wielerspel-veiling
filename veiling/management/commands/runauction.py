@@ -32,7 +32,7 @@ class Command(BaseCommand):
             # bidding should be closed and the rider goes to the
             # highest bidder. 
 
-            if verschil > 20:
+            if verschil > 20.5:
                 latestrider = latest[0].rider
                 print(latestrider.id)
                 if not VirtualTeam.objects.filter(rider=latestrider, editie=2021).exists():

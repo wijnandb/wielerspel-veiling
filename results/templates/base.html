@@ -53,7 +53,7 @@
                     <a class="nav-link" href="{% url 'auction:geheimelijst' %}">Geheime lijst</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="{% url 'auction:auction' %}">Veiling</a>
+                  <a class="nav-link" href="{% url 'veiling:veiling' %}">Veiling</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'auction:logout' %}">{% trans 'Logout' %}</a>
@@ -82,11 +82,8 @@
   <!-- Page Content -->
   <div class="container">
 
-    <div class="row">
-      <div class="col-md-12 mb-5">
         {% block content %}{% endblock %}
-      </div>
-    </div>
+
     <!-- /.row -->
 
   </div>

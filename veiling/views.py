@@ -60,7 +60,7 @@ def biddings(request):
     new_biddings = Bid.objects.filter(rider_id=rider_on_auction.id)
 
     if biddings:
-        print("we have biddings!")
+        #print("we have biddings!")
         for bidding in biddings:
             results.append({'name': bidding.team_captain.username,
                         'amount': bidding.amount,
@@ -68,7 +68,7 @@ def biddings(request):
         # here it goes wrong: there are biddings, but not for this rider
     
         if new_biddings:
-            print("we have new biddings!")
+            #print("we have new biddings!")
             highestbid = new_biddings.order_by('-amount').first()
             highest = highestbid.amount
             winner = highestbid.team_captain.username
@@ -85,9 +85,11 @@ def biddings(request):
             # but no new biddings
             # we could show some info on the sold rider
             return JsonResponse(status=200, data={'status': _('succes'),
+                                                'data': results,
                                                 'highest': 'NEW',
                                                 'winner': 'plaats een bod',
-                                                'on_auction': rider_name})
+                                                'on_auction': rider_name,
+                                                'timer': 0})
 
     else:
         return JsonResponse(status=200, data={'status': _('succes'),

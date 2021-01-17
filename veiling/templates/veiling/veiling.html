@@ -6,23 +6,24 @@
             background:yellow;
         }
         .current_price{
-            background:blue;
+           border: 2px double black!important;
+           /*background: rgb(248, 166, 166);*/
         }
     </style>
 {% endblock %}
 {% block content %}
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-5">
             <h1 id="rider">RENNER</h1>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-1 rounded-circle border border-primary user_bid text-center align-text-bottom">
             <h1 id="highest"></h1>
         </div>
         <div class="col-md-3">
             <h2 id="highest_team_captain"></h2>
         </div>
         <div class="col-md-2">
-            <h1><span id="timer"></span></h1>
+            <h3><span id="timer"></span></h3>
         </div>
     </div>
     <div class="row">
@@ -40,18 +41,7 @@
         </div>
         <div class="col-md-6">
             <table id="points" class="table table-bordered">
-                <tr>
-                    <td class='text-center td' data-td='1'> 1</td>
-                    <td class='text-center td' data-td='2'> 2</td>
-                    <td class='text-center td' data-td='3'> 3</td>
-                    <td class='text-center td' data-td='4'> 4</td>
-                    <td class='text-center td' data-td='5'> 5</td>
-                    <td class='text-center td' data-td='6'> 6</td>
-                    <td class='text-center td' data-td='7'> 7</td>
-                    <td class='text-center td' data-td='8'> 8</td>
-                    <td class='text-center td' data-td='9'> 9</td>
-                    <td class='text-center td' data-td='10'>10</td>
-                </tr>
+
             </table>
         </script>
             </table>
@@ -81,34 +71,20 @@
 {% block js %}
     <script type="text/javascript">
         $(document).ready(function(){
-            // get rider on auction
-            var riderID = get_rider()
 
-            // I want to set a "sold" boolean to true one a rider is sold.
-            // while sold = False, run everything here
-            // probably also need an "up for auction" to be True
             generateBidding()
             //getCurrentBid()
             setInterval(() => getUsersBid(), 1000)
             // Detect td click
             $('.td').click(function(){
-                // Save to a form of database
+                // Save to a form of database.
+                // Get value from clicked table cell and send
                 const credit = (this.dataset['td'])
                 setCurrentBid(this, credit)
             })
 
-        })
+        });
 
-        function get_rider(){
-            $.ajax({
-                url: `{% url "veiling:get_rider_on_auction" %}`,
-                method: 'GET',
-                success: response => {
-                    const riderID = response.rider_id            
-                }
-            })
-
-        };
 
         function generateBidding(){
             // Generate table
@@ -121,7 +97,7 @@
             for(let counter=1;counter<=8; counter++){
                 let data = "<tr>";
                 for(let i=1;i<=10;i++){
-                    data += "<td class='text-center td' data-td='"+ num +"'>" + num + "</td>"
+                    data += "<td class='text-center td' id='cell-"+ num +"' data-td='"+ num +"'><a href='#'>" + num + "</a></td>"
                     num++
                 }
                 data += "</tr>"
@@ -140,7 +116,10 @@
                 },
                 data:{'amount': credit},
                 success: response => {
-                    $('#timer').html(credit);
+                    // remove color from previous bid of user
+                    $('td.user_bid').removeClass('user_bid')
+                    // set background color for newest bid
+                    $(elem).addClass('user_bid');
                 },
                 error: err =>{
                     const error = err.responseJSON
@@ -155,7 +134,6 @@
             // Get all users bid
             $.ajax({
                 url: '{% url "veiling:biddings" %}',
-                //data: {'rider_id': riderID},
                 method: 'GET',
                 success: response => {
                     const tableBody = document.querySelector('.biddings-listing')
@@ -165,19 +143,74 @@
                     $('#rider').html(response.on_auction);
                     $('#highest').html(response.highest);
                     $('#highest_team_captain').html(response.winner);
+                    $('.td').each(function(elem){
+                        $(this).removeClass('current_price');
+                        if(this.dataset['td'] == response.highest){
+                            $(this).addClass('current_price');
+                        }
+                    })
+                    
+                    //var time_left = response.timer;
+                    // here I could check on the value of "time_left"
+                    // if it starts with 'a ' or 'no' I show nothing
+                    // if it starts with '15' or '16' I show 'eenmaal'
+                    // if it starts with '17', '18' or '19' it shows 'andermaal'
+                    // and on '20' it shows 'verkocht'
+                    // add some flashing too
+                    //$('#timer').html(time_left);
+                    countdowntimer(response.timer)
 
                     tableBody.innerHTML = ""
                     data.forEach(function (elem) {
                         tableBody.innerHTML += `<tr><td>${elem.rider}</td><td>${elem.amount}</td><td>${elem.name}</td></tr>`
                     })
-                    //countdowntimer(response.latest, riderID)
+
+                    //The following snippet would alert the value of each input each td
+                    $('table tr td input').each(function () {
+                        if ($(this).val()==1){
+                            $(this).addClass('current_price');
+                        };
+                    });
+
                 },
                 error: err =>{
                     const error = err.responseJSON
                     alert(error.msg)
                 }
             })
-        }
+        };
+
+
+        function countdowntimer(sincelastbid){
+            //console.log (sincelastbid)
+            //var countdownvalue = sincelastbid;
+            if (sincelastbid.startsWith('no')) {
+                // bieding geopend of nieuw bod! 
+                // Toon effect op prijs en ploegleider
+                var countdownvalue = "bod";
+            } else if (sincelastbid.startsWith('a')) {
+                var countdownvalue = "";
+            } else if (sincelastbid.startsWith('15')) {
+                var countdownvalue = "eenmaal...";
+            } else if (sincelastbid.startsWith('16')) {
+                var countdownvalue = "eenmaal...";
+            } else if (sincelastbid.startsWith('17')) {
+                var countdownvalue = "andermaal...";
+            } else if (sincelastbid.startsWith('18')) {
+                var countdownvalue = "andermaal...";
+            } else if (sincelastbid.startsWith('19')) {
+                var countdownvalue = "andermaal...";
+            } else if (sincelastbid.startsWith('20')) {
+                var countdownvalue = "VERKOCHT!!";
+            } else if (sincelastbid.startsWith('21')) {
+                var countdownvalue = "VERKOCHT!!";    
+            } else if (sincelastbid.startsWith('22')) {
+                var countdownvalue = "VERKOCHT!!";
+            } else {
+                countdownvalue = '';
+            }  
+            $('#timer').html(countdownvalue)
+        };
 
 
 
