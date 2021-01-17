@@ -31,7 +31,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'import_export',
-    'auction'
+    'auction',
+    'veiling',
 ]
 
 MIDDLEWARE = [
@@ -72,6 +73,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'wielerspel',
+        #'NAME': 'wsveiling',
         'USER': 'postgres',
         'PASSWORD': 'localpostgres',
         'HOST': 'LOCALHOST',
