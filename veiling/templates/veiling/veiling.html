@@ -72,15 +72,15 @@
     <script type="text/javascript">
         $(document).ready(function(){
 
-            generateBidding()
+            generateBidding();
             //getCurrentBid()
-            setInterval(() => getUsersBid(), 1000)
+            setInterval(() => getUsersBid(), 1000);
             // Detect td click
             $('.td').click(function(){
                 // Save to a form of database.
                 // Get value from clicked table cell and send
-                const credit = (this.dataset['td'])
-                setCurrentBid(this, credit)
+                const credit = (this.dataset['td']);
+                setCurrentBid(this, credit);
             })
 
         });
@@ -88,10 +88,10 @@
 
         function generateBidding(){
             // Generate table
-            const table = document.querySelector("#points")
-            const trow = "<tr>"
-            let points = ""
-            let num = 1
+            const table = document.querySelector("#points");
+            const trow = "<tr>";
+            let points = "";
+            let num = 1;
             // here we want to limit the available numbers to be equal to 
             // the maximum allowed bid
             for(let counter=1;counter<=8; counter++){
@@ -122,8 +122,8 @@
                     $(elem).addClass('user_bid');
                 },
                 error: err =>{
-                    const error = err.responseJSON
-                    alert('setCurrentBid'+ error.msg)
+                    const error = err.responseJSON;
+                    alert('setCurrentBid'+ error.msg);
                 }
             })
         };
@@ -138,7 +138,7 @@
                 success: response => {
                     const tableBody = document.querySelector('.biddings-listing')
                     // data consists of all the biddings
-                    const data = response.data
+                    const data = response.data;
                     // highest contains the highest bid, coming from db
                     $('#rider').html(response.on_auction);
                     $('#highest').html(response.highest);
@@ -152,24 +152,17 @@
                     })
                     
                     var time_left = response.timer;
-                    countdowntimer(time_left)
+                    countdowntimer(time_left);
 
-                    tableBody.innerHTML = ""
+                    tableBody.innerHTML = "";
                     data.forEach(function (elem) {
                         tableBody.innerHTML += `<tr><td>${elem.rider}</td><td>${elem.amount}</td><td>${elem.name}</td></tr>`
                     })
 
-                    //The following snippet would alert the value of each input each td
-                    $('table tr td input').each(function () {
-                        if ($(this).val()==1){
-                            $(this).addClass('current_price');
-                        };
-                    });
-
                 },
                 error: err =>{
-                    const error = err.responseJSON
-                    alert(error.msg)
+                    const error = err.responseJSON;
+                    alert(error.msg);
                 }
             })
         };
@@ -191,7 +184,7 @@
             } else {
                 countdownvalue = timeleft;
             }  
-            $('#timer').html(countdownvalue)
+            $('#timer').html(countdownvalue);
         };
 
 
