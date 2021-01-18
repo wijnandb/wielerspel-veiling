@@ -121,7 +121,7 @@ class VirtualTeam(models.Model):
 
     class Meta:
         ordering = ['-price']
-        verbose_name_plural = 'Sold riders'
+        verbose_name_plural = 'Virtual Teams'
 
     def __str__(self):
         return "%s - %s - %s" %(self.rider, self.price, self.ploegleider)

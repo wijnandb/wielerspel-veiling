@@ -43,8 +43,6 @@
             <table id="points" class="table table-bordered">
 
             </table>
-        </script>
-            </table>
             <table class="table table-striped">
                 <thead>
                 <tr>
@@ -122,13 +120,11 @@
                     $(elem).addClass('user_bid');
                 },
                 error: err =>{
-                    //const error = err.responseJSON;
-                    //alert('setCurrentBid'+ error.msg);
+                    const error = err.responseJSON;
+                    console.log('setCurrentBid'+ error.msg);
                 }
             })
         };
-
-
 
         function getUsersBid(){
             // Get all users bid
@@ -149,6 +145,9 @@
                         if(this.dataset['td'] == response.highest){
                             $(this).addClass('current_price');
                         }
+                        if(this.dataset['td'] < response.highest){
+                            $(this).html(''); 
+                        }
                     })
                     
                     var time_left = response.timer;
@@ -161,8 +160,8 @@
 
                 },
                 error: err =>{
-                    //const error = err.responseJSON;
-                    //alert(error.msg);
+                    const error = err.responseJSON;
+                    console.log('setCurrentBid'+ error.msg);
                 }
             })
         };

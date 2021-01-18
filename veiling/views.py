@@ -28,12 +28,12 @@ class AuctionView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         # Now I want to get the rider to be auctioned from the model ToBeAuctioned
-        rider = Rider.objects.filter(sold=False).first()
-        rider_id = rider.id
+        #rider = Rider.objects.filter(sold=False).first()
+        #rider_id = rider.id
         # this is how we used to do it:
         #rider_id = self.kwargs['rider_id']
-        context['rider_id'] = rider_id
-        context['rider'] = Rider.objects.get(id=rider_id)
+        #context['rider_id'] = rider_id
+        #context['rider'] = Rider.objects.get(id=rider_id)
         context['ploegleiders'] = TeamCaptain.objects.all()
         return context
 
@@ -54,6 +54,9 @@ def biddings(request):
     rider_on_auction = get_rider_on_auction()
     rider_name = rider_on_auction.name
     rider_id = rider_on_auction.id
+
+    # if this rider exists in the Joker table, we want to get the user it belongs to and the value
+    # 404 get? 
 
     #aantal biedingen tonen
     biddings = Bid.objects.order_by('-created')[:10]
