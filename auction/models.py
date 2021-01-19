@@ -106,7 +106,10 @@ class Joker(models.Model):
     value = models.IntegerField(default=0)
 
     def __str__(self):
-        return "%s heeft een %s joker op %s" %(self.team_captain, self.value, self.rider.name)
+        return "%s %s %s" %(self.team_captain.first_name, self.value, self.rider.name)
+    
+    class Meta:
+        ordering = ['team_captain']
 
 
 class VirtualTeam(models.Model):

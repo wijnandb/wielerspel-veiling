@@ -9,10 +9,11 @@ from django.views.generic.list import ListView
 from django.utils.translation import gettext as _
 from datetime import datetime
 import time
+from django.shortcuts import get_object_or_404
 from django.db.models import Count, Sum
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from auction.forms import LoginForm, RegistrationForm, BidForm
-from auction.models import Bid, TeamCaptain, ToBeAuctioned, VirtualTeam
+from auction.models import Bid, TeamCaptain, ToBeAuctioned, VirtualTeam, Joker
 from results.models import Rider
 from veiling.forms import BidForm
 
@@ -36,6 +37,7 @@ class AuctionView(TemplateView):
         #context['rider'] = Rider.objects.get(id=rider_id)
         context['ploegleiders'] = TeamCaptain.objects.all()
         return context
+    
 
 def get_rider_on_auction():
     return Rider.objects.filter(sold=False).order_by('rank').first()
@@ -56,7 +58,21 @@ def biddings(request):
     rider_id = rider_on_auction.id
 
     # if this rider exists in the Joker table, we want to get the user it belongs to and the value
-    # 404 get? 
+    joker_present = Joker.objects.filter(rider=rider_id).exists()
+    # this either True or False. If False, we only nee
+    if joker_present:
+        # we want to know if it's this user that has the joker
+        # we now check in page
+        joker_info = Joker.objects.get(rider=rider_id)
+        joker_tc_id = joker_info.team_captain.id
+        joker_tc_name = joker_info.team_captain.first_name
+        joker_value = joker_info.value
+        joker_info = "joker"
+    else:
+        joker_tc_id = 0
+        joker_tc_name = ''
+        joker_value = ''
+        joker_info = 'Geen joker'
 
     #aantal biedingen tonen
     biddings = Bid.objects.order_by('-created')[:10]
@@ -84,6 +100,10 @@ def biddings(request):
             return JsonResponse(status=200, data={'status': _('success'),
                                                 'data': results,
                                                 'on_auction': rider_name,
+                                                'joker_tc_id':joker_tc_id,
+                                                'joker_tc_name':joker_tc_name,
+                                                'joker_value':joker_value,
+                                                'joker_info': joker_info,
                                                 'highest': highest,
                                                 'winner': winner,
                                                 'timer': time_remaining})
@@ -96,13 +116,18 @@ def biddings(request):
                                                 'highest': '0',
                                                 'winner': 'plaats een bod',
                                                 'on_auction': rider_name,
+                                                'joker_tc_id':joker_tc_id,
+                                                'joker_tc_name':joker_tc_name,
+                                                'joker_value':joker_value,
+                                                'joker_info': joker_info,
                                                 'timer': 20})
 
     else:
         return JsonResponse(status=200, data={'status': _('succes'),
                                             'highest': 'Begin veiling!',
-                                            'winner': 'Plaats het eerste bod!',
-                                            'on_auction': rider_name})
+                                            'winner': '',
+                                            'on_auction': rider_name,
+                                            'joker_info': joker_info})
 
 
 @login_required
@@ -117,39 +142,65 @@ def bidding(request):
         try:
             """
             Here we have to check if the bid is allowed. 
-            It cannot be lower or equal to the current highest bid
+            It cannot be lower than the current highest bid
+            Except when it is a Joke bid. Let's start accepting equal biddings
             """
             # get the rider that is on auction
             rider = get_rider_on_auction()
             rider_id = rider.id
             biddings = Bid.objects.filter(rider_id=rider_id).order_by('-amount')
             if len(biddings) < 1:
-                """ Raise exception if queryset return 0 """
-                raise Bid.DoesNotExist
+                """ first bid, so highest_bid = 0 """
+                get_highest_bid = 0
             else:
-                get_highest_bid = biddings[0]
+                get_highest_bid = biddings[0].amount
 
-                if get_highest_bid.amount >= form.cleaned_data['amount']:
-                    """ Raise exception once the new bid is lower than current bid highest bid """
-                    raise Exception("Bod moet hoger zijn dan huidige hoogste bod")
-                
-            new_bidding = Bid(rider_id=rider_id, team_captain=user, amount=form.cleaned_data['amount'])
-        except Bid.DoesNotExist:
-            print('Eerste bod op deze renner')
-            new_bidding = Bid(rider_id=rider_id, team_captain=user, amount=form.cleaned_data['amount'])
+            if get_highest_bid == form.cleaned_data['amount']:
+                # only allow if user has a Joker
+                if check_joker(user, rider_id):
+                    # you can allow the bid
+                    new_bidding = Bid(rider_id=rider_id, team_captain=user, amount=form.cleaned_data['amount'])
+                else:
+                    #disallow, no joker and equasl bid
+                    print("disallow it")
+                    raise Exception("Bod moet hoger zijn dan huidige hoogste bod. Geen joker.")
+            elif get_highest_bid > form.cleaned_data['amount']:
+                """ Raise exception once the new bid is lower than current bid highest bid """
+                raise Exception("Bod moet hoger zijn dan huidige hoogste bod")
+
+            else:
+                # new bid is higher than highest bid
+                new_bidding = Bid(rider_id=rider_id, team_captain=user, amount=form.cleaned_data['amount'])
+            
+            enough = TeamCaptain.objects.filter(user=user)
+            if TeamCaptain.objects.filter(user=user)[0].max_allowed_bid() >= form.cleaned_data['amount']:
+                new_bidding.save()
+            else:
+                raise Exception("Not enough points left to make that bid")
+
+            return JsonResponse(status=200, data={'status': _('success'), 'msg': _('Bid successfully')})
+
         except Exception as err:
             return JsonResponse(status=400, data={'status': _('error'), 'msg': str(err) })
             #pass
         """ Check if user is allowed to make this bid, if he has enough points remaining """
-        enough = TeamCaptain.objects.filter(user=user)
-        if TeamCaptain.objects.filter(user=user)[0].max_allowed_bid() >= form.cleaned_data['amount']:
-            new_bidding.save()
-        else:
-            pass
 
-        return JsonResponse(status=200, data={'status': _('success'), 'msg': _('Bid successfully')})
+        
     else:
         return JsonResponse(status=405, data={'status': _('error'), 'msg': _('Method not allowed')})
+
+def process_bid():
+    pass
+
+def check_high_enough_bid():
+    pass
+
+
+def allowed_to_make_bid():
+    pass
+
+def check_joker(user, rider_id):
+    return Joker.objects.filter(rider=rider_id).filter(team_captain=user).exists()
 
 
 @login_required
