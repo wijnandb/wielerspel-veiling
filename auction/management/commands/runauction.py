@@ -46,6 +46,8 @@ class Command(BaseCommand):
                     
                         if winner.team_captain == joker.team_captain:
                             winner.amount = winner.amount + joker.value
+                        if winner.amount <= 0:
+                            winner.amount = 1
                     print(winner.rider, winner.team_captain, winner.amount)
                     renner = VirtualTeam()
                     renner.rider = winner.rider
