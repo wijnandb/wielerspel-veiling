@@ -40,11 +40,12 @@ class Command(BaseCommand):
                     # extra sort on created, so we get the Joker bid (same value, later entry) 
                     highest = Bid.objects.filter(rider=latestrider).order_by('-amount', '-created')
                     # check if there is a Joker
+                    winner=highest[0]
                     if Joker.objects.filter(rider=latestrider).exists():
                         joker = Joker.objects.get(rider=latestrider)
-                    winner=highest[0]
-                    if winner.team_captain == joker.team_captain:
-                        winner.amount = winner.amount + joker.value
+                    
+                        if winner.team_captain == joker.team_captain:
+                            winner.amount = winner.amount + joker.value
                     print(winner.rider, winner.team_captain, winner.amount)
                     renner = VirtualTeam()
                     renner.rider = winner.rider
@@ -71,19 +72,3 @@ class Command(BaseCommand):
         time.sleep(1)
         # make it run again
         self.handle()
-
-
-def Jokertje(rider):
-    """ Is there a Joker on this rider?
-    If so, pass the team-captain who holds the Joker and the amount 
-    so we can check if this Team_captain has bought the rider and how
-    much we should deduct from the price.
-    Pasted in so can be deleted once works
-    """
-    if Joker.objects.filter(rider=rider).exists():
-        return Joker.objects.get(rider=rider)
-        
-    else:
-        pass
-
-     
