@@ -67,11 +67,11 @@ class ToBeAuctioned(models.Model):
     multiple TeamCaptains. Once a rider is auctioned, it is removed from 
     everyone's wishlist.
     """
-    team_captain = models.ForeignKey(User, on_delete=models.CASCADE)
-    rider = models.ForeignKey(Rider, on_delete=models.CASCADE)
-    amount = models.IntegerField()
+    team_captain = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    rider = models.OneToOneField(Rider, on_delete=models.CASCADE)
+    amount = models.IntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
-    #on_auction = models.BooleanField(default=False)
+    sold = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['created']

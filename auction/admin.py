@@ -12,9 +12,14 @@ class JokerAdmin(ImportExportModelAdmin):
     list_filter = ('team_captain',)
 
 
+class ToBeAuctionedAdmin(ImportExportModelAdmin):
+    list_display = ('rider', 'team_captain', 'amount', 'sold')
+    list_filter = ('sold', 'created')
+
+
 admin.site.register(Bid)
 admin.site.register(TeamCaptain)
-admin.site.register(ToBeAuctioned)
+admin.site.register(ToBeAuctioned, ToBeAuctionedAdmin)
 admin.site.register(Joker, JokerAdmin)
 admin.site.register(VirtualTeam, VirtualTeamAdmin)
 

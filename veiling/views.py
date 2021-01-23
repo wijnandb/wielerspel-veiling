@@ -40,7 +40,7 @@ class AuctionView(TemplateView):
     
 
 def get_rider_on_auction():
-    return Rider.objects.filter(sold=False).order_by('rank').first()
+    return ToBeAuctioned.objects.filter(sold=False).order_by('created').first().rider
 
 
 @login_required

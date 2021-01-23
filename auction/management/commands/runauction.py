@@ -1,8 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from datetime import datetime
 import time
-from auction.models import Bid as Bid 
-from auction.models import VirtualTeam as VirtualTeam
+from auction.models import Bid, VirtualTeam, ToBeAuctioned 
 from results.models import Rider
 
 class Command(BaseCommand):
@@ -32,7 +31,7 @@ class Command(BaseCommand):
             # bidding should be closed and the rider goes to the
             # highest bidder. 
 
-            if verschil > 20:
+            if verschil >= 20:
                 latestrider = latest[0].rider
                 print(latestrider.id)
                 if not VirtualTeam.objects.filter(rider=latestrider, editie=2021).exists():
@@ -54,6 +53,10 @@ class Command(BaseCommand):
                     sold_rider = Rider.objects.get(id=winner.rider_id)
                     sold_rider.sold = True
                     sold_rider.save()
+
+                    verkocht_rider = ToBeAuctioned.objects.get(rider=winner.rider_id)
+                    verkocht_rider.sold = True
+                    verkocht_rider.save()
 
                 else:
                     print(f'{latestrider} is al verkocht')
