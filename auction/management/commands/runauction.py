@@ -40,9 +40,10 @@ class Command(BaseCommand):
                     # extra sort on created, so we get the Joker bid (same value, later entry) 
                     highest = Bid.objects.filter(rider=latestrider).order_by('-amount', '-created')
                     # check if there is a Joker
+                    winner=highest[0]
                     if Joker.objects.filter(rider=latestrider).exists():
                         joker = Joker.objects.get(rider=latestrider)
-                    winner=highest[0]
+                    
                         if winner.team_captain == joker.team_captain:
                             winner.amount = winner.amount + joker.value
                     print(winner.rider, winner.team_captain, winner.amount)
