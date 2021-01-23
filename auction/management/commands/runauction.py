@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from datetime import datetime
 import time
-from auction.models import Bid, VirtualTeam, ToBeAuctioned 
+from auction.models import Bid, VirtualTeam, ToBeAuctioned, Joker 
 from results.models import Rider
 
 class Command(BaseCommand):
@@ -39,14 +39,17 @@ class Command(BaseCommand):
                     # get the highest bid on that rider
                     # extra sort on created, so we get the Joker bid (same value, later entry) 
                     highest = Bid.objects.filter(rider=latestrider).order_by('-amount', '-created')
-                    # this was the winning bid
+                    # check if there is a Joker
+                    if Joker.objects.filter(rider=latestrider).exists():
+                        joker = Joker.objects.get(rider=latestrider)
                     winner=highest[0]
-                    #print(winner)
+                    if winner.team_captain == joker.team_captain:
+                        winner.amount = winner.amount + joker.value
                     print(winner.rider, winner.team_captain, winner.amount)
                     renner = VirtualTeam()
                     renner.rider = winner.rider
                     renner.ploegleider = winner.team_captain
-                    renner.price = winner.amount
+                    renner.price = winner.amount 
                     renner.editie = 2021
                     renner.save()
 
@@ -68,3 +71,19 @@ class Command(BaseCommand):
         time.sleep(1)
         # make it run again
         self.handle()
+
+
+def Jokertje(rider):
+    """ Is there a Joker on this rider?
+    If so, pass the team-captain who holds the Joker and the amount 
+    so we can check if this Team_captain has bought the rider and how
+    much we should deduct from the price.
+    Pasted in so can be deleted once works
+    """
+    if Joker.objects.filter(rider=rider).exists():
+        return Joker.objects.get(rider=rider)
+        
+    else:
+        pass
+
+     

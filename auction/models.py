@@ -44,7 +44,7 @@ class TeamCaptain(models.Model):
             return self.amount_left()-self.riders_needed()+1
     
     class Meta:
-        ordering = ['-name']
+        ordering = ['name']
 
 
 class Bid(models.Model):
