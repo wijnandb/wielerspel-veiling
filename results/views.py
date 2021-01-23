@@ -3,12 +3,10 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from auction.models import TeamCaptain, User
 from django.db.models import Sum
 
-
-from .models import Rider, Race, Uitslag
-from auction.models import VirtualTeam
+from auction.models import TeamCaptain, User, VirtualTeam
+from results.models import Rider, Race, Uitslag
 
 
 def index(request):
@@ -36,7 +34,6 @@ def index(request):
 
 class RaceListView(generic.ListView):
     model = Race
-    paginate_by = 30
 
 
 class RaceDetailView(generic.DetailView):
@@ -48,6 +45,7 @@ class RiderListView(generic.ListView):
     # filter, show only riders that haven't been sold
     def get_queryset(self):
           return Rider.objects.filter(sold=False)
+
 
 class RiderDetailView(generic.DetailView):
     model = Rider
@@ -61,6 +59,8 @@ class PloegleiderDetailView(generic.DetailView):
     model = TeamCaptain
 
 
+
+
 class UitslagListView(generic.ListView):
     model = Uitslag
 
@@ -71,7 +71,8 @@ class UitslagDetailView(generic.DetailView):
 
 class VerkochtListView(generic.ListView):
     model = VirtualTeam
-    # I need to be able to filter on Editie (=year)
+    
+
 
 
 class VerkochtDetailView(generic.DetailView):

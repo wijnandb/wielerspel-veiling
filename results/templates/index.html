@@ -2,14 +2,21 @@
 
 {% block content %}
 
+{% if request.user.is_authenticated %}
+    <h1>Welkom {{ user.first_name }} {{ user.last_name }}!</h1>
 
-<p>Ploegleiders: {{ num_ploegleiders }}</p>
+    <p>Ploegleiders: {{ num_ploegleiders }}</p>
 
-<p>Beschikbare renners: {{ num_riders }}</p>
+    <p><a href="{% url 'results:riders' %}">Nog beschikbare renners: {{ num_riders }}</a></p>
 
-<p>Verkochte renners: {{ num_sold_riders }}</p>
+    <p><a href="{% url 'results:verkochte_renners' %}">Al verkochte renners: {{ num_sold_riders }}</a></p>
 
-<p>Punten nog in het spel: {{ punten_over }}</p>
+    <p>Punten nog in het spel: {{ punten_over }}</p>
+
+{% else %}
+    <h1><a href="{% url 'auction:login' %}">Eerst inloggen!</a></h1>
+{% endif %}
+
 
 
 {% endblock %}

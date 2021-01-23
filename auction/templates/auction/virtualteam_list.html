@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+            <h1>Verkochte renners</h1>
+            {% if object_list %}
+                <table class="table" id="renners" data-page-length='25'>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Renner</th>
+                            <th>Ploegleider</th>
+                            <th>Prijs</th>
+                            <th>Land</th>
+                            <th>Team</th>
+                            <th>CQriderid</th>
+                            <th>UCICode</th>
+                            <th>Leeftijd</th>
+                            <th>CQ points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rider in object_list %}
+                            <tr>
+                                <td>{{ rider.rider.rank }}</td>
+                                <td>{{ rider.rider }}</td>
+                                <td>{{ rider.ploegleider.first_name }}</td>
+                                <td>{{ rider.price }}</td>
+                                <td>{{rider.rider.nationality }}</td>
+                                <td>{{ rider.rider.team }}</td>
+                                <td><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.rider.cqriderid }}" target="_blank">{{ rider.rider.cqriderid }}</a></td>
+                                <td>{{ rider.rider.ucicode }}</td>
+                                <td>{{ rider.rider.age }}</td>
+                                <td>{{ rider.rider.cqpoints }}</td>
+                            </tr>
+                        {% endfor %}
+                    <tbody></tbody>
+                </table>
+            {% else %}
+                <p>Geen renners aanwezig.</p>
+            {% endif %}
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.22/datatables.min.js"></script>
+<script>
+    $(document).ready( function () {
+        $('#renners').DataTable( {
+            //scrollY: 500,
+            //paging: false,
+            "language": {
+                "sProcessing": "Bezig...",
+                "sLengthMenu": "_MENU_ resultaten weergeven",
+                "sZeroRecords": "Geen resultaten gevonden",
+                "sInfo": "_START_ tot _END_ van _TOTAL_ resultaten",
+                "sInfoEmpty": "Geen resultaten om weer te geven",
+                "sInfoFiltered": " (gefilterd uit _MAX_ resultaten)",
+                "sInfoPostFix": "",
+                "sSearch": "Zoeken:",
+                "sEmptyTable": "Geen resultaten aanwezig in de tabel",
+                "sInfoThousands": ".",
+                "sLoadingRecords": "Een moment geduld aub - bezig met laden...",
+                "oPaginate": {
+                    "sFirst": "Eerste",
+                    "sLast": "Laatste",
+                    "sNext": "Volgende",
+                    "sPrevious": "Vorige"
+                },
+            }
+        } );
+    } );
+</script>
+{% endblock js %}
