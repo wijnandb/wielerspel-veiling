@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 
 
 class Rider(models.Model):
+    """
+    """
     rank = models.IntegerField(null=True, blank=True)
     prev = models.IntegerField(null=True, blank=True)
     cqriderid = models.IntegerField(unique=True)
@@ -19,7 +21,11 @@ class Rider(models.Model):
         return self.name
 
     class Meta:
-        ordering = ['rank']
+        ordering = ['name']
+    
+    def get_absolute_url(self):
+        """Returns the url to access a particular instance of the model."""
+        return reverse('rider-detail', args=[str(self.cqriderid)])
 
 
 class Category(models.Model):
@@ -35,7 +41,7 @@ class Category(models.Model):
 
     def get_absolute_url(self):
         """Returns the url to access a particular instance of the model."""
-        return reverse('category-detail', args=[str(self.id)])
+        return reverse('category-detail', args=[str(self.pk)])
 
 
 class RacePoints(models.Model):
@@ -51,7 +57,7 @@ class RacePoints(models.Model):
 
     def get_absolute_url(self):
         """Returns the url to access a particular instance of the model."""
-        return reverse('racepoints-detail', args=[str(self.id)])
+        return reverse('racepoints-detail', args=[str(self.pk)])
 
     def __str__(self):
         return self.category, self.ranking
@@ -73,13 +79,16 @@ class Race(models.Model):
 
 
 class Uitslag(models.Model):
+    """ We will import results from CQRanking, which means that races and riders will
+    be linked through the CQRanking ID's 
+    """
     race = models.ForeignKey(Race, to_field='cqraceid', on_delete=models.SET_NULL, null=True)
     rank = models.CharField(max_length=20)  # because we have "leader" as rank as well
     rider = models.ForeignKey(Rider, to_field='cqriderid', on_delete=models.SET_NULL, null=True)
 
     def get_absolute_url(self):
         """Returns the url to access a particular instance of the model."""
-        return reverse('race-detail', args=[str(self.id)])
+        return reverse('race-detail', args=[str(self.race)])
 
     class Meta:
         verbose_name_plural = 'Uitslagen'
