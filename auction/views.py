@@ -1,18 +1,20 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
 from django.views.generic import FormView, TemplateView
 from django.views.generic.list import ListView
 from django.utils.translation import gettext as _
+from django.views.decorators.http import require_POST
+from django.shortcuts import redirect
 from datetime import datetime
 import time
 from django.db.models import Count, Sum
 from django.contrib.humanize.templatetags.humanize import naturaltime
-from auction.forms import LoginForm, RegistrationForm, BidForm
-from auction.models import Bid, TeamCaptain, ToBeAuctioned, VirtualTeam
+from auction.forms import LoginForm, RegistrationForm, BidForm, ChangeSortForm
+from auction.models import Bid, TeamCaptain, ToBeAuctioned, VirtualTeam, AuctionOrder
 from results.models import Rider
 
 class LoginView(FormView):
@@ -60,11 +62,13 @@ class AuctionView(TemplateView):
         context = super().get_context_data()
         # Now I want to get the rider to be auctioned from the model ToBeAuctioned
         rider = Rider.objects.filter(sold=False).first()
-        rider_id = rider.id
-        # this is how we used to do it:
-        #rider_id = self.kwargs['rider_id']
-        context['rider_id'] = rider_id
-        context['rider'] = Rider.objects.get(id=rider_id)
+        team_captain = AuctionOrder.objects.order_by('order').first().team_captain
+        print(team_captain)
+        # get the first rider in ToBeAuctioned from that TeamCaptain
+        rider = ToBeAuctioned.objects.filter(team_captain=team_captain).order_by('order').first().rider
+        print(rider, rider.id)
+        context['rider_id'] = rider.id
+        context['rider'] = rider
         context['ploegleiders'] = TeamCaptain.objects.all()
         return context
 
@@ -177,7 +181,7 @@ def get_highest(request):
             highest_bid.amount = second_highest.amount+1
         highest = highest_bid.amount
         results.append({'name': highest_bid.team_captain.username,
-                        'amount': highest_bid.amount,
+                        'amount': highest,
                         'date': naturaltime(highest_bid.created)})
     return JsonResponse(status=200, data={'status': _('success'),
                                           'data': results})
@@ -185,8 +189,51 @@ def get_highest(request):
 
 class ToBeAuctionedListView(generic.ListView):
     model = ToBeAuctioned
+    context_object_name = 'renners'
+    
+    def get_queryset(self, **kwargs):
+        return ToBeAuctioned.objects.filter(team_captain=self.request.user)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data()
-        context['renners'] = ToBeAuctioned.objects.filter(team_captain=self.request.user)
-        return context
+
+@login_required
+def AddRiderToBeAuctioned(request):
+    rider = Rider.objects.get(id=request.POST.get('riderID'))
+    amount = request.POST.get('amount')
+    team_captain = request.user
+    #print(f"adding {rider} to list of {team_captain} with value {amount}")
+    try:
+        tba = ToBeAuctioned.objects.get(team_captain=team_captain, rider=rider)
+        tba.amount = amount
+        tba.save()
+        return JsonResponse({'status':'updated existing'})
+    except:
+        tba = ToBeAuctioned(team_captain=team_captain, rider=rider, amount=amount)
+        tba.save()
+        #print(f"Added {rider} for {team_captain} for ${amount}")
+        return JsonResponse({"status": "Added a new rider"})
+
+
+@require_POST
+@login_required
+def SaveOrderingToBeAuctioned(request):
+    """
+    Drag and drop form changes the order of riders to be auctioned
+    """
+    form = ChangeSortForm(request.POST)
+
+    if form.is_valid():
+        ordered_ids = form.cleaned_data["ordering"].split(',')
+
+        print(ordered_ids)
+        #with transaction.atomic():
+        current_order = 1
+        for lookup_id in ordered_ids:
+            rider = ToBeAuctioned.objects.get(id=lookup_id)
+            rider.order = current_order
+            rider.save()
+            current_order += 1
+
+    response = {'msg':'Submitted Successfully',
+                'url':'geheimelijst',
+                'created':True}
+    return redirect('/results/')

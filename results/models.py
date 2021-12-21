@@ -21,7 +21,7 @@ class Rider(models.Model):
         return self.name
 
     class Meta:
-        ordering = ['name']
+        ordering = ['rank']
     
     def get_absolute_url(self):
         """Returns the url to access a particular instance of the model."""
@@ -29,11 +29,11 @@ class Rider(models.Model):
 
 
 class Category(models.Model):
-    category = models.CharField(unique=True, max_length=20)
+    name = models.CharField(unique=True, max_length=20)
     category_description = models.CharField(max_length=1000)
 
     def __str__(self):
-        return self.category
+        return self.name
 
     class Meta:
         verbose_name = 'UCI-category'
@@ -45,8 +45,8 @@ class Category(models.Model):
 
 
 class RacePoints(models.Model):
-    editie = models.PositiveIntegerField(default=2020)
-    category = models.ForeignKey(Category, to_field='category', on_delete=models.CASCADE)
+    editie = models.PositiveIntegerField(default=2021)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     ranking = models.CharField(max_length=50)
     points = models.FloatField(default=0)
     jpp = models.IntegerField(default=0)
@@ -67,7 +67,7 @@ class Race(models.Model):
     name = models.CharField(max_length=100)
     startdate = models.DateField()
     enddate = models.DateField(blank=True, null=True)
-    category = models.ForeignKey(Category, to_field='category', on_delete=models.SET_NULL, null=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     cqraceid = models.IntegerField(default=0, unique=True)
     country = models.CharField(max_length=3, blank=True, null=True)
 

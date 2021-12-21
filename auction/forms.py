@@ -47,4 +47,9 @@ class BidForm(forms.Form):
 
 
 class AddToBeAuctioned(forms.Form):
-    model = ToBeAuctioned
+    rider = forms.IntegerField()
+    amount = forms.IntegerField()
+
+
+class ChangeSortForm(forms.Form):
+    ordering = forms.CharField()

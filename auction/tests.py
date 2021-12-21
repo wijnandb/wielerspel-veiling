@@ -11,9 +11,9 @@ Can't test GetWinner() anymore, because it now keeps running.
 
 # first, get a rider to be auctioned
 
-# create some users
+# create all users
 
-# make somme biddings
+# make some biddings
 
 # let the clock run out
 

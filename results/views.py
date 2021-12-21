@@ -5,7 +5,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.db.models import Sum
 
-from auction.models import TeamCaptain, User, VirtualTeam
+from auction.models import TeamCaptain, ToBeAuctioned, User, VirtualTeam
 from results.models import Rider, Race, Uitslag
 
 
@@ -13,7 +13,7 @@ def index(request):
     """View function for home page of site."""
     # Generate counts of some of the main objects
     num_riders = Rider.objects.filter(sold=False).count()  # The 'all()' is implied by default.
-    num_ploegleiders = User.objects.count()
+    num_ploegleiders = TeamCaptain.objects.count()
     num_sold_riders = VirtualTeam.objects.count()
     if num_sold_riders == 0:
         punten_over = 1500
@@ -42,9 +42,16 @@ class RaceDetailView(generic.DetailView):
 
 class RiderListView(generic.ListView):
     model = Rider
+    paginate_by = 100
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['geheimelijst'] = ToBeAuctioned.objects.filter(team_captain=self.request.user)
+        return context
+
     # filter, show only riders that haven't been sold
     def get_queryset(self):
-          return Rider.objects.filter(sold=False)
+        return Rider.objects.filter(sold=False) #.exclude(tobeauctioned__team_captain=self.request.user)
 
 
 class RiderDetailView(generic.DetailView):

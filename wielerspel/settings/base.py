@@ -1,6 +1,6 @@
 import os
 import django_heroku
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # since setting is a module now
 BASE_DIR = os.path.dirname(
@@ -32,11 +32,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'import_export',
     'auction',
-    'veiling',
+    #'veiling',
+    #'veilingeentjes',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -123,4 +125,8 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 django_heroku.settings(locals())

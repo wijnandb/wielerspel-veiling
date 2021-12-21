@@ -44,17 +44,20 @@
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'results:verkochte_renners' %}">Verkochte renners</a>
                 </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'results:ploegleiders' %}">Ploegen</a>
+                </li>
                 <!--li class="nav-item">
                   <a class="nav-link" href="{% url 'results:uitslagen' %}">Uitslagen</a>
                 </li-->
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'results:riders' %}">Beschikbare renners</a>
                 </li>
-                <!--li class="nav-item">
-                    <a class="nav-link" href="{% url 'auction:geheimelijst' %}">Geheime lijst</a>
-                </li-->
                 <li class="nav-item">
-                  <a class="nav-link" href="{% url 'veiling:veiling' %}">Veiling</a>
+                    <a class="nav-link" href="{% url 'auction:geheimelijst' %}">Geheime lijst</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'auction:auction' %}">Veiling</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'auction:logout' %}">{% trans 'Logout' %}</a>
@@ -82,7 +85,13 @@
 
   <!-- Page Content -->
   <div class="container">
-
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
         {% block content %}{% endblock %}
 
     <!-- /.row -->
@@ -127,7 +136,7 @@
   <!-- Footer -->
   <footer class="py-5 bg-dark">
     <div class="container">
-      <p class="m-0 text-center text-white">Copyright &copy; QZ Wielerspel 2020</p>
+      <p class="m-0 text-center text-white">Copyright &copy; QZ Wielerspel 2021</p>
     </div>
     <!-- /.container -->
   </footer>

@@ -15,58 +15,73 @@
                             <th>Land</th>
                             <th>Team</th>
                             <th>CQriderid</th>
-                            <th>UCICode</th>
                             <th>Leeftijd</th>
                             <th>CQ points</th>
+                            <th>Bod</th>
+                            <th>Toevoegen</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for rider in rider_list %}
-                            <tr>
+                            <tr id="row-{{ rider.id }}">
                                 <td>{{ rider.rank }}</td>
                                 <td>{{ rider }}</td>
-                                <td>{{rider.nationality }}</td>
+                                <td>{{ rider.nationality }}</td>
                                 <td>{{ rider.team }}</td>
                                 <td><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}" target="_blank">{{ rider.cqriderid }}</a></td>
-                                <td>{{ rider.ucicode }}</td>
                                 <td>{{ rider.age }}</td>
-                                <td>{{ rider.cqpoints }}</td>
+                                <td>{{ rider.cqpoints }} </td>
+                                <td><input type="number" id="value-{{ rider.id }}" min="0" max="92" value="1"  size="2"></td>
+                                <td><input type="button" class="btn btn-outline-primary" name="{{ rider.id }}" id="button-{{ rider.id }}" data-rider="{{ rider.id }}" onclick="addRider(this)" style="cursor:pointer;" value="toevoegen"></td>
                             </tr>
                         {% endfor %}
-                    <tbody></tbody>
+                    </tbody>
                 </table>
             {% else %}
                 <p>Geen renners aanwezig.</p>
             {% endif %}
+            {% for g in geheimelijst %}
+                <script type="text/javascript">
+                    window.addEventListener('DOMContentLoaded', function(){
+                        var riderID = "{{ g.rider.id }}";
+                        document.getElementById("button-"+riderID).textContent = "bijwerken";
+                        document.getElementById("row-"+riderID).className = "table-success";
+                        document.getElementById("value-"+riderID).value = "{{ g.amount }}";
+                    });
+                </script>
+            {% endfor %}
 
 {% endblock %}
 {% block js %}
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.22/datatables.min.js"></script>
-<script>
-    $(document).ready( function () {
-        $('#renners').DataTable( {
-            //scrollY: 500,
-            //paging: false,
-            "language": {
-                "sProcessing": "Bezig...",
-                "sLengthMenu": "_MENU_ resultaten weergeven",
-                "sZeroRecords": "Geen resultaten gevonden",
-                "sInfo": "_START_ tot _END_ van _TOTAL_ resultaten",
-                "sInfoEmpty": "Geen resultaten om weer te geven",
-                "sInfoFiltered": " (gefilterd uit _MAX_ resultaten)",
-                "sInfoPostFix": "",
-                "sSearch": "Zoeken:",
-                "sEmptyTable": "Geen resultaten aanwezig in de tabel",
-                "sInfoThousands": ".",
-                "sLoadingRecords": "Een moment geduld aub - bezig met laden...",
-                "oPaginate": {
-                    "sFirst": "Eerste",
-                    "sLast": "Laatste",
-                    "sNext": "Volgende",
-                    "sPrevious": "Vorige"
+<script type="application/javascript">
+        function addRider(identifier) {
+            //alert('sanity check');
+            let riderID = $(identifier).data('rider');
+            var amount = document.getElementById("value-"+riderID).value;  
+            //alert("Punten:"+amount);
+            //alert("rennerID:"+riderID);
+            document.getElementById("button-"+riderID).textContent = "bijwerken";
+            document.getElementById("row-"+riderID).className = "table-success";
+            
+            $.ajax({
+                url: '{% url "auction:ajax-add-rider-tobeauctioned" %}',
+                type: 'POST',
+                headers: {
+                    "X-CSRFToken": '{{ csrf_token }}',
                 },
-            }
-        } );
-    } );
+                data: {
+                    'riderID': riderID,
+                    'amount': amount,
+                },
+                success: function(json){
+                    console.log(json);
+                    //location.reload();
+                },
+                error: function (json) {
+                    //location.reload();
+                    console.log(json);
+                }
+            });
+        };
 </script>
 {% endblock js %}

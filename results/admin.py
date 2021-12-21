@@ -30,9 +30,11 @@ class RaceAdmin(admin.ModelAdmin):
     # add link to CQranking site
     # add filter on editie
 
+class RacePointsAdmin(admin.ModelAdmin):
+    pass
 
 admin.site.register(Category)
 admin.site.register(Rider, RiderAdmin)
-admin.site.register(RacePoints)
+admin.site.register(RacePoints, RacePointsAdmin)
 admin.site.register(Race, RaceAdmin)
 admin.site.register(Uitslag, UitslagAdmin)

@@ -11,6 +11,8 @@ class Command(BaseCommand):
         """
         This is the function that gets the latest rider that was bid on, finds the
         highest bid on that rider and sells that rider to the highest bidder.
+        WIP: check if pause after auctioned rider is working
+        USe a site variable in settings to set the Edition (now hardcoded 2021 or 2022)
         """
         # first, check what the latest bid was
         latest = Bid.objects.order_by('-created')
@@ -27,14 +29,14 @@ class Command(BaseCommand):
             verschil = ((nu-Timestamp).total_seconds())
             #print(verschil)
             # I want to know if the latest bid has been
-            # at least 10 seconds ago. If that is the case, the
+            # at least x seconds ago. If that is the case, the
             # bidding should be closed and the rider goes to the
             # highest bidder. 
 
             if verschil > 20:
                 latestrider = latest[0].rider
                 print(latestrider.id)
-                if not VirtualTeam.objects.filter(rider=latestrider, editie=2021).exists():
+                if not VirtualTeam.objects.filter(rider=latestrider, editie=2022).exists():
                     # print(latestrider)
                     # get the highest bid on that rider
                     # extra sort on created, so we get the Joker bid (same value, later entry) 
@@ -53,7 +55,7 @@ class Command(BaseCommand):
                     renner.rider = winner.rider
                     renner.ploegleider = winner.team_captain
                     renner.price = winner.amount 
-                    renner.editie = 2021
+                    renner.editie = 2022
                     renner.save()
 
                     sold_rider = Rider.objects.get(id=winner.rider_id)
@@ -63,6 +65,8 @@ class Command(BaseCommand):
                     verkocht_rider = ToBeAuctioned.objects.get(rider=winner.rider_id)
                     verkocht_rider.sold = True
                     verkocht_rider.save()
+                    # Pause before new rider gets auctioned
+                    time.sleep(5)
 
                 else:
                     print(f'{latestrider} is al verkocht')
@@ -73,4 +77,9 @@ class Command(BaseCommand):
             print(f"Nog geen biedingen aanwezig")
         time.sleep(1)
         # make it run again
+        # Wip WIP WIP WIP WIP
+        # turn on auction at specified time
+        # built in a PAUSE button?
+        # WHO controls PAUSE button?
+        # uncomment line below to start auction (and run python manage.py runauction)
         self.handle()
