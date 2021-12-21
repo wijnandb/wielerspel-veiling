@@ -1,6 +1,6 @@
 import os
 import django_heroku
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # since setting is a module now
 BASE_DIR = os.path.dirname(
