@@ -17,7 +17,7 @@ class ToBeAuctionedAdmin(ImportExportModelAdmin):
     list_filter = ('team_captain', 'sold', 'modified', 'created')
 
 class AuctionOrderAdmin(ImportExportModelAdmin):
-    list_display = ('team_captain', 'order')
+    list_display = ('team_captain', 'order', 'riders_proposed')
 
 
 admin.site.register(Bid)

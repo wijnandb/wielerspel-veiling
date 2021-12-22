@@ -95,9 +95,13 @@ class AuctionOrder(models.Model):
     """
     team_captain = models.ForeignKey(User, on_delete=models.CASCADE)
     order = models.IntegerField()
+    riders_proposed = models.IntegerField(default=0)
 
     def __str__(self):
         return self.team_captain
+    
+    class Meta:
+        ordering = ['riders_proposed', 'order']
 
 
 class Joker(models.Model):
@@ -113,7 +117,7 @@ class Joker(models.Model):
     value = models.IntegerField(default=0)
 
     def __str__(self):
-        return "%s %s %s" %(self.team_captain.name, self.value, self.rider.name)
+        return "%s %s %s" %(self.team_captain, self.value, self.rider.name)
     
     class Meta:
         ordering = ['team_captain']

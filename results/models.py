@@ -45,7 +45,7 @@ class Category(models.Model):
 
 
 class RacePoints(models.Model):
-    editie = models.PositiveIntegerField(default=2021)
+    editie = models.PositiveIntegerField(default=2022)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     ranking = models.CharField(max_length=50)
     points = models.FloatField(default=0)
