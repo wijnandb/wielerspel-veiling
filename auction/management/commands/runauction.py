@@ -21,7 +21,7 @@ class Command(BaseCommand):
         # no, when there is only one team_captain left with points
         #punten = VirtualTeam.objects.aggregate(Sum('price'))['price__sum']
         #punten_over = 1400 - punten['price__sum']
-
+    
         while VirtualTeam.objects.aggregate(Sum('price'))['price__sum']<1400:
             #print(f"Totaal {VirtualTeam.objects.count()} verkocht")
             print(f"Punten besteed: {VirtualTeam.objects.aggregate(Sum('price'))['price__sum']}")

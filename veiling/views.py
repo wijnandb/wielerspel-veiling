@@ -246,12 +246,3 @@ def get_highest(request):
                         'date': naturaltime(highest_bid.created)})
     return JsonResponse(status=200, data={'status': _('success'),
                                           'data': results})
-
-
-class ToBeAuctionedListView(generic.ListView):
-    model = ToBeAuctioned
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data()
-        context['renners'] = ToBeAuctioned.objects.filter(team_captain=self.request.user)
-        return context

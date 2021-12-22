@@ -22,4 +22,4 @@ class Command(BaseCommand):
 
         Bid.objects.all().delete()
 
-        VirtualTeam.objects.filter(edition=2022).delete()
+        VirtualTeam.objects.filter(editie=2022).delete()
