@@ -57,7 +57,7 @@ class Bid(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return "%s %s - %s" %(self.team_captain.username, self.rider.name, self.amount)
+        return "%s %s - %s" %(self.team_captain, self.rider, self.amount)
 
 
 
@@ -67,17 +67,20 @@ class ToBeAuctioned(models.Model):
     multiple TeamCaptains. Once a rider is auctioned, it is removed from 
     everyone's wishlist.
     """
-    team_captain = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    rider = models.OneToOneField(Rider, on_delete=models.CASCADE)
-    amount = models.IntegerField(default=0)
+    order = models.IntegerField(blank=False, default=100_000)
+    team_captain = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
+    rider = models.ForeignKey(Rider, on_delete=models.CASCADE)
+    amount = models.IntegerField(default=1)
     created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
     sold = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ['created']
+        ordering = ['order', 'modified']
+        unique_together = ("team_captain", "rider")
 
     def __str__(self):
-        return "%s biedt %s aan voor %s" %(self.team_captain, self.rider.name, self.amount)
+        return "%s biedt %s aan voor %s" %(self.team_captain.name, self.rider.name, self.amount)
 
 
 class AuctionOrder(models.Model):
@@ -93,6 +96,9 @@ class AuctionOrder(models.Model):
     team_captain = models.ForeignKey(User, on_delete=models.CASCADE)
     order = models.IntegerField()
 
+    def __str__(self):
+        return self.team_captain
+
 
 class Joker(models.Model):
     """
@@ -100,13 +106,14 @@ class Joker(models.Model):
     previous year(s). This allows them to buy that Rider for a lower amount than 
     the other TeamCaptains. A Joker with a value of 0 allows them to buy the
     rider for the highest amount the other TeamCaptains have bidded.
+    A Joker with a negative value gets them the discount of that value.
     """
     team_captain = models.ForeignKey(User, on_delete=models.CASCADE)
     rider = models.ForeignKey(Rider, on_delete=models.CASCADE)
     value = models.IntegerField(default=0)
 
     def __str__(self):
-        return "%s %s %s" %(self.team_captain.first_name, self.value, self.rider.name)
+        return "%s %s %s" %(self.team_captain.name, self.value, self.rider.name)
     
     class Meta:
         ordering = ['team_captain']

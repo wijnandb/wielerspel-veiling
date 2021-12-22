@@ -112,6 +112,7 @@ docs/_build/
 target/
 
 # old files in repo
-bewaren/
+/veilingeentjes-MAGWEG??
+/veiling:USE_AUCTION_INSTEAD
 
 .idea/

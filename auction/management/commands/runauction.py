@@ -14,6 +14,8 @@ class Command(BaseCommand):
         """
         This is the function that gets the latest rider that was bid on, finds the
         highest bid on that rider and sells that rider to the highest bidder.
+        WIP: check if pause after auctioned rider is working
+        USe a site variable in settings to set the Edition (now hardcoded 2021 or 2022)
         """
         # the auction is over when all points have been spend
         # no, when there is only one team_captain left with points

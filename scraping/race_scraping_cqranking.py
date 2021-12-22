@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import pandas as pd
 
 startURL = 'https://cqranking.com/men/asp/gen/race.asp?raceid='
 
@@ -36,26 +37,26 @@ for race in race_calendar:
 
         for row_tag in row_tags:
             for td in row_tag.find_all("td"):
-                print(td.contents)
+                # print(td.contents)
             # Now get all info in each cell
-            #row = [col.text for col in row_tag.find('td')]
-            #print(row)
+                row = 
+                print(row)
             # we want to get the A HREF from certain cells as well
-            # results.append(row_tag)  # Add this row to all the other rows of this table
+                results.append(row_tag)  # Add this row to all the other rows of this table
 #                        df = df.append(results)
     except:
         continue
 
 print(results)
-# df = pd.DataFrame(results)
-# print(df)
+df = pd.DataFrame(results)
+print(df)
 
 
-#                df.insert(0,'race',race[3])
-#                df.insert(1, 'raceID',race[2])
-#                df = df.drop(df.index[0:1])
-#                print("drop index[0:4]",df)
-#                df = df.drop(df.index[-1:0])
-#                print(df)
-#                with open('2019_final_rankings.csv', 'a') as f:
-#                        df.to_csv(f, index = False)
+df.insert(0,'race',race[3])
+df.insert(1, 'raceID',race[2])
+df = df.drop(df.index[0:1])
+print("drop index[0:4]",df)
+df = df.drop(df.index[-1:0])
+print(df)
+with open('2019_final_rankings.csv', 'a') as f:
+    df.to_csv(f, index = False)

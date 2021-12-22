@@ -6,7 +6,7 @@ from auction.models import ToBeAuctioned as ToBeAuctioned
 from results.models import Rider
 
 class Command(BaseCommand):
-    help = 'Carteful! Used to reset, empty existing data'
+    help = 'Careful! This causes a reset, empty existing data'
 
     def handle(self, *args, **options):
         """
@@ -19,8 +19,7 @@ class Command(BaseCommand):
 
         verkocht_riders = ToBeAuctioned.objects.filter(sold=True)
         verkocht_riders.update(sold=False)
-        
 
         Bid.objects.all().delete()
 
-        VirtualTeam.objects.all().delete()
+        VirtualTeam.objects.filter(edition=2022).delete()

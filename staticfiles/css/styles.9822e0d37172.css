@@ -1,0 +1,13 @@
+.sidebar-nav {
+    margin-top: 20px;
+    padding: 0;
+    list-style: none;
+}
+
+.user_bid{
+    background:yellow;
+}
+.current_price{
+   border: 2px double black!important;
+   background: rgb(128, 235, 124);*/
+}

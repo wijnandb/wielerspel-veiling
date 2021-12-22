@@ -6,17 +6,47 @@
             background:yellow;
         }
         .current_price{
-            background:blue;
+           border: 2px double black!important;
+           background: rgb(162, 252, 139);
         }
+        .grey{
+            background:grey;
+        }
+        a:link {
+            color: grey;
+            background-color: transparent;
+            text-decoration: none;
+            }
+        a:link {
+            color: grey;
+            }
     </style>
 {% endblock %}
 {% block content %}
+<div class="" id="auction-screen">
     <div class="row">
-        <div class="col-md-6">
-            <h1><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}" target="_blank">{{ rider }}</a> {% if rider.sold %} verkocht{% else %} {% endif %}</h1>
+        <div class="col-md-5">
+            <h1 id="rider">RENNER</h1>
         </div>
-        <div class="col-md-6">
-            <h1><span id="countdown"></span></h1>
+        <div class="col-md-1 text-center align-text-bottom">
+            <h1 id="highest" class="current_price"></h1>
+        </div>
+        <div class="col-md-3">
+            <h2 id="highest_team_captain"></h2>
+        </div>
+        <div class="col-md-2">
+            <h3><span id="timer"></span></h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-7 align-text-bottom">
+            <span id="joker_tc"></span> <span id="joker_value"></span>  <span id="joker"></span>
+        </div>
+        <div class="col-md-3">
+            
+        </div>
+        <div class="col-md-2">
+            
         </div>
     </div>
     <div class="row">
@@ -24,7 +54,7 @@
             <div class="table-responsive" style="height: 100%;">
                 <table class="table table-striped">
                     <thead>
-                    <tr><td>Ploegleider</td><td>Bod</td><td>Tijdstip</td></tr>
+                    <tr><td>Renner</td><td>Bod</td><td>ploegleider</td></tr>
                     </thead>
                     <tbody class="biddings-listing">
 
@@ -33,9 +63,6 @@
             </div>
         </div>
         <div class="col-md-6">
-            <div class="d-flex justify-content-between">
-                <h2><p>Hoogste bod: <span id="CurrentPriceDisplay">0</span> (<span id="winner"></span>)</p></h2>
-            </div>
             <table id="points" class="table table-bordered">
 
             </table>
@@ -61,66 +88,63 @@
             </table>
         </div>
     </div>
+</div>
 {% endblock %}
 {% block js %}
     <script type="text/javascript">
         $(document).ready(function(){
-            // Generate Bidding Platform
-            var riderID = ({{ rider_id }})
+            const startveiling = new Date('2021-01-15T14:00:00');
+            var now = new Date().getTime();
+            if (now > startveiling) {
+                generateBidding();
+                //getCurrentBid()
+                setInterval(() => getUsersBid(), 1000);
+                // Detect td click
+                $('.td').click(function(){
+                    // Save to a form of database.
+                    // Get value from clicked table cell and send
+                    const credit = (this.dataset.td);
+                    setCurrentBid(credit);
+                });
+            } else {
+                countdown = startveiling - now;
+                var screen = document.getElementById('auction-screen');
+                $(screen).empty();
+                alert(countdown);
+                // Time calculations for days, hours, minutes and seconds
+                var days = Math.floor(countdown / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((countdown % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((countdown % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((countdown % (1000 * 60)) / 1000);
 
-            // I want to set a "sold" boolean to true one a rider is sold.
-            // while sold = False, run everything here
-            // probably also need an "up for auction" to be True
-            generateBidding()
-            getCurrentBid(riderID)
-            setInterval(() => getUsersBid(riderID), 1000)
-            // Detect td click
-            $('.td').click(function(){
-                // Save to a form of database
-                const credit = (this.dataset['td'])
-                setCurrentBid(this, riderID, credit)
-            })
+                HTML = "<p class='text-center>De veiling begint over:<br/>"+countdown+"</p>"
+                $(screen).html(HTML);
+            }
+        });
 
-        })
+
         function generateBidding(){
             // Generate table
-            const table = document.querySelector("#points")
-            const trow = "<tr>"
-            let points = ""
-            let num = 1
+            const table = document.querySelector("#points");
+            let points = "";
+            let num = 1;
             // here we want to limit the available numbers to be equal to 
             // the maximum allowed bid
-            for(let counter=1;counter<=8; counter++){
+            var max_allowed = 80;
+            var rows = Math.ceil(max_allowed/10);
+            for(let counter=1;counter<=rows; counter++){
                 let data = "<tr>";
                 for(let i=1;i<=10;i++){
-                    data += "<td class='text-center td' data-td='"+ num +"'>" + num + "</td>"
-                    num++
+                    data += "<td class='text-center td' role='button' id='cell-"+ num +"' data-td='"+ num +"'>" + num + "</td>";
+                    num++;
                 }
-                data += "</tr>"
-                points += data
+                data += "</tr>";
+                points += data;
             }
             table.innerHTML = "<tbody>" + points + "</tbody>";
         }
-        function getCurrentBid(riderID){
-            // Get current user bid from database
-            $.ajax({
-                url: `{% url "auction:get_current_bid" %}?rider_id=${riderID}`,
-                method: 'GET',
-                success: response => {
-                    const credit = response.msg
-                    $('.td').each(function(elem){
-                        if(this.dataset['td'] == credit){
-                            updateTableUI(this, credit)
-                        }
-                    })
-                },
-                error: err => {
-                    console.log(err)
-                }
 
-            })
-        }
-        function setCurrentBid(elem, riderID, credit){
+        function setCurrentBid(credit){
             // Set current user bid in database
             $.ajax({
                 url: '{% url "auction:bidding" %}',
@@ -128,104 +152,109 @@
                 headers: {
                     "X-CSRFToken": '{{ csrf_token }}',
                 },
-                data:{'rider': riderID, 'amount': credit},
+                data:{'amount': credit},
                 success: response => {
-                    updateTableUI(elem, credit)
+                    // effect? To show it was a bid?
+                    // briefly color the name of teamcaptain?
                 },
                 error: err =>{
-                    const error = err.responseJSON
-                    alert(error.msg)
+                    const error = err.responseJSON;
+                    console.log('setCurrentBid'+ error.msg);
                 }
-            })
-        }
-        function updateTableUI(elem, credit){
-            // Update table UI after detecting any changes in the UI
-            //const getPrevActiveBid = $('td.user_bid')
-            //getPrevActiveBid.removeClass('user_bid')
-            //elem.className = 'text-center td user_bid'
-            //const display = document.querySelector('#bidDisplay')
-            //display.innerHTML = credit
+            });
         }
 
-        function getUsersBid(riderID){
+        function getUsersBid(){
             // Get all users bid
             $.ajax({
                 url: '{% url "auction:biddings" %}',
-                data: {'rider_id': riderID},
                 method: 'GET',
                 success: response => {
-                    const tableBody = document.querySelector('.biddings-listing')
+                    const tableBody = document.querySelector('.biddings-listing');
                     // data consists of all the biddings
-                    const data = response.data
+                    const data = response.data;
                     // highest contains the highest bid, coming from db
-                    const high = response.highest
-                    const display = document.querySelector('#CurrentPriceDisplay')
-                    display.innerHTML = high
-                    const winner = response.winner
-                    const displaywinner = document.querySelector('#winner')
-                    displaywinner.innerHTML = winner
-                    tableBody.innerHTML = ""
+                    $('#rider').html(response.on_auction);
+                    $('#highest').html(response.highest);
+                    $('#highest_team_captain').html(response.winner);
+                    var user_id = "{{ user.id }}";
+                    if (response.joker_tc_id == user_id){
+                        console.log("Je hebt een joker!");
+                        // make the Joker symbol appear
+                    } else {
+                        // make the joker symbol disappear
+                    }
+                    $('#joker').html(response.joker_info);
+                    $('#joker_tc').html(response.joker_tc_name);
+                    $('#joker_value').html(response.joker_value);
+                    $('.td').each(function(elem){
+                        if (response.highest > 0){
+                            $(this).removeClass('current_price');
+                            $(this).removeClass('user_bid');
+                            if(this.dataset.td < response.highest){
+                                $(this).addClass('grey');
+                            } else if(this.dataset.td == response.highest){
+                                $(this).addClass('current_price');
+                            } else {
+                                console.log('');
+                                $(this).removeClass('grey');
+                            }
+                        } else {
+                            //hoogste bod = 0, herstel biedtabel
+                            // kan zelfs nieuwe biedinterface opnieuw
+                            // maken op basis van max. toegestaan bod
+                            $(this).removeClass('grey');
+                            $(this).removeClass('current_price');
+                            $(this).removeClass('user_bid');
+                        }
+                    });
+                    
+                    var time_left = response.timer;
+                    countdowntimer(time_left);
+
+                    tableBody.innerHTML = "";
                     data.forEach(function (elem) {
-                        tableBody.innerHTML += `<tr><td>${elem.name}</td><td>${elem.amount}</td><td>${elem.date}</td></tr>`
-                    })
-                    //countdowntimer(response.latest, riderID)
+                        tableBody.innerHTML += `<tr><td>${elem.rider}</td><td>${elem.amount}</td><td>${elem.name}</td></tr>`;
+                    });
+
                 },
                 error: err =>{
-                    const error = err.responseJSON
-                    alert(error.msg)
+                    const error = err.responseJSON;
+                    console.log('getUsersBid'+ error.msg);
                 }
-            })
+            });
         }
 
-        function countdowntimer(sincelastbid, riderID){
-            console.log (sincelastbid)
-            var countdownvalue = sincelastbid;
-            if (countdownvalue.startsWith('20')) {
-                var countdownvalue = "VERKOCHT!!";
-            } else if (countdownvalue.startsWith('14')) {
-                var countdownvalue = "eenmaal...";
-            } else if (countdownvalue.startsWith('17')) {
-                var countdownvalue = "andermaal...";
 
-            // var sold = true
-            // call function buyRider(TeamCaptain, riderID, amount)
+        function countdowntimer(timeleft){
+            //console.log (sincelastbid)
+            var countdownvalue = timeleft;
+            if (timeleft > 6) {
+                // bieding geopend of nieuw bod! 
+                // Toon effect op prijs en ploegleider
+                countdownvalue = timeleft;
+            } else if (timeleft > 3) {
+                countdownvalue = "eenmaal";
+            } else if (timeleft > 0) {
+                countdownvalue = "andermaal...";
+            } else if (timeleft > -20) {
+                countdownvalue = "verkocht!";
             } else {
-                countdownvalue = "";
-                getWinner();
+                countdownvalue = timeleft;
             }  
-            var displaytimer = document.querySelector('#countdown')
-            displaytimer.innerHTML = countdownvalue
+            $('#timer').html(countdownvalue);
         }
 
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
+        function joker(){
+            // get the current highest value
+            console.log('clicked!');
+            
+            var jokerbod = Number($('#highest.current_price').val());
+            console.log(typeof jokerbod);
 
-        function getWinner() {
-            // get the highest bidder for the currently auctioned rider
-            // send the bid, the teamcaptain and the rider to a form
-            // on the backend, select a new rider to be auctioned
-            // refresh the page and start a new auction
-            // so call a function with the rider_id, the rest of the information can
-            // be obtained from the Bid model
-            //$.ajax({
-                
-            //    method: 'POST',
-            //    headers: {
-            //        "X-CSRFToken": '{{ csrf_token }}',
-            //    },
-            //    data:{'rider': riderID },
-            //
-            //    success: response => {
-            //await sleep(2000);
-            setTimeout(5000);
-            location.reload(true);
-            //    },
-            //    error: err =>{
-            //        const error = err.responseJSON
-            //        alert(error.msg)
-            //    }
-            //})
+            console.log(jokerbod);
+            setCurrentBid(parseInt(jokerbod,10));
+
         }
 
     </script>
