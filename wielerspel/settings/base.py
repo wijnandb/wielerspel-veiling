@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'import_export',
     'auction',
-    #'veiling',
+    'veiling',
     #'veilingeentjes',
 ]
 
