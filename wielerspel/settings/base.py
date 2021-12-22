@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'auction',
     'veiling',
     #'veilingeentjes',
-    'debug_toolbar',
+    #'debug_toolbar',
 ]
 
 MIDDLEWARE = [
