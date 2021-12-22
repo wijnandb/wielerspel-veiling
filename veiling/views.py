@@ -59,16 +59,15 @@ def biddings(request):
     Transfer it to a different function so we can more easily change it?
     """
     rider_on_auction = get_rider_on_auction()
-    rider_name = rider_on_auction.name
-    rider_id = rider_on_auction.id
+    #rider_name = rider_on_auction.name
+    #rider_id = rider_on_auction.id
 
     # if this rider exists in the Joker table, we want to get the user it belongs to and the value
-    joker_present = Joker.objects.filter(rider=rider_id).exists()
     # this either True or False. If False, we only nee
-    if joker_present:
+    if Joker.objects.filter(rider=rider_on_auction.id).exists():
         # we want to know if it's this user that has the joker
         # we now check in page
-        joker_info = Joker.objects.get(rider=rider_id)
+        joker_info = Joker.objects.get(rider=rider_on_auction.id)
         joker_tc_id = joker_info.team_captain.id
         joker_tc_name = joker_info.team_captain.first_name
         joker_value = joker_info.value
@@ -79,8 +78,9 @@ def biddings(request):
         joker_value = ''
         joker_info = 'Geen joker'
 
-    #aantal biedingen tonen
-    biddings = Bid.objects.order_by('-created')[:10]
+    # aantal biedingen tonen
+    # bij nieuwe renner ter bieding, openingsbod tonen
+    biddings = Bid.objects.filter(rider_id=rider_on_auction.id).order_by('-created')[:20]
     new_biddings = Bid.objects.filter(rider_id=rider_on_auction.id)
 
     if biddings:
@@ -104,7 +104,7 @@ def biddings(request):
 
             return JsonResponse(status=200, data={'status': _('success'),
                                                 'data': results,
-                                                'on_auction': rider_name,
+                                                'on_auction': rider_on_auction.name,
                                                 'joker_tc_id':joker_tc_id,
                                                 'joker_tc_name':joker_tc_name,
                                                 'joker_value':joker_value,
@@ -120,7 +120,7 @@ def biddings(request):
                                                 'data': results,
                                                 'highest': '0',
                                                 'winner': 'plaats een bod',
-                                                'on_auction': rider_name,
+                                                'on_auction': rider_on_auction.name,
                                                 'joker_tc_id':joker_tc_id,
                                                 'joker_tc_name':joker_tc_name,
                                                 'joker_value':joker_value,
@@ -131,7 +131,7 @@ def biddings(request):
         return JsonResponse(status=200, data={'status': _('succes'),
                                             'highest': 'Begin veiling!',
                                             'winner': '',
-                                            'on_auction': rider_name,
+                                            'on_auction': rider_on_auction.name,
                                             'joker_info': joker_info})
 
 
@@ -166,7 +166,7 @@ def bidding(request):
                     # you can allow the bid
                     new_bidding = Bid(rider_id=rider_id, team_captain=user, amount=form.cleaned_data['amount'])
                 else:
-                    #disallow, no joker and equasl bid
+                    #disallow, no joker and equal bid
                     print("disallow it")
                     raise Exception("Bod moet hoger zijn dan huidige hoogste bod. Geen joker.")
             elif get_highest_bid > form.cleaned_data['amount']:
@@ -239,10 +239,10 @@ def get_highest(request):
         highest_bid = biddings[0]
         second_highest = biddings[1]
         if highest_bid.amount > second_highest.amount:
-            highest_bid.amount = second_highest.amount+1
+            highest = second_highest.amount+1
         highest = highest_bid.amount
         results.append({'name': highest_bid.team_captain.username,
-                        'amount': highest_bid.amount,
+                        'amount': highest,
                         'date': naturaltime(highest_bid.created)})
     return JsonResponse(status=200, data={'status': _('success'),
                                           'data': results})

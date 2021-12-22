@@ -115,7 +115,7 @@ class Joker(models.Model):
 class VirtualTeam(models.Model):
     rider = models.ForeignKey(Rider, on_delete=models.CASCADE)
     ploegleider = models.ForeignKey(User, on_delete=models.CASCADE)
-    editie = models.PositiveIntegerField(default=2021)
+    editie = models.PositiveIntegerField(default=2022)
     price = models.IntegerField(default=0)
     punten = models.FloatField(default=0)
     jpp = models.IntegerField(default=0)

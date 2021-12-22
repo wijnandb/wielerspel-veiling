@@ -16,11 +16,10 @@ def index(request):
     num_ploegleiders = User.objects.count()
     num_sold_riders = VirtualTeam.objects.count()
     if num_sold_riders == 0:
-        punten_over = 1500
+        punten_over = num_ploegleiders * 100
     else:
         punten = VirtualTeam.objects.aggregate(Sum('price'))
-        punten_over = 1500 - punten['price__sum']
-
+        punten_over = num_ploegleiders * 100 - punten['price__sum']
 
 # Render the HTML template index.html with the data in the context variable.
     return render(
@@ -59,8 +58,6 @@ class PloegleiderDetailView(generic.DetailView):
     model = TeamCaptain
 
 
-
-
 class UitslagListView(generic.ListView):
     model = Uitslag
 
@@ -71,9 +68,7 @@ class UitslagDetailView(generic.DetailView):
 
 class VerkochtListView(generic.ListView):
     model = VirtualTeam
-    
-
-
+ 
 
 class VerkochtDetailView(generic.DetailView):
     model = VirtualTeam
