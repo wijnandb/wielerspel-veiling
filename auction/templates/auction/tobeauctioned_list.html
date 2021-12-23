@@ -7,14 +7,15 @@
 {% block content %}
     <div>
         <h1>Geheime lijst van {{ user }}</h1>
-        <p>Dit zijn de renners die {{ user.first_name }} wil aanbieden. </p>
+        <p>Dit zijn de renners die jij wilt aanbieden. </p>
         <p>Volgorde van aanbieden kan gewijzigd worden door de renner te slepen naar de gewenste positie.</p>
+        <p>Andere ploegleiders kunnen jouw lijst niet zien.</p>
     </div>
     <div class="col-md-12">
             <table width="100%" border="0" class="table thead-dark">
                 <thead class="thead-dark">
                     <tr>
-                        <th class="text-center">positie</th>
+                        <th class="text-center">cqriderid</th>
                         <!--th>vorige</th-->
                         <th>renner</th>
                         <th class="text-center">ploeg</th>
@@ -26,7 +27,8 @@
                 <tbody id="sortlist">
                     {% for renner in renners %}
                         <tr id={{ renner.rider.pk }} data-lookup="{{ renner.id }}">
-                            <td class="text-center">{{ renner.rider.rank }}</td>
+                            <td>{{ renner.rider.cqriderid }}</td>
+                            <!--td class="text-center">{{ renner.rider.rank }}</td-->
                             <!--td>({{ renner.rider.prev }})</td-->
                             <td>{{ renner.rider }}</td>
                             <td class="text-center">{{ renner.rider.team }}</td>
