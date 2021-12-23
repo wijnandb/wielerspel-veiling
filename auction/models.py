@@ -80,7 +80,7 @@ class ToBeAuctioned(models.Model):
         unique_together = ("team_captain", "rider")
 
     def __str__(self):
-        return "%s biedt %s aan voor %s" %(self.team_captain.name, self.rider.name, self.amount)
+        return "%s biedt %s aan voor %s" %(self.team_captain, self.rider.name, self.amount)
 
 
 class AuctionOrder(models.Model):
