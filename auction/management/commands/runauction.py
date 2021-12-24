@@ -2,11 +2,10 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Sum
 from datetime import datetime
 import time
-from auction.models import Bid, VirtualTeam, ToBeAuctioned, Joker, TeamCaptain 
+from auction.models import Bid, VirtualTeam, ToBeAuctioned, Joker, TeamCaptain
 from results.models import Rider
 
 
-teamcaptains_to_propose = [1,2,3,4,5,6]
 class Command(BaseCommand):
     help = 'Checks if bidding is over and sells rider. Keeps running'
 
@@ -21,10 +20,10 @@ class Command(BaseCommand):
         # no, when there is only one team_captain left with points
         #punten = VirtualTeam.objects.aggregate(Sum('price'))['price__sum']
         #punten_over = 1400 - punten['price__sum']
-    
+        # WIP: replace with solution where we look at # of active teamcaptains.
         while VirtualTeam.objects.aggregate(Sum('price'))['price__sum']<1400:
             #print(f"Totaal {VirtualTeam.objects.count()} verkocht")
-            print(f"Punten besteed: {VirtualTeam.objects.aggregate(Sum('price'))['price__sum']}")
+            #print(f"Punten besteed: {VirtualTeam.objects.aggregate(Sum('price'))['price__sum']}")
             # first, check what the latest bid was
             latest = Bid.objects.order_by('-created')
             # get the rider that was bidded on
@@ -49,7 +48,7 @@ class Command(BaseCommand):
 
                 if verschil > 10:
                     latestrider = latest[0].rider
-                    print(latestrider.id)
+                    #print(latestrider.id)
                     if not VirtualTeam.objects.filter(rider=latestrider, editie=2022).exists():
                         # print(latestrider)
                         # get the highest bid on that rider
@@ -80,8 +79,11 @@ class Command(BaseCommand):
 
                         # update all existing entries for sold rider, set to sold
                         ToBeAuctioned.objects.filter(rider=winner.rider_id).update(sold=True)
-                        #verkocht_rider.sold = True
-                        #verkocht_rider.save()
+                        # add 1 to riders_proposed for teamcaptain who has just proposed a rider
+                        # WIP: update team_captains who are allowed to make a bid (so who have points left)
+                        proposed_rider_teamcaptain = TeamCaptain.objects.get(team_captain=winner.team_captain)
+                        proposed_rider_teamcaptain.riders_proposed += 1
+                        proposed_rider_teamcaptain.save()
                         print(f"{latestrider} has been sold to {winner.team_captain} for {winner.amount}")
 
                     else:

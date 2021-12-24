@@ -14,7 +14,7 @@ import time
 from django.db.models import Count, Sum
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from auction.forms import LoginForm, RegistrationForm, BidForm, ChangeSortForm
-from auction.models import Bid, TeamCaptain, ToBeAuctioned, VirtualTeam, AuctionOrder
+from auction.models import Bid, TeamCaptain, ToBeAuctioned, VirtualTeam
 from results.models import Rider
 
 class LoginView(FormView):
@@ -53,7 +53,7 @@ class ToBeAuctionedListView(generic.ListView):
     context_object_name = 'renners'
     
     def get_queryset(self, **kwargs):
-        return ToBeAuctioned.objects.filter(team_captain=self.request.user)
+        return ToBeAuctioned.objects.filter(team_captain=self.request.user).filter(sold=False)
 
 
 @login_required
@@ -97,4 +97,10 @@ def SaveOrderingToBeAuctioned(request):
     response = {'msg':'Submitted Successfully',
                 'url':'geheimelijst',
                 'created':True}
-    return redirect('/results/')
+    return redirect('/geheimelijst/')
+
+
+class TeamCaptainListView(generic.ListView):
+    model = TeamCaptain
+    context_object_name = 'team_captains'
+    template_name = 'auction/auctionorder.html'

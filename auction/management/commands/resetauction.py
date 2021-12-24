@@ -1,8 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 
 from auction.models import Bid as Bid 
-from auction.models import VirtualTeam as VirtualTeam
-from auction.models import ToBeAuctioned as ToBeAuctioned 
+from auction.models import VirtualTeam, ToBeAuctioned, TeamCaptain 
 from results.models import Rider
 
 class Command(BaseCommand):
@@ -23,3 +22,6 @@ class Command(BaseCommand):
         Bid.objects.all().delete()
 
         VirtualTeam.objects.filter(editie=2022).delete()
+
+        sold_riders = TeamCaptain.objects.all()
+        sold_riders.update(riders_proposed=0)

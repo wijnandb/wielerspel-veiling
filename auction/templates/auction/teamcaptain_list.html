@@ -8,18 +8,22 @@
             {% if object_list %}
                 <table width="100%">
                     <thead>
+                        <th>volgorde</th>
                         <th>Ploegleider</th>
                         <th>#  renners</th>
-                        <th>punten over</th>
-                        <th>max. bod</th>
+                        <th>punten (max)</th>
+                        <th>renners aangeboden</th>
+                        <th>renners om aan te bieden</th>
                     </thead>
                     <tbody>
                     {% for ploegleider in object_list %}
                         <tr>
+                            <td>{{ ploegleider.order }}</td>
                             <td><a href="{% url 'results:ploegleider-detail' ploegleider.pk %}">{{ ploegleider }}</a></td>
-                            <td>{{ ploegleider.team_size }}</td>
-                            <td>{{ ploegleider.amount_left }}</td>
-                            <td>{{ ploegleider.max_allowed_bid }}</td>
+                            <td class="text-center">{{ ploegleider.team_size }}</td>
+                            <td class="text-center">{{ ploegleider.amount_left }} ({{ ploegleider.max_allowed_bid }})</td>
+                            <td class="text-center">{{ ploegleider.riders_proposed }}</td>
+                            <td class="text-center">{{ ploegleider.riders_for_auction }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>

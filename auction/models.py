@@ -10,17 +10,17 @@ class TeamCaptain(models.Model):
     how much points do they have left, what is max. bid, how many riders 
     do they still need to buy?
     """
-    name = models.CharField(max_length=30, default='naam invoeren')
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    team_captain = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    order = models.IntegerField(default=0)
+    riders_proposed = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.name
-
+        return str(self.team_captain.get_full_name())
 
     @property
     def team_size(self):
         from auction.models import VirtualTeam
-        team_size = VirtualTeam.objects.filter(ploegleider=self.user).count()
+        team_size = VirtualTeam.objects.filter(ploegleider=self.team_captain).count()
         return team_size
     
     def riders_needed(self):
@@ -31,7 +31,7 @@ class TeamCaptain(models.Model):
 
     def amount_left(self):
         from auction.models import VirtualTeam
-        spend = VirtualTeam.objects.filter(ploegleider=self.user).aggregate(Sum('price'))
+        spend = VirtualTeam.objects.filter(ploegleider=self.team_captain).aggregate(Sum('price'))
         if spend['price__sum'] == None:
             spend['price__sum']=0    
         amount_left = 100 - spend['price__sum']
@@ -42,9 +42,17 @@ class TeamCaptain(models.Model):
             return self.amount_left()
         else:
             return self.amount_left()-self.riders_needed()+1
-    
+
+    def riders_for_auction(self):
+        """
+        How many riders unsold riders does a temacaptain have on his list?
+        If this is low or even zero, warn him to add a rider to his list
+        """
+        from auction.models import ToBeAuctioned
+        return ToBeAuctioned.objects.filter(team_captain=self.team_captain).filter(sold=False).count()
+
     class Meta:
-        ordering = ['name']
+        ordering = ['riders_proposed', 'order']
 
 
 class Bid(models.Model):
@@ -57,8 +65,7 @@ class Bid(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return "%s %s - %s" %(self.team_captain, self.rider, self.amount)
-
+        return "%s %s - %s" %(self.team_captain.get_full_name(), self.rider, self.amount)
 
 
 class ToBeAuctioned(models.Model):
@@ -80,28 +87,7 @@ class ToBeAuctioned(models.Model):
         unique_together = ("team_captain", "rider")
 
     def __str__(self):
-        return "%s biedt %s aan voor %s" %(self.team_captain, self.rider.name, self.amount)
-
-
-class AuctionOrder(models.Model):
-    """
-    We need to determine the order in which riders are being auctioned.
-    The TeamCaptains take turns proposing a rider to be auctioned.
-    After each auctioned rider, the order has to be changed: number 1
-    teamcaptain shifts to last order (count(teamcaptains)+1) and then each
-    order goes -1: order = order -1
-    Once a TeamCaptain doesn't have anymore points to spend, he gets 
-    taken of the list.
-    """
-    team_captain = models.ForeignKey(User, on_delete=models.CASCADE)
-    order = models.IntegerField()
-    riders_proposed = models.IntegerField(default=0)
-
-    def __str__(self):
-        return self.team_captain
-    
-    class Meta:
-        ordering = ['riders_proposed', 'order']
+        return "%s biedt %s aan voor %s" %(self.team_captain.get_full_name(), self.rider.name, self.amount)
 
 
 class Joker(models.Model):
@@ -117,7 +103,7 @@ class Joker(models.Model):
     value = models.IntegerField(default=0)
 
     def __str__(self):
-        return "%s %s %s" %(self.team_captain, self.value, self.rider.name)
+        return "%s %s %s" %(self.team_captain.get_full_name(), self.value, self.rider.name)
     
     class Meta:
         ordering = ['team_captain']
@@ -138,4 +124,4 @@ class VirtualTeam(models.Model):
         verbose_name_plural = 'Virtual Teams'
 
     def __str__(self):
-        return "%s - %s - %s" %(self.rider, self.price, self.ploegleider)
+        return "%s - %s - %s" %(self.rider, self.price, self.ploegleider.get_full_name())
