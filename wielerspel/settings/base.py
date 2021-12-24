@@ -22,6 +22,7 @@ ALLOWED_HOSTS = []
 # new in Django 3.2: BigAutoField
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
+REGISTRATION_OPEN = False
 
 # Application definition
 
