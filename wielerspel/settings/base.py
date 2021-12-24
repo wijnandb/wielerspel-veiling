@@ -16,13 +16,12 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', False)
+REGISTRATION_OPEN = os.environ.get('REGISTRATION_OPEN', False)
 
 ALLOWED_HOSTS = []
 
 # new in Django 3.2: BigAutoField
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
-
-REGISTRATION_OPEN = False
 
 # Application definition
 
