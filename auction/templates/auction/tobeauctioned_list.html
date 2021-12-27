@@ -35,6 +35,10 @@
                             <td class="text-center">{{ renner.rider.nationality }}</td>
                             <td class="text-center">{{ renner.rider.age }}</td>
                             <td class="text-center">{{ renner.amount }}</td>
+                            <!--td><button type="button" class="btn btn-outline-danger" data-rider={{ renner.rider.id }} onclick="removeRider(this)">Verwijder</button></td-->
+                            <td><button type="button" class="close danger" aria-label="Close"  data-rider={{ renner.rider.id }} onclick="removeRider(this)">
+                                <span aria-hidden="true" class="danger">&times;</span>
+                              </button></td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -70,6 +74,34 @@
         //alert(ids);
         formInput.value = ids.join(',');
         orderingForm.submit();
+    }
+
+    function removeRider(identifier) {
+        let rider = $(identifier).data('rider');
+        $.ajax({
+            url: '{% url "auction:ajax-remove-rider-tobeauctioned" %}',
+            type: 'POST',
+            headers: {
+                "X-CSRFToken": '{{ csrf_token }}',
+            },
+            data: {'riderID': rider},
+            success: function(json){
+                console.log(json);
+                //make row disappear slowly;
+            },
+            error: function (json) {
+                //location.reload();
+                //alert(json);
+                console.log(json);
+            }
+        });
+        console.log(rider);
+        $('#' + rider).addClass("table-danger");
+        $('#' + rider).fadeToggle(2500);
+        
+        //document.getElementById(rider).className = "danger";
+        //document.getElementById(rider).fadeToggle(2500);
+        //document.getElementById(rider).style.display='none';
     }
 </script>
 {% endblock %}

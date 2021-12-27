@@ -56,6 +56,7 @@ class ToBeAuctionedListView(generic.ListView):
         return ToBeAuctioned.objects.filter(team_captain=self.request.user).filter(sold=False)
 
 
+@require_POST
 @login_required
 def AddRiderToBeAuctioned(request):
     rider = Rider.objects.get(id=request.POST.get('riderID'))
@@ -72,6 +73,19 @@ def AddRiderToBeAuctioned(request):
         tba.save()
         #print(f"Added {rider} for {team_captain} for ${amount}")
         return JsonResponse({"status": "Added a new rider"})
+
+
+@require_POST
+@login_required
+def RemoveRiderToBeAuctioned(request):
+    rider = Rider.objects.get(id=request.POST.get('riderID'))
+    team_captain = request.user
+    try:
+        tba = ToBeAuctioned.objects.get(team_captain=team_captain, rider=rider)
+        tba.delete()
+        return JsonResponse({'status':'removed rider'})
+    except:
+        print("Rider not on wishlist")
 
 
 @require_POST
