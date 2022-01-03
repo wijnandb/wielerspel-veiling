@@ -10,10 +10,10 @@
                     <thead>
                         <th>volgorde</th>
                         <th>Ploegleider</th>
-                        <th>#  renners</th>
-                        <th>punten (max)</th>
-                        <th>renners aangeboden</th>
-                        <th>renners om aan te bieden</th>
+                        <th class="text-center">#  renners</th>
+                        <th class="text-center">punten (max)</th>
+                        <th class="text-center">al aangeboden</th>
+                        <th class="text-center">geheime lijst</th>
                     </thead>
                     <tbody>
                     {% for ploegleider in object_list %}
@@ -24,6 +24,7 @@
                             <td class="text-center">{{ ploegleider.amount_left }} ({{ ploegleider.max_allowed_bid }})</td>
                             <td class="text-center">{{ ploegleider.riders_proposed }}</td>
                             <td class="text-center">{{ ploegleider.riders_for_auction }}</td>
+                            <!--td class="text-center">{{ ploegleider.next_rider_on_auction }}</td-->
                         </tr>
                     {% endfor %}
                     </tbody>

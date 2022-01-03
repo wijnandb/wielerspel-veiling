@@ -30,7 +30,7 @@
                                 <td>{{ rider.age }}</td>
                                 <td>{{ rider.cqpoints }} </td>
                                 <td><input type="number" id="value-{{ rider.id }}" min="0" max="92" value="1"  size="2"></td>
-                                <td><input type="button" class="btn btn-outline-primary" name="{{ rider.id }}" id="button-{{ rider.id }}" data-rider="{{ rider.id }}" onclick="addRider(this)" style="cursor:pointer;" value="toevoegen"></td>
+                                <td><button type="button" class="btn btn-outline-primary" name="{{ rider.id }}" id="button-{{ rider.id }}" data-rider="{{ rider.id }}" onclick="addRider(this)" style="cursor:pointer;">Toevoegen</button></td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -58,8 +58,7 @@
             var amount = document.getElementById("value-"+riderID).value;  
             //alert("Punten:"+amount);
             //alert("rennerID:"+riderID);
-            document.getElementById("button-"+riderID).textContent = "bijwerken";
-            document.getElementById("row-"+riderID).className = "table-success";
+            
             
             $.ajax({
                 url: '{% url "auction:ajax-add-rider-tobeauctioned" %}',
@@ -73,7 +72,8 @@
                 },
                 success: function(json){
                     console.log(json);
-                    //location.reload();
+                    document.getElementById("row-"+riderID).className = "table-success";
+                    document.getElementById("button-"+riderID).textContent = "bijwerken";
                 },
                 error: function (json) {
                     //location.reload();
@@ -83,12 +83,12 @@
         };
 </script>
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.22/datatables.min.js"></script>
+
 <script>
     $(document).ready( function () {
         $('#renners').DataTable( {
-            "pageLength": 100,
-            "lengthMenu": [[100, 25, 50, -1], [100, 25, 50, "All"]],
             "dom": '<"top"if>rt<"bottom"lp><"clear">',
+            "pageLength": 50,
             "language": {
                 "sProcessing": "Bezig...",
                 "sLengthMenu": "_MENU_ resultaten weergeven",

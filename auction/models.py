@@ -37,6 +37,7 @@ class TeamCaptain(models.Model):
         amount_left = 100 - spend['price__sum']
         return amount_left
 
+    @property
     def max_allowed_bid(self):
         if self.team_size > 8:
             return self.amount_left()
@@ -50,6 +51,13 @@ class TeamCaptain(models.Model):
         """
         from auction.models import ToBeAuctioned
         return ToBeAuctioned.objects.filter(team_captain=self.team_captain).filter(sold=False).count()
+
+    def next_rider_on_auction(self):
+        from auction.models import ToBeAuctioned
+        try:
+            return ToBeAuctioned.objects.filter(team_captain=self.team_captain).filter(sold=False)[0].rider
+        except:
+            return "geen"
 
     class Meta:
         ordering = ['riders_proposed', 'order']
@@ -72,7 +80,7 @@ class ToBeAuctioned(models.Model):
     """
     The wishlist for each Teamcaptain. A rider can be on the wishlist of 
     multiple TeamCaptains. Once a rider is auctioned, it is removed from 
-    everyone's wishlist.
+    everyone's wishlist (by setting sold =True).
     """
     order = models.IntegerField(blank=False, default=100_000)
     team_captain = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)

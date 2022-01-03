@@ -41,7 +41,7 @@ class RaceDetailView(generic.DetailView):
 
 class RiderListView(generic.ListView):
     model = Rider
-    #paginate_by = 100
+    #paginate_by = 500
         
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
@@ -51,6 +51,11 @@ class RiderListView(generic.ListView):
     # filter, show only riders that haven't been sold
     def get_queryset(self):
         return Rider.objects.filter(sold=False) #.exclude(tobeauctioned__team_captain=self.request.user)
+
+
+class TopRiders(RiderListView):
+    def get_queryset(self):
+        return Rider.objects.filter(sold=False)[0:250]
 
 
 class RiderDetailView(generic.DetailView):

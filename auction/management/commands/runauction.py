@@ -4,6 +4,7 @@ from datetime import datetime
 import time
 from auction.models import Bid, VirtualTeam, ToBeAuctioned, Joker, TeamCaptain
 from results.models import Rider
+from veiling.views import get_rider_on_auction
 
 
 class Command(BaseCommand):
@@ -21,11 +22,14 @@ class Command(BaseCommand):
         #punten = VirtualTeam.objects.aggregate(Sum('price'))['price__sum']
         #punten_over = 1400 - punten['price__sum']
         # WIP: replace with solution where we look at # of active teamcaptains.
-        while VirtualTeam.objects.aggregate(Sum('price'))['price__sum']<1400:
+        while TeamCaptain.objects.aggregate(Sum('riders_proposed'))['riders_proposed__sum']<400:
+            print(TeamCaptain.objects.aggregate(Sum('riders_proposed'))['riders_proposed__sum'])
+            team_captain, rider_on_auction = get_rider_on_auction()
             #print(f"Totaal {VirtualTeam.objects.count()} verkocht")
             #print(f"Punten besteed: {VirtualTeam.objects.aggregate(Sum('price'))['price__sum']}")
             # first, check what the latest bid was
             latest = Bid.objects.order_by('-created')
+
             # get the rider that was bidded on
             # could be improved by checking on latest unsold rider
             # this decides IF we are going to auction a rider, as well as WHICH rider we will auction
@@ -92,7 +96,7 @@ class Command(BaseCommand):
                 else:
                     print("Nog bezig met bieden")
             else:
-                print(f"Nog geen biedingen aanwezig")
+                print(f"Wachten op openingsbod van {team_captain.get_full_name()}")
             time.sleep(1)
             # send it in a loop
             # check if all points have been spend

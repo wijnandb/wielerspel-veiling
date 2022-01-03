@@ -17,7 +17,7 @@
   <!-- Add additional CSS in static file -->
 
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap4.min.css">
   {% block css %}
   
   {% endblock %}
@@ -51,7 +51,7 @@
                   <a class="nav-link" href="{% url 'results:uitslagen' %}">Uitslagen</a>
                 </li-->
                 <li class="nav-item">
-                  <a class="nav-link" href="{% url 'results:riders' %}">Beschikbare renners</a>
+                  <a class="nav-link" href="{% url 'results:riders' %}">Top 250</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'auction:geheimelijst' %}">Geheime lijst</a>
@@ -136,7 +136,7 @@
   <!-- Footer -->
   <footer class="py-5 bg-dark">
     <div class="container">
-      <p class="m-0 text-center text-white">Copyright &copy; QZ Wielerspel 2021</p>
+      <p class="m-0 text-center text-white">Copyright &copy; QZ Wielerspel 1994 - 2021</p>
     </div>
     <!-- /.container -->
   </footer>

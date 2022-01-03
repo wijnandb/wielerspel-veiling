@@ -22,6 +22,7 @@
                         <th class="text-center">nationaliteit</th>
                         <th class="text-center">leeftijd</th>
                         <th class="text-center">beginbod</th>
+                        <th class="text-center">verwijder</th>
                     </tr>
                 </thead>
                 <tbody id="sortlist">
@@ -37,7 +38,7 @@
                             <td class="text-center">{{ renner.amount }}</td>
                             <!--td><button type="button" class="btn btn-outline-danger" data-rider={{ renner.rider.id }} onclick="removeRider(this)">Verwijder</button></td-->
                             <td><button type="button" class="close danger" aria-label="Close"  data-rider={{ renner.rider.id }} onclick="removeRider(this)">
-                                <span aria-hidden="true" class="danger">&times;</span>
+                                <span aria-hidden="true" class="danger" title="Verwijder renner">&times;</span>
                               </button></td>
                         </tr>
                     {% endfor %}
