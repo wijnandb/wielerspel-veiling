@@ -14,7 +14,7 @@ import time
 from django.db.models import Count, Sum
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from auction.forms import LoginForm, RegistrationForm, BidForm, ChangeSortForm
-from auction.models import Bid, TeamCaptain, ToBeAuctioned, VirtualTeam
+from auction.models import Bid, Joker, TeamCaptain, ToBeAuctioned, VirtualTeam
 from results.models import Rider
 
 class LoginView(FormView):
@@ -118,3 +118,15 @@ class TeamCaptainListView(generic.ListView):
     model = TeamCaptain
     context_object_name = 'team_captains'
     template_name = 'auction/auctionorder.html'
+
+
+class JokerListView(ListView):
+    model = Joker
+
+    def get_queryset(self, **kwargs):
+        return Joker.objects.filter(rider__sold=False)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['geheimelijst'] = ToBeAuctioned.objects.filter(team_captain=self.request.user)
+        return context
