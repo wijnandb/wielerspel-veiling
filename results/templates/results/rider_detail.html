@@ -3,51 +3,73 @@
 {% block content %}
 
   
+<div class="row">
+  <div class="col-3">
+    <div class="card" style="width: 16rem;">
+      <img class="card-img-top" src="{{ rider.image_link }}" alt="{{ renner }}">
+      <div class="card-body">
+        <h5 class="card-title text-center">{{ rider }}</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item text-center">Team: {{ rider.team }}</li>
+          <li class="list-group-item text-center">Land: {{ rider.nationality }}</li>
+          <li class="list-group-item text-center"><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.id }}" target="_blank" class="btn btn-primary">CQranking</a></li>
+        </ul>
+      </div>
+    </div>
 
 
-    <div class="row" >
-      <h1>{{ rider }}</h1>
-        <div class="col-sm-3">UCI: {{ rider.ucicode }}</div>
-        <div class="col-sm-3"><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}">CQranking {{ rider.cqriderid }}</a></div>
-        <div class="col-sm-3"> {{ rider.nationality }}</div>
-        <div class="col-sm-3"> {{ rider.team }}</div>
   </div>
-  <div class="row">
-    <div class="col-7">
-      <h2>Uitslagen {{ selected_editie }}</h2>
-      <table class="table table-striped" width="100%">
-        {% for result in rider.uitslag_set.all %}
+
+
+  <div class="col-9">
+    {% if rider.virtualteam_set.all %}
+      <table class="table table-striped">
+        <thead>
           <tr>
-            <td>{{ result.race.startdate| date:"j-n" }}</td>
-            <td>{{ result.rank }}.</td>
-            <td>{{ result.race.name }} ({{ result.race.category }})</td>
-            <td>{{ result.race.category }}</td>
+            <th>Editie</th>
+            <th>Ploegleider</th>
+            <th>Prijs</th>
+            <th>Punten</th>
+            <th>JPP</th>
+          </tr>
+        </thead>
+        {% for vt in rider.virtualteam_set.all %}
+          <tr>
+            <td>{{ vt.editie }}</td>
+            <td>{{ vt.ploegleider.teamcaptain }}</td>
+            <td>{{ vt.price }} </td>
+            <td>{{ vt.punten }}</td>
+            <td>{{ vt.jpp }}</td>
           </tr>
         {% endfor %}
       </table>
-    </div>
-    {% if rider.virtualteam_set.all %}
-      <div class="col-5">
-        <h2>Eerdere resultaten</h2>
-        <table class="table table-striped" width="100%">
-          <tr>
-            <th>editie</th>
-            <th>ploegleider</th>
-            <th>prijs</th>
-            <th>punten</th>
-            <th>jpp</th>
-          </tr>
-          {% for vt in rider.virtualteam_set.all %}
-            <tr>
-              <td>{{ vt.editie }}</td>
-              <td>{{ vt.ploegleider.teamcaptain }}</td>
-              <td>{{ vt.price }} </td>
-              <td>{{ vt.punten }}</td>
-              <td>{{ vt.jpp }}</td>
-            </tr>
-          {% endfor %}
-        </table>
-      </div>
     {% endif %}
+
+
+
+    <h2>Uitslagen {{ selected_editie }}</h2>
+    <table class="table table-striped" width="100%">
+      <thead>
+        <tr>
+          <th>datum</th>
+          <th>#</th>
+          <th>Race</th>
+          <th>Punten</th>
+          <th>JPP</th>
+        </tr>
+      </thead>
+      {% for result in rider.uitslag_set.all %}
+        <tr>
+          <td width="10%">{{ result.race.startdate| date:"j-n" }}</td>
+          <td width="10%">{{ result.rank }}.</td>
+          <td><a href="{% url 'results:uitslag-detail' result.race.id %}">{{ result.race.name }}</a></td>
+          <td width="10%">{{ result.race.category }}</td>
+          <td>{{ result.points.points }}</td>
+          <td>{{ result.points.jpp }}</td>
+        </tr>
+      {% endfor %}
+    </table>
   </div>
+</div>
 {% endblock %}
+

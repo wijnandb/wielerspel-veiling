@@ -19,6 +19,8 @@
       <td><a href="{% url 'results:rider-detail' result.rider.pk %}">{{ result.rider.name }}</a></td>
       <td>{{ result.rider.nationality }}</td>
       <td>{{ result.rider.virtualteam.teamcaptain }}</td>
+      <td>{{ result.points.points }}</td>
+      <td>{{ result.points.jpp }}</td>
     </tr>
   {% endfor %}
 </table>

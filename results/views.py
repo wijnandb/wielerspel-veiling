@@ -12,9 +12,9 @@ from results.models import Rider, Race, Uitslag
 def index(request):
     """View function for home page of site."""
     # Generate counts of some of the main objects
-    num_riders = Rider.objects.filter(sold=False).count()  # The 'all()' is implied by default.
-    num_ploegleiders = TeamCaptain.objects.count()
-    num_sold_riders = VirtualTeam.objects.count()
+    num_riders = Rider.objects.filter(sold=False).count()  # filter on active=True once field is added
+    num_ploegleiders = TeamCaptain.objects.count() # filter on active=True once field is added
+    num_sold_riders = VirtualTeam.objects.filter(editie=2022).count()
     if num_sold_riders == 0:
         punten_over = num_ploegleiders * 100
     else:

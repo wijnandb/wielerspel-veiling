@@ -22,6 +22,19 @@ class Rider(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def image_link(self):
+        link = str(self.id)
+        #print(f"eerste link = { link }")
+        digits = len(link)
+        while digits < 6:
+            link = "0"+link
+            #print(link)
+            digits = len(link)
+
+        return "https://cqranking.com/men/images/Riders/2021/CQM2021"+link+".jpg"
+        
+
     class Meta:
         ordering = ['rank']
     
@@ -63,7 +76,7 @@ class RacePoints(models.Model):
         return reverse('racepoints-detail', args=[str(self.pk)])
 
     def __str__(self):
-        return self.category, self.ranking
+        return str(self.ranking)
 
 
 class Race(models.Model):
@@ -105,6 +118,9 @@ class Uitslag(models.Model):
         unique_together = ("race", "rank")
         ordering = ("race__startdate", "rank")
     
+    @property
     def points(self):
-        points = RacePoints.objects.filter(category=self.race__category)
+        #return RacePoints.objects.filter(ranking=self.rank).filter(category=1)
+        return RacePoints.objects.get(ranking=self.rank, category__race=self.race)
+
 
