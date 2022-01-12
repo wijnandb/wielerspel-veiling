@@ -35,7 +35,7 @@ class AuctionView(TemplateView):
     """
     This is the page where the actual auctioning takes place.
     We want to refresh all data with Javascript, so initial view
-    shouldn't provide any data
+    doesn't have to provide any data
     """
     template_name = 'veiling/veiling.html'
     
@@ -75,17 +75,20 @@ def biddings(request):
         # we want to know if it's this user that has the joker
         # we now check in page
         joker_info = Joker.objects.get(rider=rider_on_auction)
-        #joker_tc = joker_info.team_captain
+        joker_tc = joker_info.team_captain.id
         joker_tc_name = joker_info.team_captain.first_name
-        #joker_value = joker_info.value
-        #joker_info = "joker"
+        joker_value = joker_info.value
+        joker_exists = "joker"
     else:
-        joker_info = None
+        joker_tc = ""
+        joker_tc_name = ""
+        joker_value = ""
+        joker_exists = "geen joker"
 
     # aantal biedingen tonen
     # bij nieuwe renner ter bieding, openingsbod tonen
-    biddings = Bid.objects.order_by('-created')[:10]
-    print(biddings)
+    biddings = Bid.objects.filter(rider_id=rider_on_auction).order_by('-created')[:10]
+    #print(biddings)
     new_biddings = Bid.objects.filter(rider_id=rider_on_auction)
 
     # What if I check whether the first bidding is by the Team_captain who proposed the rider
@@ -93,17 +96,17 @@ def biddings(request):
     if biddings:
         #print("we have biddings!")
         for bidding in biddings:
-            results.append({'name': bidding.team_captain.get_full_name,
+            results.append({'name': bidding.team_captain.first_name,
                         'amount': bidding.amount,
                         'rider': bidding.rider.name})
-            print(results)
+            #print(results)
         # here it goes wrong: there are biddings, but not for this rider
 
         if new_biddings:
             #print("we have new biddings!")
             highestbid = new_biddings.order_by('-amount').first()
             highest = highestbid.amount
-            winner = highestbid.team_captain
+            winner = highestbid.team_captain.first_name
             timestamp = highestbid.created
             nu=datetime.now()
             time_remaining = round(20 - (nu-timestamp).total_seconds())
@@ -113,10 +116,10 @@ def biddings(request):
             return JsonResponse(status=200, data={'status': _('success'),
                                                 'data': results,
                                                 'on_auction': rider_on_auction.name,
-                                                #'joker_tc':joker_tc,
-                                                #'joker_tc_name':joker_tc_name,
-                                                #'joker_value':joker_value,
-                                                'joker_info': joker_info,
+                                                'joker_tc': joker_tc,
+                                                'joker_tc_name':joker_tc_name,
+                                                'joker_value': joker_value,
+                                                'joker_info': joker_exists,
                                                 'highest': highest,
                                                 'winner': winner,
                                                 'timer': time_remaining})
@@ -129,10 +132,10 @@ def biddings(request):
                                                 'highest': '0',
                                                 'winner': 'plaats een bod',
                                                 'on_auction': rider_on_auction.name,
-                                                #'joker_tc':joker_tc,
-                                                #'joker_tc_name':joker_tc_name,
-                                                #'joker_value':joker_value,
-                                                'joker_info': joker_info,
+                                                'joker_tc': joker_tc,
+                                                'joker_tc_name':joker_tc_name,
+                                                'joker_value': joker_value,
+                                                'joker_info': joker_exists,
                                                 'timer': 20})
 
     else:
@@ -140,7 +143,11 @@ def biddings(request):
                                             'highest': 'Wacht op openingsbod',
                                             'winner': '',
                                             'on_auction': rider_on_auction.name,
-                                            'joker_info': joker_info})
+                                            'joker_tc': joker_tc,
+                                            'joker_tc_name':joker_tc_name,
+                                            'joker_value': joker_value,
+                                            'joker_info': joker_exists,
+                                            })
 
 """
 @login_required
@@ -215,17 +222,19 @@ def bidding(request):
         if form.is_valid():
             amount = form.cleaned_data['amount']
             print(f"Amount in cleaned_data is {amount}")
-            if opening_bid_exists:
+            if opening_bid_exists(rider):
                 if process_bid(user, rider, amount):
                     return JsonResponse(status=200, data={'status': _('success'), 'msg': _('Bid successfully')})
                 else:
                     print("No bid placed")
+                    return JsonResponse(status=405, data={'status': _('error'), 'msg': _('Unsuccessful bid')})
             elif user == teamcaptain:
-                print(f"{user} is {teamcaptain}")
+                #print(f"{user} is {teamcaptain}")
                 place_opening_bid(teamcaptain, rider, amount)
                 return JsonResponse(status=200, data={'status': _('success'), 'msg': _('Bid successfully')})
             else:
-                print(f"Wacht op openingbod van {teamcaptain}")
+                #print(f"Wacht op openingbod van {teamcaptain}")
+                return JsonResponse(status=200, data={'status': _('success'), 'msg': _('Waiting for openingbid')})
     else:
         return JsonResponse(status=405, data={'status': _('error'), 'msg': _('Method not allowed')})      
 
@@ -233,10 +242,18 @@ def joker_bid(request):
     pass
 
 def process_bid(user, rider, amount):
-    b= Bid(team_captain=user, rider=rider, amount=amount)
-    b.save()
-    print("placed bid! Check in admin")
-    return JsonResponse(status=200, data={'status': _('success'), 'msg': _('Bid successfully')})
+    highest = Bid.objects.filter(rider=rider).order_by('-amount')[0].amount
+    print(highest)
+    max_allowed = TeamCaptain.objects.get(temacaptain=user).max_allowed_bid
+    print(max_allowed)
+    if amount > highest and amount <= max_allowed:
+        b= Bid(team_captain=user, rider=rider, amount=amount)
+        b.save()
+        #print("placed bid! Check in admin")
+        return JsonResponse(status=200, data={'status': _('success'), 'msg': _('Bid successfully')})
+    else:
+        print("bod niet hoog genoeg of over limiet")
+        return JsonResponse(status=200, data={'status': _('success'), 'msg': _('Bid not high enough or higher than allowed')})
 
 def opening_bid_exists(rider):
     """
@@ -245,19 +262,21 @@ def opening_bid_exists(rider):
     a bid.
     """
     if Bid.objects.filter(rider=rider).exists():
+        #print(f"opening bid exists on {rider}")
         return True
     else:
+        #print(f"No opening bid on {rider}")
         return False
 
 
 def place_opening_bid(teamcaptain, rider, amount):
     """ If opening bid is to high, adjust it to the allowed amount """
-    print("entering place_opening_bid")
+    #print("entering place_opening_bid")
     amount = allowed_to_make_bid(teamcaptain, amount)
-    print(amount)
+    #print(amount)
     b = Bid(rider=rider, team_captain=teamcaptain, amount=amount)
     b.save()
-    print("Openingbid is placed, check if it is in the table")
+    #print("Openingbid is placed, check if it is in the table")
 
 
 def allowed_to_make_bid(teamcaptain, amount):
@@ -265,8 +284,8 @@ def allowed_to_make_bid(teamcaptain, amount):
     If the amount is higher than allowed, change it to the proper amount.
     Need to check if the potentially lower amount is still high enough to allow
     """
-    max_allowed_bid = TeamCaptain.objects.get(team_captain=teamcaptain).max_allowed_bid()
-    print(max_allowed_bid)
+    max_allowed_bid = TeamCaptain.objects.get(team_captain=teamcaptain).max_allowed_bid
+    #print(max_allowed_bid)
     if  max_allowed_bid < amount:
         amount = max_allowed_bid
     return amount

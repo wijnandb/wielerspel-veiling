@@ -6,7 +6,7 @@
   
   {{ race.startdate }}
 
-{% for race in race_set.all %}
+{% for race in race.uitslag_set.all %}
   <dl class="row">
     <dd class="col-sm-3">{{ race.rank }}</dd>
     <dd class="col-sm-3">{{ race.name }}</dd>

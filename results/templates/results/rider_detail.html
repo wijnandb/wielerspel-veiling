@@ -2,20 +2,45 @@
 
 {% block content %}
 
-  <h1>Renner: {{ rider }} </h1>
+  <h1>{{ rider }}</h1>
 
-  <div style="margin-left:20px;margin-top:20px">
-    <dl class="row">
-        <dt class="col-sm-4">UCI_id: {{ rider.uciid }}</dt>
-        <dd class="col-sm-4">CQranking pagina: <a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}">{{ rider.cqriderid }}</a></dd>
-        <dd class="col-sm-4"> {{ rider.nationality }}</dd>
-    </dl>
-    {% for result in rider.race_set.all %}
-      <dl class="row">
-        <dt class="col-sm-3">{{ result.startdate }}</dt>
-        <dd class="col-sm-3">{{ result.rank }}</dd>
-        <dd class="col-sm-3">{{ result.name }} ({{ result.category }})</dd>
-      </dl>
-    {% endfor %}
+
+    <div class="row" >
+        <div class="col-sm-3">UCI: {{ rider.ucicode }}</div>
+        <div class="col-sm-3"><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}">CQranking {{ rider.cqriderid }}</a></div>
+        <div class="col-sm-3"> {{ rider.nationality }}</div>
+        <div class="col-sm-3"> {{ rider.team }}</div>
+  </div>
+  <div class="col-12">
+    <table classs="table table-striped" width="100%">
+      {% for result in rider.uitslag_set.all %}
+        <tr>
+          <td>{{ result.race.startdate| date:"j-n" }}</td>
+          <td>{{ result.rank }}.</td>
+          <td>{{ result.race.name }} ({{ result.race.category }})</td>
+          <td>{{ result.race.category }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+  <div class="col-12">
+    <table classs="table table-striped" width="100%">
+      <tr>
+        <th>editie</th>
+        <th>ploegleider</th>
+        <th>prijs</th>
+        <th>punten</th>
+        <th>jpp</th>
+      </tr>
+      {% for vt in rider.virtualteam_set.all %}
+        <tr>
+          <td>{{ vt.editie }}</td>
+          <td>{{ vt.ploegleider.teamcaptain }}</td>
+          <td>{{ vt.price }} </td>
+          <td>{{ vt.punten }}</td>
+          <td>{{ vt.jpp }}</td>
+        </tr>
+      {% endfor %}
+    </table>
   </div>
 {% endblock %}

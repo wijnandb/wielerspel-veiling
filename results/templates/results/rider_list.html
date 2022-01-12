@@ -23,8 +23,8 @@
                     <tbody>
                         {% for rider in rider_list %}
                             <tr id="row-{{ rider.id }}">
-                                <td>{{ rider.rank }}</td>
-                                <td><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}" target="_blank">{{ rider }}</a></td>
+                                <td><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}" target="_blank">{{ rider.rank }}</a></td>
+                                <td><a href="{% url 'results:rider-detail' rider.pk %}">{{ rider }}</a></td>
                                 <td>{{ rider.nationality }}</td>
                                 <td>{{ rider.team }}</td>
                                 <td>{{ rider.age }}</td>

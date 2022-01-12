@@ -1,16 +1,26 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+<div class="row">
   <h2>{{ race }} ({{ race.category }})</h2>
   
-  {{ race.startdate }}
-
-{% for race in race_set.all %}
-  <dl class="row">
-    <dd class="col-sm-3">{{ race.rank }}</dd>
-    <dd class="col-sm-3">{{ race.name }}</dd>
-  </dl>
-{% endfor %}
-  </div>
+  {{ race.startdate }} - {{ race.enddate }} {{ race.country }}
+</div>
+<div class="row">
+  <table classs="table table-striped" width="100%">
+    <tr>
+      <th>positie</th>
+      <th>renner</th>
+      <th>nationaliteit</th>
+    </tr>
+  {% for result in race.uitslag_set.all %}
+    <tr>
+      <td>{{ result.rank }}.</td>
+      <td><a href="{% url 'results:rider-detail' result.rider.pk %}">{{ result.rider.name }}</a></td>
+      <td>{{ result.rider.nationality }}</td>
+      <td>{{ result.rider.virtualteam.teamcaptain }}</td>
+    </tr>
+  {% endfor %}
+</table>
+</div>
 {% endblock %}

@@ -50,7 +50,7 @@ class Command(BaseCommand):
                 # bidding should be closed and the rider goes to the
                 # highest bidder. 
 
-                if verschil > 10:
+                if verschil > 20:
                     latestrider = latest[0].rider
                     #print(latestrider.id)
                     if not VirtualTeam.objects.filter(rider=latestrider, editie=2022).exists():
@@ -67,9 +67,9 @@ class Command(BaseCommand):
                         
                             if winner.team_captain == joker.team_captain:
                                 winner.amount = winner.amount + joker.value
-                            if winner.amount <= 0:
+                            if winner.amount < 1:
                                 winner.amount = 1
-                        print(winner.rider, winner.team_captain, winner.amount)
+                        #print(winner.rider, winner.team_captain, winner.amount)
                         renner = VirtualTeam()
                         renner.rider = winner.rider
                         renner.ploegleider = winner.team_captain
@@ -85,7 +85,8 @@ class Command(BaseCommand):
                         ToBeAuctioned.objects.filter(rider=winner.rider_id).update(sold=True)
                         # add 1 to riders_proposed for teamcaptain who has just proposed a rider
                         # WIP: update team_captains who are allowed to make a bid (so who have points left)
-                        proposed_rider_teamcaptain = TeamCaptain.objects.get(team_captain=winner.team_captain)
+
+                        proposed_rider_teamcaptain = TeamCaptain.objects.get(team_captain=team_captain)
                         proposed_rider_teamcaptain.riders_proposed += 1
                         proposed_rider_teamcaptain.save()
                         print(f"{latestrider} has been sold to {winner.team_captain} for {winner.amount}")

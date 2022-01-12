@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Rider, Category, RacePoints, Race, Uitslag
+from .models import Rider, Category, RacePoints, Race, Uitslag 
 from import_export.admin import ImportExportModelAdmin
 from import_export import resources
 
@@ -19,21 +19,26 @@ class RiderAdmin(ImportExportModelAdmin):
 
 class UitslagAdmin(ImportExportModelAdmin):
     list_display = ('race', 'rank', 'rider', 'race_id')
-    list_filter = ('race', 'rank')
+    list_filter = ('race__category', 'rank', 'race__country')
     search_fields = ('race', 'rider')
 
 
-class RaceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'startdate', 'category', 'country')
+class RaceAdmin(ImportExportModelAdmin):
+    list_display = ('name', 'startdate', 'enddate', 'category', 'country')
     list_filter = ('category', 'country')
-    search_fields = ('race', 'rider')
+    search_fields = ('race', 'rider', 'cqraceid')
     # add link to CQranking site
     # add filter on editie
 
-class RacePointsAdmin(admin.ModelAdmin):
-    pass
+class RacePointsAdmin(ImportExportModelAdmin):
+    list_display = ('category', 'ranking', 'points', 'jpp', 'editie')
+    list_filter = ('editie', 'category', 'ranking')
 
-admin.site.register(Category)
+
+class CategoryAdmin(ImportExportModelAdmin):
+    list_display =('name',)
+
+admin.site.register(Category, CategoryAdmin)
 admin.site.register(Rider, RiderAdmin)
 admin.site.register(RacePoints, RacePointsAdmin)
 admin.site.register(Race, RaceAdmin)

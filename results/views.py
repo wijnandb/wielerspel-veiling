@@ -61,6 +61,11 @@ class TopRiders(RiderListView):
 class RiderDetailView(generic.DetailView):
     model = Rider
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['teamcaptain'] = VirtualTeam.objects.filter(rider=self.object)
+        return context    
+
 
 class PloegleiderListView(generic.ListView):
     model = TeamCaptain

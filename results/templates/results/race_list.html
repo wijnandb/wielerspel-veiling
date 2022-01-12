@@ -9,7 +9,7 @@
                 <ul>
                     {% for race in race_list %}
 
-                        {{ race.startdate }}<h5><a href="{% url 'uitslag-detail' race.cqraceid %}">{{ race }}</a></h5>
+                        {{ race.startdate }}<h5><a href="{% url 'results:uitslag-detail' race.cqraceid %}">{{ race }}</a></h5>
 
                     {% endfor %}
 
