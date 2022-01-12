@@ -85,7 +85,11 @@ class UitslagDetailView(generic.DetailView):
 
 class VerkochtListView(generic.ListView):
     model = VirtualTeam
+
+    def get_queryset(self):
+        return VirtualTeam.objects.filter(editie=2022)
  
 
 class VerkochtDetailView(generic.DetailView):
     model = VirtualTeam
+

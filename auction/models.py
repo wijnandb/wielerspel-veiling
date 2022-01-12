@@ -20,7 +20,7 @@ class TeamCaptain(models.Model):
     @property
     def team_size(self):
         from auction.models import VirtualTeam
-        team_size = VirtualTeam.objects.filter(ploegleider=self.team_captain).count()
+        team_size = VirtualTeam.objects.filter(ploegleider=self.team_captain, editie=2022).count()
         return team_size
     
     def riders_needed(self):
@@ -31,7 +31,7 @@ class TeamCaptain(models.Model):
 
     def amount_left(self):
         from auction.models import VirtualTeam
-        spend = VirtualTeam.objects.filter(ploegleider=self.team_captain).aggregate(Sum('price'))
+        spend = VirtualTeam.objects.filter(ploegleider=self.team_captain, editie=2022).aggregate(Sum('price'))
         if spend['price__sum'] == None:
             spend['price__sum']=0    
         amount_left = 100 - spend['price__sum']
