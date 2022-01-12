@@ -1,7 +1,10 @@
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
-import time
+import datetime
+import dateutil
+
+#from auction.models import TeamCaptain
 
 
 class Rider(models.Model):
@@ -33,7 +36,24 @@ class Rider(models.Model):
             digits = len(link)
 
         return "https://cqranking.com/men/images/Riders/2021/CQM2021"+link+".jpg"
+    
+
         
+    def current_age(self):
+        try:
+            day = self.ucicode[-2:]
+            month = self.ucicode[-4:-2]
+            year = self.ucicode[-8:-4]
+            birthdate = day+month+year
+            born = datetime.datetime.strptime(birthdate, "%d%m%Y").date()
+            today = datetime.date.today()
+            age = today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+        except:
+            age = "Onbekende geboortedatum"
+
+        #print(f"Age is {age}")
+        return str(age) + " jaar"
+
 
     class Meta:
         ordering = ['rank']
@@ -122,5 +142,4 @@ class Uitslag(models.Model):
     def points(self):
         #return RacePoints.objects.filter(ranking=self.rank).filter(category=1)
         return RacePoints.objects.get(ranking=self.rank, category__race=self.race)
-
 
