@@ -20,7 +20,7 @@
                     {% for joker in object_list %}
                     <tr id="row-{{ joker.rider.id }}">
                             <td>{{ joker.rider.rank }}</td>
-                            <td><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ joker.rider.id }}">{{ joker.rider }}</a></td>
+                            <td><a href="{% url 'results:rider-detail' joker.rider.id %}">{{ joker.rider }}</a></td>
                             <td>{{ joker.team_captain.get_full_name }}</td>
                             <td class="text-center">{{ joker.value }}</td>
                             <td><input type="number" id="value-{{ joker.rider.id }}" min="0" max="92" value="1"  size="2"></td>
