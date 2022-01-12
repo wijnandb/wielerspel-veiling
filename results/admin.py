@@ -26,7 +26,7 @@ class UitslagAdmin(ImportExportModelAdmin):
 class RaceAdmin(ImportExportModelAdmin):
     list_display = ('name', 'startdate', 'enddate', 'category', 'country')
     list_filter = ('category', 'country')
-    search_fields = ('race', 'rider', 'cqraceid')
+    search_fields = ('name', 'cqraceid')
     # add link to CQranking site
     # add filter on editie
 
