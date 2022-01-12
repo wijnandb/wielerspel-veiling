@@ -69,7 +69,7 @@ class RacePoints(models.Model):
 class Race(models.Model):
     id = models.PositiveIntegerField(primary_key=True)
     cqraceid = models.PositiveIntegerField(unique=True)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=150)
     startdate = models.DateField()
     enddate = models.DateField(blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
