@@ -1,8 +1,6 @@
 from django.views import generic
 from django.shortcuts import render
 from django.urls import reverse
-from django.views.generic.list import ListView
-from django.views.generic.detail import DetailView
 from django.db.models import Sum
 
 from auction.models import TeamCaptain, ToBeAuctioned, User, VirtualTeam
@@ -58,8 +56,26 @@ class TopRiders(RiderListView):
         return Rider.objects.filter(sold=False)[0:250]
 
 
+class Team(RiderListView):
+
+    def get_queryset(self, *args, **kwargs):
+        team = self.kwargs['teamcode']
+        return Rider.objects.filter(team=team)
+
+
+class Country(RiderListView):
+
+    def get_queryset(self, **kwargs):
+        country = self.kwargs['country']
+        return Rider.objects.filter(nationality=country)
+
+
 class RiderDetailView(generic.DetailView):
     model = Rider
+
+    # def get_queryset(self, **kwargs):
+    #     year = self.kwargs['year']
+    #     return Rider.objects.filter(nationality=country)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
@@ -82,6 +98,8 @@ class UitslagListView(generic.ListView):
 class UitslagDetailView(generic.DetailView):
     model = Uitslag
 
+    #qs.select_related()
+
 
 class VerkochtListView(generic.ListView):
     model = VirtualTeam
@@ -93,3 +111,19 @@ class VerkochtListView(generic.ListView):
 class VerkochtDetailView(generic.DetailView):
     model = VirtualTeam
 
+
+class ResultsListView(generic.ListView):
+    model = Uitslag
+    template = "rider-results.html"
+
+    def get_queryset(self):
+        rider = self.kwargs['rider']
+        year = self.kwargs['year']
+        return Uitslag.objects.filter(rider=rider, race__startdate__year=year)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['rider'] = Rider.objects.get(id=self.kwargs['rider'])
+        context['year'] = self.kwargs['year']
+        return context
+ 
