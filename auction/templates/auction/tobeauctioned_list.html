@@ -31,7 +31,7 @@
                             <td>{{ renner.rider.cqriderid }}</td>
                             <!--td class="text-center">{{ renner.rider.rank }}</td-->
                             <!--td>({{ renner.rider.prev }})</td-->
-                            <td>{{ renner.rider }}</td>
+                            <td><a href="{% url 'results:rider-detail' renner.rider.id %}">{{ renner.rider }}, {{ renner.rider.id }}</a></td>
                             <td class="text-center">{{ renner.rider.team }}</td>
                             <td class="text-center">{{ renner.rider.nationality }}</td>
                             <td class="text-center">{{ renner.rider.age }}</td>

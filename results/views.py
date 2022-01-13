@@ -115,15 +115,16 @@ class VerkochtDetailView(generic.DetailView):
 class ResultsListView(generic.ListView):
     model = Uitslag
     template = "rider-results.html"
+    year = '2021'
 
     def get_queryset(self):
         rider = self.kwargs['rider']
-        year = self.kwargs['year']
+        year = self.kwargs.get('year', self.year)
         return Uitslag.objects.filter(rider=rider, race__startdate__year=year)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context['rider'] = Rider.objects.get(id=self.kwargs['rider'])
-        context['year'] = self.kwargs['year']
+        context['year'] = self.kwargs.get('year', self.year)
         return context
  

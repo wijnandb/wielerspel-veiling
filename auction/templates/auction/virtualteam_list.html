@@ -30,7 +30,7 @@
                                 <td>{{ rider.price }}</td>
                                 <td>{{rider.rider.nationality }}</td>
                                 <td>{{ rider.rider.team }}</td>
-                                <td><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.rider.cqriderid }}" target="_blank">{{ rider.rider.cqriderid }}</a></td>
+                                <td><a href="{% url 'results:rider-detail' rider.pk %}">{{ rider.rider.cqriderid }}</a></td>
                                 <td>{{ rider.rider.ucicode }}</td>
                                 <td>{{ rider.rider.age }}</td>
                                 <td>{{ rider.rider.cqpoints }}</td>
