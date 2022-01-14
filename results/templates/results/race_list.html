@@ -6,14 +6,20 @@
             <h1>Races</h1>
             <br/><br/>
             {% if race_list %}
-                <ul>
+                <table class="table table-striped">
+                    
+                
                     {% for race in race_list %}
-
-                        {{ race.startdate }}<h5><a href="{% url 'results:uitslag-detail' race.cqraceid %}">{{ race }}</a></h5>
-
+                        <tr>
+                            <td>{{ race.startdate }}</td>
+                            <td>{% if race.startdate != race.enddate %}{{ race.enddate }}{% endif %}</td>
+                            <td>{{ race.category }}</td>  
+                            <td><a href="{% url 'results:uitslag-detail' race.cqraceid %}">{{ race }}</a></td>                         
+                            <td>{% for rider in race.uitslag_set.all %}{{ rider.rider }} {{ rider.teamcaptain }}{% endfor %}</td>
+                        </tr>
                     {% endfor %}
 
-                </ul>
+                </table>
             {% else %}
                 <p>Geen races aanwezig.</p>
             {% endif %}

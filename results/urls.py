@@ -7,7 +7,7 @@ app_name = 'results'
 urlpatterns = [path('', views.index, name='index'),
                path('renners/', views.RiderListView.as_view(), name='riders'),
                path('toprenners/', views.TopRiders.as_view(), name='top500'),
-               path('renner/<rider>/', views.ResultsListView.as_view(),
+               path('editie/2021/renner/<rider>/', views.ResultsListView.as_view(),
                     name='rider-detail'),
                path('editie/<year>/renner/<rider>/', views.ResultsListView.as_view(),
                     name='rider-detail'),

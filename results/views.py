@@ -10,7 +10,7 @@ from results.models import Rider, Race, Uitslag
 def index(request):
     """View function for home page of site."""
     # Generate counts of some of the main objects
-    num_riders = Rider.objects.filter(sold=False).count()  # filter on active=True once field is added
+    num_riders = Rider.objects.filter(sold=False).exclude(rank__isnull=True).count()  # filter on active=True once field is added
     num_ploegleiders = TeamCaptain.objects.count() # filter on active=True once field is added
     num_sold_riders = VirtualTeam.objects.filter(editie=2022).count()
     if num_sold_riders == 0:
@@ -48,7 +48,7 @@ class RiderListView(generic.ListView):
 
     # filter, show only riders that haven't been sold
     def get_queryset(self):
-        return Rider.objects.filter(sold=False) #.exclude(tobeauctioned__team_captain=self.request.user)
+        return Rider.objects.filter(sold=False).exclude(rank__isnull=True) #.exclude(tobeauctioned__team_captain=self.request.user)
 
 
 class TopRiders(RiderListView):
@@ -85,6 +85,11 @@ class RiderDetailView(generic.DetailView):
 
 class PloegleiderListView(generic.ListView):
     model = TeamCaptain
+
+    def get_queryset(self, *args, **kwargs):
+        year = self.kwargs['year']
+        print(year)
+        return TeamCaptain.objects.filter(editie=year)
 
 
 class PloegleiderDetailView(generic.DetailView):

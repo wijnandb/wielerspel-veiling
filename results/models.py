@@ -39,19 +39,31 @@ class Rider(models.Model):
 
         
     def current_age(self):
-        try:
-            day = self.ucicode[-2:]
-            month = self.ucicode[-4:-2]
-            year = self.ucicode[-8:-4]
-            birthdate = day+month+year
-            born = datetime.datetime.strptime(birthdate, "%d%m%Y").date()
-            today = datetime.date.today()
-            age = today.year - born.year - ((today.month, today.day) < (born.month, born.day))
-        except:
-            age = "Onbekende geboortedatum"
+        if len(self.ucicode) < 11:
+            try:
+                birthdate = self.ucicode
+                born = datetime.datetime.strptime(birthdate, "%d/%m/%Y").date()
+                print(born)
+                today = datetime.date.today()
+                age = today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+                age = str(age) + " jaar"
+            except:
+                age = "Onbekende geboortedatum"
+        else:
+            try:
+                day = self.ucicode[-2:]
+                month = self.ucicode[-4:-2]
+                year = self.ucicode[-8:-4]
+                birthdate = day+month+year
+                born = datetime.datetime.strptime(birthdate, "%d%m%Y").date()
+                today = datetime.date.today()
+                age = today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+                age = str(age) + " jaar"
+            except:
+                age = "Onbekende geboortedatum"
 
         #print(f"Age is {age}")
-        return str(age) + " jaar"
+        return str(age)
 
 
     class Meta:
@@ -111,8 +123,12 @@ class Race(models.Model):
         return self.name
 
     class Meta:
-        ordering = ['-startdate']
-
+        ordering = ['startdate']
+    
+    @property
+    def edition(self):
+        """ calculate the edition year from the startdate """
+        return self.startdate.timetuple().tm_year
 
     # def get_absolute_url(self):
     #     """Returns the url to access a particular instance of the model."""
@@ -141,4 +157,3 @@ class Uitslag(models.Model):
     def points(self):
         #return RacePoints.objects.filter(ranking=self.rank).filter(category=1)
         return RacePoints.objects.get(ranking=self.rank, category__race=self.race)
-

@@ -38,7 +38,7 @@
         {% for vt in rider.virtualteam_set.all %}
           <tr>
             <td>{{ vt.editie }}</td>
-            <td>{{ vt.ploegleider.teamcaptain }}</td>
+            <td>{{ vt.ploegleider.get_full_name }}</td>
             <td>{{ vt.price }} </td>
             <td>{{ vt.punten }}</td>
             <td>{{ vt.jpp }}</td>
