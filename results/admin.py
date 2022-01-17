@@ -13,21 +13,23 @@ class RiderResource(resources.ModelResource):
 
 class RiderAdmin(ImportExportModelAdmin):
     list_display = ('name', 'cqriderid', 'nationality')
-    list_filter = ("sold","nationality",)
+    list_filter = ("team", "sold", "nationality",)
     search_fields = ['name']
-    ordering = ['cqriderid']
+    ordering = ['name']
 
 
 class UitslagAdmin(ImportExportModelAdmin):
     list_display = ('race', 'rank', 'rider', 'race_id')
     list_filter = ('race__category', 'rank', 'race__country')
     search_fields = ('race', 'rider')
+    ordering = ('-race__startdate',)
 
 
 class RaceAdmin(ImportExportModelAdmin):
     list_display = ('edition', 'name', 'startdate', 'enddate', 'category', 'country')
     list_filter = ('category', 'country')
     search_fields = ('name', 'cqraceid')
+    ordering = ('-startdate',)
     # add link to CQranking site
     # add filter on editie
 

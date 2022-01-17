@@ -128,7 +128,7 @@ class VirtualTeam(models.Model):
     UniqueConstraint(fields=['rider', 'editie'], name='verkochte_renner') 
 
     class Meta:
-        ordering = ['editie', '-price']
+        ordering = ['-editie', '-price']
         verbose_name_plural = 'Virtual Teams'
 
     def __str__(self):

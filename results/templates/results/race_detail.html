@@ -20,9 +20,8 @@
   {% for result in race.uitslag_set.all %}
     <tr>
       <td>{{ result.rank }}.</td>
-      <td><a href="{% url 'results:rider-detail' result.rider.pk %}">{{ result.rider.name }}</a> ({{ result.rider.nationality }})</td>
-
-      <td><!-- WIP Add teamcaptain for current_year -->{{ result.rider.virtualteam_set.all.teamcaptain }}</td>
+      <td><a href="{% url 'results:rider-detail' result.race.edition result.rider.pk %}">{{ result.rider.name }}</a> ({{ result.rider.nationality }})</td>
+      <td><!-- WIP Add teamcaptain for current_year --> {{ result.teamcaptain.ploegleider.get_full_name }} {{ result.teamcaptain.editie }}</td>
       <td>{{ result.points.points }}</td>
       <td>{{ result.points.jpp }}</td>
     </tr>

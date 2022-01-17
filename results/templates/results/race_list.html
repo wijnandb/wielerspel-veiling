@@ -3,7 +3,7 @@
 {% block content %}
 
 
-            <h1>Races</h1>
+            <h1>Uitslagen</h1>
             <br/><br/>
             {% if race_list %}
                 <table class="table table-striped">
@@ -14,8 +14,10 @@
                             <td>{{ race.startdate }}</td>
                             <td>{% if race.startdate != race.enddate %}{{ race.enddate }}{% endif %}</td>
                             <td>{{ race.category }}</td>  
-                            <td><a href="{% url 'results:uitslag-detail' race.cqraceid %}">{{ race }}</a></td>                         
-                            <td>{% for rider in race.uitslag_set.all %}{{ rider.rider }} {{ rider.teamcaptain }}{% endfor %}</td>
+                            <td><a href="{% url 'results:uitslag-detail' race.cqraceid %}">{{ race }}</a></td>
+                            <!-- WIP: if first rider isn't sold, this shows the wrong information -->                    
+                            <td>{{ race.uitslag_set.all.first.rank }}. {{ race.uitslag_set.all.first.rider }} {{ year }}</td>
+                            <td>{{ race.uitslag_set.all.first.teamcaptain.ploegleider.get_full_name }} </td>
                         </tr>
                     {% endfor %}
 

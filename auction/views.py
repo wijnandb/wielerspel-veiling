@@ -130,3 +130,27 @@ class JokerListView(ListView):
         context = super().get_context_data()
         context['geheimelijst'] = ToBeAuctioned.objects.filter(team_captain=self.request.user)
         return context
+
+
+@require_POST
+@login_required
+def sold(request):
+    r = Rider.objects.get(id=request.POST.get('riderID'))
+    #r.sold = True
+    #r.save()
+
+    renner = VirtualTeam()
+    renner.rider = r.rider
+    renner.ploegleider = request.POST.get('teamcaptainID')
+    renner.price = request.POST.get('amount') 
+    renner.editie = 2022
+    renner.save()
+
+    sold_rider = Rider.objects.get(id=r.rider_id)
+    sold_rider.sold = True
+    sold_rider.save()
+
+    # update all existing entries for sold rider, set to sold
+    ToBeAuctioned.objects.filter(rider=r.rider_id).update(sold=True)
+
+    return JsonResponse({'status':'set to sold'})

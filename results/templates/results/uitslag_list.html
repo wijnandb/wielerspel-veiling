@@ -10,8 +10,8 @@
       <div class="card-body">
         <h5 class="card-title text-center">{{ rider.name }}</h5>
         <ul class="list-group list-group-flush">
-          <li class="list-group-item text-center">Team: <a href="{% url 'results:team-detail' 'UAD' %}">{{ rider.team }}</a></li>
-          <li class="list-group-item text-center">Land: <a href="{% url 'results:country-detail' 'NED' %}">{{ rider.nationality }}</a></li>
+          <li class="list-group-item text-center">Team: <a href="{% url 'results:team-detail' rider.team %}">{{ rider.team }}</a></li>
+          <li class="list-group-item text-center">Land: <a href="{% url 'results:country-detail' rider.nationality %}">{{ rider.nationality }}</a></li>
           <li class="list-group-item text-center">{{ rider.current_age }}</li>
           <li class="list-group-item text-center">{{ rider.ucicode }}</li>
           <li class="list-group-item text-center"><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.id }}" target="_blank" class="btn btn-primary">CQranking</a></li>

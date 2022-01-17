@@ -1,10 +1,12 @@
-from django.views import generic
+from django.views.generic import ListView, DetailView
 from django.shortcuts import render
 from django.urls import reverse
 from django.db.models import Sum
 
 from auction.models import TeamCaptain, ToBeAuctioned, User, VirtualTeam
 from results.models import Rider, Race, Uitslag
+
+from core.views import YearFilterMixin, TeamCaptainMixin
 
 
 def index(request):
@@ -29,15 +31,21 @@ def index(request):
                  'punten_over': punten_over})
 
 
-class RaceListView(generic.ListView):
+class RaceListView(ListView):
+    model = Race
+
+    def get_queryset(self):
+        year = self.kwargs.get('year', 2022)
+        return Race.objects.filter(startdate__year=year)
+
+        ploegleider = VirtualTeam.objects.filter(editie=year)
+        #VirtualTeam.objects.filter(rider=self.object)
+
+class RaceDetailView(DetailView):
     model = Race
 
 
-class RaceDetailView(generic.DetailView):
-    model = Race
-
-
-class RiderListView(generic.ListView):
+class RiderListView(ListView):
     model = Rider
     #paginate_by = 500
         
@@ -47,8 +55,12 @@ class RiderListView(generic.ListView):
         return context
 
     # filter, show only riders that haven't been sold
-    def get_queryset(self):
-        return Rider.objects.filter(sold=False).exclude(rank__isnull=True) #.exclude(tobeauctioned__team_captain=self.request.user)
+    #def get_queryset(self):
+    #    return Rider.objects.filter(sold=False).exclude(rank__isnull=True) #.exclude(tobeauctioned__team_captain=self.request.user)
+
+class SoldRiderListView(RiderListView):
+
+    pass
 
 
 class TopRiders(RiderListView):
@@ -70,7 +82,7 @@ class Country(RiderListView):
         return Rider.objects.filter(nationality=country)
 
 
-class RiderDetailView(generic.DetailView):
+class RiderDetailView(DetailView):
     model = Rider
 
     # def get_queryset(self, **kwargs):
@@ -83,44 +95,36 @@ class RiderDetailView(generic.DetailView):
         return context    
 
 
-class PloegleiderListView(generic.ListView):
-    model = TeamCaptain
-
-    def get_queryset(self, *args, **kwargs):
-        year = self.kwargs['year']
-        print(year)
-        return TeamCaptain.objects.filter(editie=year)
+class PloegleiderListView(YearFilterMixin, ListView):
+    model = VirtualTeam
 
 
-class PloegleiderDetailView(generic.DetailView):
+class PloegleiderDetailView(DetailView):
     model = TeamCaptain
 
 
-class UitslagListView(generic.ListView):
+class UitslagListView(ListView):
     model = Uitslag
 
 
-class UitslagDetailView(generic.DetailView):
+class UitslagDetailView(DetailView):
     model = Uitslag
 
     #qs.select_related()
 
 
-class VerkochtListView(generic.ListView):
+class VerkochtListView(YearFilterMixin, TeamCaptainMixin, ListView):
     model = VirtualTeam
-
-    def get_queryset(self):
-        return VirtualTeam.objects.filter(editie=2022)
  
 
-class VerkochtDetailView(generic.DetailView):
+class VerkochtDetailView(DetailView):
     model = VirtualTeam
 
 
-class ResultsListView(generic.ListView):
+class ResultsListView(ListView):
     model = Uitslag
     template = "rider-results.html"
-    year = '2021'
+    year = '2022'
 
     def get_queryset(self):
         rider = self.kwargs['rider']
@@ -132,4 +136,16 @@ class ResultsListView(generic.ListView):
         context['rider'] = Rider.objects.get(id=self.kwargs['rider'])
         context['year'] = self.kwargs.get('year', self.year)
         return context
- 
+
+
+def scraperesults(year):
+    # first, go to cqranking.com and see if there are any races not in the database yet
+    
+
+    # Extra: existing races can be updated, if that's what we want
+
+
+
+
+
+    pass

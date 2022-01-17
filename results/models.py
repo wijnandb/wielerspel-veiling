@@ -39,31 +39,32 @@ class Rider(models.Model):
 
         
     def current_age(self):
-        if len(self.ucicode) < 11:
-            try:
-                birthdate = self.ucicode
-                born = datetime.datetime.strptime(birthdate, "%d/%m/%Y").date()
-                print(born)
-                today = datetime.date.today()
-                age = today.year - born.year - ((today.month, today.day) < (born.month, born.day))
-                age = str(age) + " jaar"
-            except:
-                age = "Onbekende geboortedatum"
-        else:
-            try:
-                day = self.ucicode[-2:]
-                month = self.ucicode[-4:-2]
-                year = self.ucicode[-8:-4]
-                birthdate = day+month+year
-                born = datetime.datetime.strptime(birthdate, "%d%m%Y").date()
-                today = datetime.date.today()
-                age = today.year - born.year - ((today.month, today.day) < (born.month, born.day))
-                age = str(age) + " jaar"
-            except:
-                age = "Onbekende geboortedatum"
+        if self.ucicode:
+            if len(self.ucicode) < 11:
+                try:
+                    birthdate = self.ucicode
+                    born = datetime.datetime.strptime(birthdate, "%d/%m/%Y").date()
+                    print(born)
+                    today = datetime.date.today()
+                    age = today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+                    return str(age) + " jaar"
+                except:
+                    return "Onbekende geboortedatum"
+            else:
+                try:
+                    day = self.ucicode[-2:]
+                    month = self.ucicode[-4:-2]
+                    year = self.ucicode[-8:-4]
+                    birthdate = day+month+year
+                    born = datetime.datetime.strptime(birthdate, "%d%m%Y").date()
+                    today = datetime.date.today()
+                    age = today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+                    return str(age) + " jaar"
+                except:
+                    return "Onbekende geboortedatum"
 
-        #print(f"Age is {age}")
-        return str(age)
+        else:
+            return "Onbekende geboortedatum"
 
 
     class Meta:
@@ -123,7 +124,7 @@ class Race(models.Model):
         return self.name
 
     class Meta:
-        ordering = ['startdate']
+        ordering = ['-startdate']
     
     @property
     def edition(self):
@@ -151,9 +152,14 @@ class Uitslag(models.Model):
     class Meta:
         verbose_name_plural = 'Uitslagen'
         unique_together = ("race", "rank")
-        ordering = ("race__startdate", "rank")
+        ordering = ("-race__startdate", "rank")
     
     @property
     def points(self):
         #return RacePoints.objects.filter(ranking=self.rank).filter(category=1)
         return RacePoints.objects.get(ranking=self.rank, category__race=self.race)
+    
+    @property
+    def teamcaptain(self):
+        from auction.models import VirtualTeam
+        return VirtualTeam.objects.get(rider=self.rider, editie=self.race.edition)
