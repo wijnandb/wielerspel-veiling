@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Sum, UniqueConstraint
-from results.models import Rider
+from results.models import CalculatedPoints, Rider
 
 
 class TeamCaptain(models.Model):
@@ -133,3 +133,9 @@ class VirtualTeam(models.Model):
 
     def __str__(self):
         return "%s - %s - %s" %(self.rider, self.price, self.team_captain.get_full_name())
+
+    def get_calculated_points(self):
+        return CalculatedPoints.objects.get(rider=self.rider, editie=self.editie).points
+
+    def get_calculated_jpp(self):
+       return CalculatedPoints.objects.get(rider=self.rider, editie=self.editie).jpp
