@@ -9,25 +9,26 @@
                 <table class="table" id="renners" data-page-length='25'>
                     <thead>
                         <tr>
-                            <th>#</th>
                             <th>Renner</th>
+                            <th>Land</th>
                             <th>Ploegleider</th>
                             <th>Prijs</th>
-                            <th>Land</th>
-                            <th>Team</th>
-                            <th>CQriderid</th>
+                            <th>Punten</th>
+                            <th>JPP</th>
 
                         </tr>
                     </thead>
                     <tbody>
                         {% for rider in object_list %}
                             <tr>
-                                <td><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.rider.pk }}">{{ rider.rider.rank }}</a></td>
+                                <!--td><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.rider.pk }}">CQ</a></td-->
                                 <td><a href="{% url 'results:rider-detail' view.kwargs.year rider.rider.id %}">{{ rider.rider }}</a></td>
                                 <td><a href="{% url 'results:country-detail' rider.rider.nationality %}">{{rider.rider.nationality }}</a></td>
-                                <td><a href="{% url 'results:team-detail' rider.rider.team %}">{{ rider.rider.team }}</a></td>
+                                <!--td><a href="{% url 'results:team-detail' rider.rider.team %}">{{ rider.rider.team }}</a></td-->
                                 <td><a href="{% url 'results:ploegleider-detail' rider.team_captain.pk view.kwargs.year %}">{{ rider.team_captain.first_name }}</a></td>
                                 <td>{{ rider.price }}</td>
+                                <td>{{ rider.punten }} ({{ rider.get_calculated_points }})</td>
+                                <td>{{ rider.jpp }} ({{ rider.get_calculated_jpp }})</td>
                             </tr>
                         {% endfor %}
                     <tbody></tbody>

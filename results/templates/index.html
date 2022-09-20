@@ -8,13 +8,11 @@
     <p>Ploegleiders: {{ num_ploegleiders }}</p>
     {% for tc in team_captains %}
         {{ tc }}
-    {% endif %}
+    {% endfor %}
 
     <p><a href="{% url 'results:riders' %}">Nog beschikbare renners: {{ num_riders }}</a></p>
 
     <p><a href="{% url 'results:verkochte_renners' 2022 %}">Al verkochte renners: {{ num_sold_riders }}</a></p>
-
-    <p>Punten nog in het spel: {{ punten_over }}</p>
 
     <p><a href={% url 'password_change' %}>Wachtwoord veranderen?</a></p>
 

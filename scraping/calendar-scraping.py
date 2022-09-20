@@ -211,7 +211,7 @@ def scrape_calendar(year):
 def scrape_results(race):
     """
     This will get all results for one day races and GC for multi-day races.
-    Still need to get stage results and leader jerseys for multi-day races.
+    as well as stage results and leader jerseys for multi-day races.
     """
     base_result_url = "https://cqranking.com/men/asp/gen/race.asp?raceid="
     b = base_result_url + str(race)
@@ -230,8 +230,11 @@ def scrape_results(race):
     # and its parent <table>
     result_table = result_tr.parent
     #print(result_table)
-
-    row_tags = result_table.find_all('tr')[1:11] # skipping the header row, top 10 only
+    """
+    WIP: afhankelijk van categorie haal je aantal renners binnen.
+    Top 20 TdF klassement, top 15 klassemenet Giro/Vuelta
+    """
+    row_tags = result_table.find_all('tr')[1:16] # skipping the header row, top 10 only
     #print("row_tags:", row_tags)
     # now we want to find all tr within this table
     # don't forget to replace the "leader" with an integer
@@ -242,12 +245,13 @@ def scrape_results(race):
             print(tds[1].text)
             #print(tds[1].text.split(".")[0], tds[5].a['href'].split("=")[1], race)
             # # Now get all info in each cell
-            # leader is missing with this method
-            print(f"Text for leader found: { tds[1].text }")
+            #print(f"Text for leader found: { tds[1].text }")
             if tds[1].text == 'leader':
-                print("###########################")
-                print("We have found the leader. Only do this for GT1 and GT2")
-                print("###########################")
+                # print("###########################")
+                # print("We have found the leader. Only do this for GT1 and GT2")
+                # print("###########################")
+                # LEader of the race gets position 0 (has to be integer)
+                # in pages we change this to "Leader"
                 rank = 0
             else:
                 rank = tds[1].text.split(".")[0]
@@ -383,8 +387,10 @@ def write_to_csv(races):
 
 #bulkInsert([3, 3, '10001655448', 'CUNEGO Damiano', 'ITA', False], 3)
 
-scrape_calendar(2022)
+#scrape_calendar(2022)
 
 #https://cqranking.com/men/asp/gen/race.asp?raceid=39990
 
-#scrape_results(40681)
+#scrape_results(40460)
+
+

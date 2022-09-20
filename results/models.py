@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 import datetime
+from django.db.models import UniqueConstraint
 
 #from auction.models import TeamCaptain
 
@@ -162,6 +163,28 @@ class Uitslag(models.Model):
         """
         from auction.models import VirtualTeam
         return VirtualTeam.objects.get(rider=self.rider, editie=self.race.editie)
+
+
+class CalculatedPoints(models.Model):
+    """
+    Calculate points per rider for each edition and store it here, so we can compare
+    with the "official" results.
+    """
+    rider = models.ForeignKey(Rider, on_delete=models.CASCADE)
+    editie = models.PositiveIntegerField(default=2022)
+    points = models.DecimalField(default=0, max_digits=4, decimal_places=1)
+    jpp = models.IntegerField(default=0)
+
+    UniqueConstraint(fields=['rider', 'editie'], name='calculate_per_rider')
+
+    def __str__(self):
+        return str(self.rider.name)
+    
+    class Meta:
+        verbose_name_plural = "Calculated points"
+        unique_together = ("rider", "editie")
+
+    
 
 
 class Teams(models.Model):

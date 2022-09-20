@@ -46,6 +46,19 @@
           <li class="nav-item active">
             <a class="nav-link" href="{% url 'results:verkochte_renners' 2022 %}">Verkochte renners</a>
           </li>
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Verkochte renners
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="{% url 'results:verkochte_renners' 2022 %}">2022</a>
+                <a class="dropdown-item" href="{% url 'results:verkochte_renners' 2021 %}">2021</a>
+                <a class="dropdown-item" href="{% url 'results:verkochte_renners' 2020 %}">2020</a>
+                <a class="dropdown-item" href="{% url 'results:verkochte_renners' 2019 %}">2019</a>
+                <a class="dropdown-item" href="{% url 'results:verkochte_renners' 2018 %}">2018</a>
+                <a class="dropdown-item" href="{% url 'results:verkochte_renners' 2017 %}">2017</a>
+            </div>
+          </div>
           {% if request.user.is_authenticated %}
 
                 <li class="nav-item active">

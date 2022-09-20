@@ -37,11 +37,11 @@
         </thead>
         {% for vt in rider.virtualteam_set.all %}
           <tr>
-            <td><a href="{% url 'results:rider-detail' vt.editie vt.rider.id %}">{{ vt.editie }}</a></td>
-            <td><a href="{% url 'results:ploegleider-detail' vt.team_captain.id vt.editie %}">{{ vt.team_captain.get_full_name }}</a></td>
-            <td>{{ vt.price }} </td>
-            <td>{{ vt.punten }}</td>
-            <td>{{ vt.jpp }}</td>
+            <td><a href="{% url 'results:rider-detail' vt.editie vt.rider.id %}" title="Uitslagen {{ rider.name }} in {{ vt.editie }}">{{ vt.editie }}</a></td>
+            <td><a href="{% url 'results:ploegleider-detail' vt.team_captain.id vt.editie %}" title="Naar ploeg van {{ vt.team_captain }} in {{ vt.editie }}">{{ vt.team_captain.get_full_name }}</a></td>
+            <td>{{ vt.price }}</td>
+            <td>{{ vt.punten }} ({{ vt.get_calculated_points }})</td>
+            <td>{{ vt.jpp }} ({{ vt.get_calculated_jpp }})</td>
           </tr>
         {% endfor %}
       </table>

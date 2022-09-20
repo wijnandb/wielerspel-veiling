@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.db.models import Sum
 
 from auction.models import TeamCaptain, ToBeAuctioned, User, VirtualTeam
-from results.models import Rider, Race, Uitslag
+from results.models import CalculatedPoints, Rider, Race, Uitslag
 
 from core.views import YearFilterMixin, TeamCaptainMixin
 
@@ -104,7 +104,7 @@ class PloegleiderDetailView(YearFilterMixin, TeamCaptainMixin, ListView):
         tc = self.kwargs['teamcaptain']
         editie = self.kwargs['year']
         return VirtualTeam.objects.filter(team_captain=tc).filter(editie=editie)
-
+    
 
 class UitslagListView(ListView):
     model = Uitslag
@@ -150,3 +150,11 @@ class SearchResultsView(YearFilterMixin, ListView):
         query = self.request.GET.get("q")
         object_list = Rider.objects.filter(name__icontains=query)
         return object_list
+
+def ComparePoints(request):
+    """
+    Get all sold riders and for each rider get both the calculated value and the value from
+
+    """
+    
+    pass

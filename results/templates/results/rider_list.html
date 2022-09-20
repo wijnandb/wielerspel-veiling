@@ -27,7 +27,7 @@
                                 <td><a href="{% url 'results:rider-detail' rider.pk %}">{{ rider }}</a></td>
                                 <td><a href="{% url 'results:country-detail' rider.nationality %}">{{ rider.nationality }}</a></td>
                                 <td><a href="{% url 'results:team-detail' rider.team %}">{{ rider.team }}</a></td>
-                                <!--td>{{ rider.team_captain.get_full_name }}</td-->
+                                <td>{{ rider.get_calculated_value }}</td>
                                 <!--td></td>
                                 <td></td-->
 
