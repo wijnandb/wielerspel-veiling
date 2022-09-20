@@ -14,13 +14,13 @@
 <div class="row">
   <div class="col-sm-6">
     {% for rider in teamcaptain.virtualteam %}
-      <div class="col-sm-5"><a href="{% url 'results:rider-detail' rider.pk %}">{{ rider.name }}</a></div>
+      <div class="col-sm-5"><a href="{% url 'results:rider-detail' 2022 rider.pk %}">{{ rider.name }}</a></div>
       <div class="col-sm-5">{{ rider.price }}</div>
     {% endfor %}
   </div>
   <div class="col-sm-6">
     {% for rider in teamcaptain.tobeauctioned %}
-      <div class="col-sm-5"><a href="{% url 'results:rider-detail' rider.pk %}">{{ rider.name }}</a></div>
+      <div class="col-sm-5"><a href="{% url 'results:rider-detail' 2022 rider.pk %}">{{ rider.name }}</a></div>
       <div class="col-sm-5">{{ rider.price }}</div>
     {% endfor %}
   </div>

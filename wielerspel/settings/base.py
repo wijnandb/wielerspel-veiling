@@ -75,6 +75,7 @@ WSGI_APPLICATION = 'wielerspel.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+# WIP: remove this, always get DATABASE infor from .env
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',

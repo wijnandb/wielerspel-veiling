@@ -17,47 +17,47 @@ class TeamCaptain(models.Model):
     def __str__(self):
         return str(self.team_captain.get_full_name())
 
-    @property
-    def team_size(self):
-        from auction.models import VirtualTeam
-        team_size = VirtualTeam.objects.filter(ploegleider=self.team_captain, editie=2022).count()
-        return team_size
+    # @property
+    # def team_size(self):
+    #     from auction.models import VirtualTeam
+    #     team_size = VirtualTeam.objects.filter(team_captain=self.team_captain, editie=2022).count()
+    #     return team_size
     
-    def riders_needed(self):
-        if self.team_size < 9:
-            return (9-self.team_size)
-        else:
-            return self.team_size()
+    # def riders_needed(self):
+    #     if self.team_size < 9:
+    #         return (9-self.team_size)
+    #     else:
+    #         return self.team_size()
 
-    def amount_left(self):
-        from auction.models import VirtualTeam
-        spend = VirtualTeam.objects.filter(ploegleider=self.team_captain, editie=2022).aggregate(Sum('price'))
-        if spend['price__sum'] == None:
-            spend['price__sum']=0    
-        amount_left = 100 - spend['price__sum']
-        return amount_left
+    # def amount_left(self):
+    #     from auction.models import VirtualTeam
+    #     spend = VirtualTeam.objects.filter(team_captain=self.team_captain, editie=2022).aggregate(Sum('price'))
+    #     if spend['price__sum'] == None:
+    #         spend['price__sum']=0    
+    #     amount_left = 100 - spend['price__sum']
+    #     return amount_left
 
-    @property
-    def max_allowed_bid(self):
-        if self.team_size > 8:
-            return self.amount_left()
-        else:
-            return self.amount_left()-self.riders_needed()+1
+    # @property
+    # def max_allowed_bid(self):
+    #     if self.team_size > 8:
+    #         return self.amount_left()
+    #     else:
+    #         return self.amount_left()-self.riders_needed()+1
 
-    def riders_for_auction(self):
-        """
-        How many riders unsold riders does a temacaptain have on his list?
-        If this is low or even zero, warn him to add a rider to his list
-        """
-        from auction.models import ToBeAuctioned
-        return ToBeAuctioned.objects.filter(team_captain=self.team_captain).filter(sold=False).count()
+    # def riders_for_auction(self):
+    #     """
+    #     How many riders unsold riders does a temacaptain have on his list?
+    #     If this is low or even zero, warn him to add a rider to his list
+    #     """
+    #     from auction.models import ToBeAuctioned
+    #     return ToBeAuctioned.objects.filter(team_captain=self.team_captain).filter(sold=False).count()
 
-    def next_rider_on_auction(self):
-        from auction.models import ToBeAuctioned
-        try:
-            return ToBeAuctioned.objects.filter(team_captain=self.team_captain).filter(sold=False)[0].rider
-        except:
-            return "geen"
+    # def next_rider_on_auction(self):
+    #     from auction.models import ToBeAuctioned
+    #     try:
+    #         return ToBeAuctioned.objects.filter(team_captain=self.team_captain).filter(sold=False)[0].rider
+    #     except:
+    #         return "geen"
 
     class Meta:
         ordering = ['riders_proposed', 'order']
@@ -119,7 +119,7 @@ class Joker(models.Model):
 
 class VirtualTeam(models.Model):
     rider = models.ForeignKey(Rider, on_delete=models.CASCADE)
-    ploegleider = models.ForeignKey(User, on_delete=models.CASCADE)
+    team_captain = models.ForeignKey(User, on_delete=models.CASCADE)
     editie = models.PositiveIntegerField(default=2022)
     price = models.IntegerField(default=0)
     punten = models.FloatField(default=0)
@@ -132,4 +132,4 @@ class VirtualTeam(models.Model):
         verbose_name_plural = 'Virtual Teams'
 
     def __str__(self):
-        return "%s - %s - %s" %(self.rider, self.price, self.ploegleider.get_full_name())
+        return "%s - %s - %s" %(self.rider, self.price, self.team_captain.get_full_name())

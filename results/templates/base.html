@@ -40,16 +40,19 @@
               <span class="sr-only">(current)</span>
             </a>
           </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="{% url 'results:races' 2022 %}">Uitslagen</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="{% url 'results:verkochte_renners' 2022 %}">Verkochte renners</a>
+          </li>
           {% if request.user.is_authenticated %}
+
                 <li class="nav-item active">
-                  <a class="nav-link" href="{% url 'results:verkochte_renners' %}">Verkochte renners</a>
+                  <a class="nav-link" href="{% url 'results:ploegleiders' 2022 %}">Ploegen</a>
                 </li>
-                <li class="nav-item active">
-                  <a class="nav-link" href="{% url 'results:ploegleiders' %}">Ploegen</a>
-                </li>
-                <!--li class="nav-item">
-                  <a class="nav-link" href="{% url 'results:uitslagen' %}">Uitslagen</a>
-                </li-->
+          {% endif %}
+                {% comment %}
                 <li class="nav-item active">
                   <a class="nav-link" href="{% url 'results:riders' %}">Alle renners</a>
                 </li>
@@ -62,18 +65,22 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="{% url 'auction:geheimelijst' %}">Geheime lijst</a>
                 </li>
-                <!--li class="nav-item">
+                <li class="nav-item">
                   <a class="nav-link" href="{% url 'veiling:veiling' %}">Veiling</a>
-                </li-->
+                </li>
                 <li class="nav-item active">
                     <a class="nav-link" href="{% url 'auction:logout' %}">{% trans 'Logout' %}</a>
                 </li>
-            {% else %}
                 <li class="nav-item active">
                     <a class="nav-link" href="{% url 'auction:login' %}">{% trans 'Login' %}</a>
                 </li>
-            {% endif %}
+                {% endcomment %}
+            
+
         </ul>
+        <form action="{% url 'results:search-results' %}" method="get">
+          <input name="q" type="text" placeholder="Search...">
+        </form>
       </div>
     </div>
   </nav>
@@ -94,7 +101,7 @@
     {% if messages %}
     <ul class="messages">
         {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+          <li>{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
         {% endfor %}
     </ul>
     {% endif %}

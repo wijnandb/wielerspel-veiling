@@ -36,7 +36,6 @@ class Rider(models.Model):
 
         return "https://cqranking.com/men/images/Riders/2021/CQM2021"+link+".jpg"
     
-
         
     def current_age(self):
         if self.ucicode:
@@ -70,9 +69,9 @@ class Rider(models.Model):
     class Meta:
         ordering = ['rank']
     
-    def get_absolute_url(self):
-        """Returns the url to access a particular instance of the model."""
-        return reverse('rider-detail', args=[str(self.cqriderid)])
+    # def get_absolute_url(self):
+    #     """Returns the url to access a particular instance of the model."""
+    #     return reverse('rider-detail', kwargs={'year': self.year, 'riderid': str(self.cqriderid)})
 
 
 class Category(models.Model):
@@ -113,6 +112,7 @@ class RacePoints(models.Model):
 
 class Race(models.Model):
     id = models.PositiveIntegerField(primary_key=True)
+    editie = models.PositiveIntegerField(default=2022)
     cqraceid = models.PositiveIntegerField(unique=True)
     name = models.CharField(max_length=150)
     startdate = models.DateField()
@@ -125,11 +125,7 @@ class Race(models.Model):
 
     class Meta:
         ordering = ['-startdate']
-    
-    @property
-    def edition(self):
-        """ calculate the edition year from the startdate """
-        return self.startdate.timetuple().tm_year
+  
 
     # def get_absolute_url(self):
     #     """Returns the url to access a particular instance of the model."""
@@ -142,7 +138,7 @@ class Uitslag(models.Model):
     be linked through the CQRanking ID's 
     """
     race = models.ForeignKey(Race, on_delete=models.CASCADE)
-    rank = models.IntegerField()  # we'll fix the "leader" differently
+    rank = models.IntegerField()  # we'll fix the "leader" differently. Use '0' as a rank
     rider = models.ForeignKey(Rider, on_delete=models.CASCADE)
 
     def get_absolute_url(self):
@@ -161,5 +157,17 @@ class Uitslag(models.Model):
     
     @property
     def teamcaptain(self):
+        """ Let's think about performance. It will look up a team_captain for every result there is.
+        That is a lot of queries. 
+        """
         from auction.models import VirtualTeam
-        return VirtualTeam.objects.get(rider=self.rider, editie=self.race.edition)
+        return VirtualTeam.objects.get(rider=self.rider, editie=self.race.editie)
+
+
+class Teams(models.Model):
+    """
+    Show a page with the cyclingteams, so we can clickthrough and show riders per team.
+    The teams are now linked to riders by a three-letter abbreviation and it chnages evrey year, no 
+    solution (yet) to keep track of teams.
+    """
+    pass

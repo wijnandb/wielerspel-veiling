@@ -3,7 +3,7 @@
 {% block content %}
 
 
-            <h1>Uitslagen</h1>
+            <h1>Uitslagen {{ view.kwargs.year }}</h1>
             <br/><br/>
             {% if race_list %}
                 <table class="table table-striped">
@@ -16,8 +16,8 @@
                             <td>{{ race.category }}</td>  
                             <td><a href="{% url 'results:uitslag-detail' race.cqraceid %}">{{ race }}</a></td>
                             <!-- WIP: if first rider isn't sold, this shows the wrong information -->                    
-                            <td>{{ race.uitslag_set.all.first.rank }}. {{ race.uitslag_set.all.first.rider }} {{ year }}</td>
-                            <td>{{ race.uitslag_set.all.first.teamcaptain.ploegleider.get_full_name }} </td>
+                            <td>{% if race.uitslag_set.all.first.rank == 0 %}Leider:{% else %}{{ race.uitslag_set.all.first.rank }}.{% endif %} {{ race.uitslag_set.all.first.rider }}</td>
+                            <td>{{ race.uitslag_set.all.first.teamcaptain.team_captain.get_full_name }}</td>
                         </tr>
                     {% endfor %}
 

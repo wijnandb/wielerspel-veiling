@@ -22,6 +22,22 @@ import urllib.request
 import csv
 from datetime import datetime
 
+# load data for current season
+
+# with open('/home/wijnandb/sites/heroku/wielerspel/scraping/csv/2022/veilingdata/ploegen.csv', newline='') as f:
+#     reader = csv.reader(f)
+#     ploegen = list(reader)
+
+# with open('/home/wijnandb/sites/heroku/wielerspel/scraping/csv/2022/veilingdata/ploegleiders.csv', newline='') as f:
+#     reader = csv.reader(f)
+#     ploegleiders = dict(reader)
+
+# res =[i + [ploegleiders[i[2]], i[2]] for i in ploegen[1:]]
+
+# for r in res:
+#     print(r)
+
+
 # define starturl
 # year is now hardcoded, can be changed
 startURL = 'https://cqranking.com/men/asp/gen/RaceCal.asp?year='
@@ -35,31 +51,33 @@ def bulkInsert(records, type):
         cursor = connection.cursor()
 #         this is query for races from calendar
         if type==1:
-            print("insert races")
-            sql_insert_query = """INSERT into results_race(id, cqraceid, name, startdate, enddate, category_id, country) VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+            #print("insert races")
+            sql_insert_query = """INSERT into results_race(id, cqraceid, name, startdate, enddate, category_id, country, editie) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
 # this is query for results
         elif type==2:
-            print("insert results")
+            #print("insert results")
             sql_insert_query = """INSERT into results_uitslag(rank, race_id, rider_id) VALUES (%s, %s, %s)"""
         elif type==3:
-            sql_insert_query = """ INSERT into results_rider(name, birthday, cqriderid)
-                            VALUES (%s, %s, %s) """
+            sql_insert_query = """ INSERT into results_rider(id, cqriderid, ucicode, name, nationality, sold)
+                            VALUES (%s, %s, %s, %s, %s, %s) """
         # executemany() to insert multiple rows rows
         else:
-            print("failed to find correct query")
+            #print("failed to find correct query")
+            pass
         cursor.execute(sql_insert_query, records,)
         connection.commit()
-        print(cursor.rowcount, "Record inserted successfully into table")
+        #print(cursor.rowcount, "Record inserted successfully into table")
 
     except (Exception, psycopg2.Error) as error:
-        print("Failed inserting record into table {}".format(error))
+        #print("Failed inserting record into table {}".format(error))
+        pass
 
     finally:
         # closing database connection.
         if (connection):
             cursor.close()
             connection.close()
-            print("PostgreSQL connection is closed")
+            #print("PostgreSQL connection is closed")
 
 
 # reviewing the code of the page tells us the table to scrape is among a lot
@@ -82,42 +100,48 @@ categories = {
     'GT1': 11,
     'GT2': 12,
     'WCRR': 13,
-    'NC.1': 14,
-    'NC.2': 15,
-    'NC.3': 16,
-    'NC.4': 17,
-    'NC.5': 18,
-    'NCT.1': 19,
-    'NCT.2': 20,
-    'NCT.3': 21,
-    'NCT.4': 22,
-    'NCT.5': 23,
+    'NC1': 14,
+    'NC2': 15,
+    'NC3': 16,
+    'NC4': 17,
+    'NC5': 18,
+    'NCT1': 19,
+    'NCT2': 20,
+    'NCT3': 21,
+    'NCT4': 22,
+    'NCT5': 23,
     'CC1': 24,
     'CC2': 25,
     'CCT1': 26,
     'CCT2': 27,
-    'GT2r': 36,
-    'GT1r': 35,
-    'GT2s': 34,
-    'GT1s': 33,
-    '2.WT3s': 32,
-    '2.WT2s': 31,
-    '2.WT1s': 30,
-    '2.PSs': 29,
     '2.1s': 28,
-    '2.WT3r': 39,
-    '2.WT2r': 38,
+    '2.PSs': 29,
+    '2.WT1s': 30,
+    '2.WT2s': 31,
+    '2.WT3s': 32,
+    'GT1s': 33,
+    'GT2s': 34,
+    'GT1r': 35,
+    'GT2r': 36,
     '2.WT1r': 37,
+    '2.WT2r': 38,
+    '2.WT3r': 39,
+    '1.HC': 40,
+    '2.HC': 41,
+    '2.HCs':42,
+    'WCTT':43,
 }
 races = []
 results = []
 riders = []
 def scrape_calendar(year):
-        
+    year = str(year)   
+    # WIP: limit time, only scrape current month
     for i in range(1,13):
+    #for i in range(7,8):
         try:
             b = startURL+str(year)+"&month="+str(i)
-            print(b)
+            #print(b)
             r = requests.get(b)
             soup = BeautifulSoup(r.text, "html.parser")
             first_result = soup.find("td", ["tabrow1simple","tabrow2simple"])
@@ -130,18 +154,23 @@ def scrape_calendar(year):
             #print(result_table)
             # now we found the right table, we want all tr's within
             for tr in result_table.find_all('tr')[1:]:
-                # we skip the header row, hence [1:12] and only top 10
+                # we skip the header row, hence [1:]
                 tds = tr.find_all('td')
                 #print (tds[3].text, tds[5].text, tds[7].text, tds[9].img['title'], tds[11].text, tds[11].a['href'].split("=")[1])
                 try:
                     racename = tds[11].text
                     #print(racename)
-                    startdate = datetime.strptime(tds[3].text, '%d/%m/%Y')
+                    # WIP: convert to dates?
+                    # startdate = datetime.strptime(tds[3].text, '%d/%m/%Y')
+                    startdate =tds[3].text
+
                     # no enddate, 1 day race
                     if tds[5].text != "\xa0":
-                        enddate = datetime.strptime(tds[5].text, '%d/%m/%Y')
+                        # WIP: convert to dates?
+                        # enddate = datetime.strptime(tds[5].text, '%d/%m/%Y')
+                        enddate = tds[5].text
                     else:
-                        enddate = ""
+                        enddate = tds[3].text
                     category = tds[7].text
                     category_id = categories[category]
                     try:
@@ -155,7 +184,7 @@ def scrape_calendar(year):
                     # exclude categories that we don't use
                     if category_id:
                         #races.append([cqraceid, racename, startdate, enddate, category_id, country])
-                        bulkInsert([cqraceid, cqraceid, racename, startdate, enddate, int(category_id), country],1,)
+                        bulkInsert([cqraceid, cqraceid, racename, startdate, enddate, int(category_id), country, year],1,)
                         scrape_results(cqraceid)
                     else:
                         print(f"{racename} has category {category}, do not store.")
@@ -164,6 +193,10 @@ def scrape_calendar(year):
                         stages_id = tds[13].a['href'].split("=")[1]
                         if stages_id:
                             #url = "https://cqranking.com/men/asp/gen/"&stages
+                            print("####################################")
+                            print("FOUND STAGES")
+                            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                             get_stages(racename, stages_id, year, category, country)
 
                     except:
@@ -198,23 +231,34 @@ def scrape_results(race):
     result_table = result_tr.parent
     #print(result_table)
 
-    row_tags = result_table.find_all('tr')[1:12] # skipping the header row, top 10 only
+    row_tags = result_table.find_all('tr')[1:11] # skipping the header row, top 10 only
     #print("row_tags:", row_tags)
     # now we want to find all tr within this table
+    # don't forget to replace the "leader" with an integer
 
     for row_tag in row_tags:
         try:
             tds = row_tag.find_all('td')
+            print(tds[1].text)
             #print(tds[1].text.split(".")[0], tds[5].a['href'].split("=")[1], race)
             # # Now get all info in each cell
-            rank = tds[1].text.split(".")[0]
+            # leader is missing with this method
+            print(f"Text for leader found: { tds[1].text }")
+            if tds[1].text == 'leader':
+                print("###########################")
+                print("We have found the leader. Only do this for GT1 and GT2")
+                print("###########################")
+                rank = 0
+            else:
+                rank = tds[1].text.split(".")[0]
             #print(int(rank))
             rider = tds[5].a['href'].split("=")[1]
-            #print(f"Resultaat: {rank}, {race}, {rider}")
+            print(f"Resultaat: {rank}, {race}, {rider}")
             #results.append([rank, race, rider])
             bulkInsert([rank, race, rider], 2)
         except:
             continue
+    
 
 def get_stages(racename, race_id, year, category, country):
     """
@@ -222,7 +266,7 @@ def get_stages(racename, race_id, year, category, country):
     """
     base_result_url = "https://cqranking.com/men/asp/gen/tour.asp?tourid="
     b = base_result_url + str(race_id)
-    print(b)
+    #print(b)
     r = requests.get(b)
     #print(r)
     soup = BeautifulSoup(r.text, "html.parser")
@@ -265,8 +309,7 @@ def get_stages(racename, race_id, year, category, country):
             print(f"Raceid = {cqraceid}")
             # Now add race to races:
             if tds[7].text[0:5] == "Stage":
-                lookupcat = str(category)+"s"
-                
+                lookupcat = str(category)+"s"  
             elif tds[7].text[0:7] != "General": # Mountain and Points ranking
                 lookupcat = str(category)+"r"
             if lookupcat:    
@@ -274,12 +317,17 @@ def get_stages(racename, race_id, year, category, country):
                 category_id = categories[lookupcat]
                 print(category_id)
                 stagewinner = tds[11].a['href'].split("=")[1]
-                bulkInsert([cqraceid, cqraceid, fullname, startdate, startdate, int(category_id), country],1,)
                 print([cqraceid, cqraceid, fullname, startdate, startdate, int(category_id), country],1,)
-                # and add stage winnner to results:
-                stagewinner = tds[11].a['href'].split("=")[1]
+                #stagewinner = tds[11].a['href'].split("=")[1]
                 #print(1, cqraceid, stagewinner)
-                bulkInsert([1, cqraceid, stagewinner], 2)
+                # Add the race 
+                bulkInsert([cqraceid, cqraceid, fullname, startdate, startdate, int(category_id), country, year],1,)
+                # and add stage winnner
+                #bulkInsert([1, cqraceid, stagewinner], 2)
+                #print(f"Inserted stagewinner { stagewinner } for race { cqraceid }")
+                # or, alternatively, scrape the stage results as if it's a 'normal' race
+                scrape_results(cqraceid) #
+
         except:
             continue
 
@@ -287,37 +335,56 @@ def get_stages(racename, race_id, year, category, country):
 def get_rider_info(riderid):
     BASE_RIDER_URL = "https://cqranking.com/men/asp/gen/rider.asp?riderid="
     b = BASE_RIDER_URL+str(riderid)
-    """
+
+    #print(b)
     r = requests.get(b)
+    #print(r)
     soup = BeautifulSoup(r.text, "html.parser")
-    first_result = soup.find("td", ["raceheader"])
-        # now get the parent tr
-    result_tr = first_result.parent
-    # and the parent table
-    table = result_tr.parent
-    table_rows = table.find_all('tr')
-    for tr in table_rows:
-        td = tr.find_all('td')
-        row = [i.text for i in td]
-        print(row)
-    """
-    try:
-        dfs = pd.read_html(b)
-        #print(type(dfs))
-        #print(len(dfs))
-        relevant_df = dfs[8][1]
-        renner_info = relevant_df.values.tolist()
-        renner_info.append(riderid)
-        #print(renner_info)
-        riders.append(renner_info)
-    except:
-        print("rider {} bestaat niet".format(riderid))
+    first_result = soup.find("table", "borderNoOpac")
+    #print(first_result)
+    next_table = first_result.find("table")
+    #print(next_table)
+
+    row_tags = next_table.find_all('tr') # skipping the header row
+    #print("row_tags:", row_tags)
+    # now we want to find all tr within this table
+
+    tds = row_tags[0].find_all('td')
+    name = tds[1].text.strip()
+    #print(name)
+    nationality = tds[1].img['alt'].strip()
+    #print(nationality)
+    tds = row_tags[1].find_all('td')
+    birthdate = tds[1].text.strip()
+    #print(birthdate)
+    tds = row_tags[2].find_all('td')
+    status = tds[1].text.strip()
+    #print(status)
+        # try:
+        #     tds = row_tag.find_all('td')
+        #     # first row [0], second td [1]: name + nationality
+        #     name = row_tag[0][1].text
+        #     print(name)
+    bulkInsert([riderid, riderid, birthdate, name, nationality, False], 3)
+
+        # except:
+        #     print("rider {} bestaat niet".format(riderid))
 
 
 def write_to_csv(races):
-    with open('scraping/csv/scraped_races.csv','a', newline="") as f:
+    with open('scraping/csv/2022/full_results.csv','a', newline="") as f:
         writer = csv.writer(f)
         writer.writerows(races)
 
-scrape_calendar(2021)
+#for race in range(2010, 2020):
+#    scrape_calendar(race)
 #get_stages("Paris-Nice", 3895, 2021, "2.WT1", "Fra")
+
+
+#bulkInsert([3, 3, '10001655448', 'CUNEGO Damiano', 'ITA', False], 3)
+
+scrape_calendar(2022)
+
+#https://cqranking.com/men/asp/gen/race.asp?raceid=39990
+
+#scrape_results(40681)

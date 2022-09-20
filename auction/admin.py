@@ -3,8 +3,8 @@ from import_export.admin import ImportExportModelAdmin
 from auction.models import Bid, TeamCaptain, ToBeAuctioned, Joker, VirtualTeam
 
 class VirtualTeamAdmin(ImportExportModelAdmin):
-    list_display = ('editie', 'rider', 'ploegleider', 'price', 'punten', 'jpp')
-    list_filter = ('ploegleider', 'editie')
+    list_display = ('editie', 'rider', 'team_captain', 'price', 'punten', 'jpp')
+    list_filter = ('team_captain', 'editie')
 
 
 class JokerAdmin(ImportExportModelAdmin):

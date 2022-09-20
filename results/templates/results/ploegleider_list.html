@@ -4,16 +4,16 @@
 {% block content %}
 
 
-            <h1>Renners</h1>
+            <h1>Stand {{ view.kwargs.year }}</h1>
             <br/><br/>
-            {% if rider_list %}
+            {% if teamcaptain_list %}
                 <table class="table" id="renners" data-page-length='25'>
                     <thead>
                         <tr>
                             <th>Rank</th>
                             <th>Renner</th>
-                            <th>Land</th>
-                            <th>Team</th>
+                            <th>Punten</th>
+                            <th>JPP</th>
                             <!--th>Ploegleider</th>
                             <th>Prijs</th-->
                             <!--th>Punten</th>
@@ -21,13 +21,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for rider in rider_list %}
+                        {% for tc in teamcaptain_list %}
                             <tr id="row-{{ rider.id }}">
-                                <td><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.pk }}" title="Link naar CQranking pagina van {{ rider }}">{{ rider.rank }}</a></td>
-                                <td><a href="{% url 'results:rider-detail' rider.pk %}">{{ rider }}</a></td>
+                                <td></td>
+                                <td><a href="{% url 'results:ploegleider-detail' tc.pk view.kwargs.year %}">{{ tc }}</a></td>
                                 <td><a href="{% url 'results:country-detail' rider.nationality %}">{{ rider.nationality }}</a></td>
                                 <td><a href="{% url 'results:team-detail' rider.team %}">{{ rider.team }}</a></td>
-                                <!--td>{{ rider.team_captain.get_full_name }}</td-->
+                                <!--td>{{ rider.team_captain.first_name }}</td-->
                                 <!--td></td>
                                 <td></td-->
 

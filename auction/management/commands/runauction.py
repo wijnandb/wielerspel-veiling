@@ -72,7 +72,7 @@ class Command(BaseCommand):
                         #print(winner.rider, winner.team_captain, winner.amount)
                         renner = VirtualTeam()
                         renner.rider = winner.rider
-                        renner.ploegleider = winner.team_captain
+                        renner.team_captain = winner.team_captain
                         renner.price = winner.amount 
                         renner.editie = 2022
                         renner.save()

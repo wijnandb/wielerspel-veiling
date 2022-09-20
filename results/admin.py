@@ -26,7 +26,7 @@ class UitslagAdmin(ImportExportModelAdmin):
 
 
 class RaceAdmin(ImportExportModelAdmin):
-    list_display = ('edition', 'name', 'startdate', 'enddate', 'category', 'country')
+    list_display = ('editie', 'name', 'startdate', 'enddate', 'category', 'country')
     list_filter = ('category', 'country')
     search_fields = ('name', 'cqraceid')
     ordering = ('-startdate',)

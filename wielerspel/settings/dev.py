@@ -4,13 +4,13 @@ import os
 from .base import *
 
 # Application definition
-# INSTALLED_APPS += [
-#     'debug_toolbar',
-# ]
+INSTALLED_APPS += [
+    'debug_toolbar',
+]
 
-# MIDDLEWARE += (
-#     'debug_toolbar.middleware.DebugToolbarMiddleware',
-# )
+MIDDLEWARE += (
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+)
 
 # used for Django Toolbar
 INTERNAL_IPS = [

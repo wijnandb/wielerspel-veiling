@@ -4,7 +4,7 @@
 {% block content %}
 <div class="row">
     <div class="col-lg-12">
-            <h1>Verkochte renners</h1>
+            <h1>Verkochte renners {{ view.kwargs.year }}</h1>
             {% if object_list %}
                 <table class="table" id="renners" data-page-length='25'>
                     <thead>
@@ -16,24 +16,18 @@
                             <th>Land</th>
                             <th>Team</th>
                             <th>CQriderid</th>
-                            <th>UCICode</th>
-                            <th>Leeftijd</th>
-                            <th>CQ points</th>
+
                         </tr>
                     </thead>
                     <tbody>
                         {% for rider in object_list %}
                             <tr>
-                                <td>{{ rider.rider.rank }}</td>
-                                <td>{{ rider.rider }}</td>
-                                <td>{{ rider.ploegleider.first_name }}</td>
+                                <td><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.rider.pk }}">{{ rider.rider.rank }}</a></td>
+                                <td><a href="{% url 'results:rider-detail' view.kwargs.year rider.rider.id %}">{{ rider.rider }}</a></td>
+                                <td><a href="{% url 'results:country-detail' rider.rider.nationality %}">{{rider.rider.nationality }}</a></td>
+                                <td><a href="{% url 'results:team-detail' rider.rider.team %}">{{ rider.rider.team }}</a></td>
+                                <td><a href="{% url 'results:ploegleider-detail' rider.team_captain.pk view.kwargs.year %}">{{ rider.team_captain.first_name }}</a></td>
                                 <td>{{ rider.price }}</td>
-                                <td>{{rider.rider.nationality }}</td>
-                                <td>{{ rider.rider.team }}</td>
-                                <td><a href="{% url 'results:rider-detail' rider.pk %}">{{ rider.rider.cqriderid }}</a></td>
-                                <td>{{ rider.rider.ucicode }}</td>
-                                <td>{{ rider.rider.age }}</td>
-                                <td>{{ rider.rider.cqpoints }}</td>
                             </tr>
                         {% endfor %}
                     <tbody></tbody>
