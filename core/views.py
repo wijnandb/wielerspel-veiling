@@ -3,7 +3,7 @@ class YearFilterMixin:
 
     def get_queryset(self):
         queryset = super(YearFilterMixin, self).get_queryset()
-        year = self.kwargs.get('year', 2022)
+        year = self.kwargs.get('year', 2023)
         return queryset.filter(editie=year)
     
     # def get_context(self, **kwargs):

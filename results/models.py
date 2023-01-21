@@ -9,6 +9,7 @@ from django.db.models import UniqueConstraint
 
 class Rider(models.Model):
     """
+    The riders, the cyclists
     """
     id = models.PositiveIntegerField(primary_key=True)
     rank = models.IntegerField(null=True, blank=True)
@@ -35,7 +36,7 @@ class Rider(models.Model):
             #print(link)
             digits = len(link)
 
-        return "https://cqranking.com/men/images/Riders/2021/CQM2021"+link+".jpg"
+        return link+".jpg"
     
         
     def current_age(self):
@@ -44,10 +45,10 @@ class Rider(models.Model):
                 try:
                     birthdate = self.ucicode
                     born = datetime.datetime.strptime(birthdate, "%d/%m/%Y").date()
-                    print(born)
+                    #print(born)
                     today = datetime.date.today()
                     age = today.year - born.year - ((today.month, today.day) < (born.month, born.day))
-                    return str(age) + " jaar"
+                    return age
                 except:
                     return "Onbekende geboortedatum"
             else:
@@ -59,17 +60,76 @@ class Rider(models.Model):
                     born = datetime.datetime.strptime(birthdate, "%d%m%Y").date()
                     today = datetime.date.today()
                     age = today.year - born.year - ((today.month, today.day) < (born.month, born.day))
-                    return str(age) + " jaar"
+                    return age
                 except:
                     return "Onbekende geboortedatum"
 
         else:
             return "Onbekende geboortedatum"
 
-
     class Meta:
         ordering = ['rank']
+
+    def get_absolute_url(self):
+        return reverse('rider-detail', kwargs={'pk': self.pk})
     
+    @property
+    def calculated_points(self):
+        return CalculatedPoints.objects.get(rider=self.id, editie=2022).points
+    
+    @property
+    def calculated_jpp(self):
+       return CalculatedPoints.objects.get(rider=self.id, editie=2022).jpp
+    
+    @property
+    def spelpunten(self):
+        from auction.models import VirtualTeam
+        try:
+            return VirtualTeam.objects.get(rider=self.id, editie=2023).punten
+        except:
+            return "*"
+
+    @property
+    def points2021(self):
+        return CalculatedPoints.objects.get(editie=2021, rider_id=self.id).points
+
+    @property
+    def points2020(self):
+        return CalculatedPoints.objects.get(editie=2020, rider_id=self.id).points
+
+    @property
+    def points2019(self):
+        return CalculatedPoints.objects.get(editie=2019, rider_id=self.id).points
+
+    @property
+    def points2018(self):
+        return CalculatedPoints.objects.get(editie=2018, rider_id=self.id).points
+
+    @property
+    def jpp2021(self):
+        return CalculatedPoints.objects.get(editie=2021, rider_id=self.id).jpp
+
+    @property
+    def jpp2020(self):
+        return CalculatedPoints.objects.get(editie=2020, rider_id=self.id).jpp
+
+    @property
+    def jpp2019(self):
+        return CalculatedPoints.objects.get(editie=2019, rider_id=self.id).jpp
+
+    @property
+    def jpp2018(self):
+        return CalculatedPoints.objects.get(editie=2018, rider_id=self.id).jpp
+
+    @property
+    def average(self):
+        return (self.calculated_points+self.points2021+self.points2020)/3
+    
+    @property
+    def averagejpp(self):
+        return (self.calculated_jpp+self.jpp2021+self.jpp2020)/3
+
+     
     # def get_absolute_url(self):
     #     """Returns the url to access a particular instance of the model."""
     #     return reverse('rider-detail', kwargs={'year': self.year, 'riderid': str(self.cqriderid)})
@@ -102,6 +162,7 @@ class RacePoints(models.Model):
         verbose_name = 'Punten per race'
         verbose_name_plural = 'Punten per race'
         unique_together = ("editie", "category", "ranking")
+        ordering = ('ranking',)
 
     def get_absolute_url(self):
         """Returns the url to access a particular instance of the model."""
@@ -127,10 +188,8 @@ class Race(models.Model):
     class Meta:
         ordering = ['-startdate']
   
-
-    # def get_absolute_url(self):
-    #     """Returns the url to access a particular instance of the model."""
-    #     return reverse('race-detail', args=[str(self.cqraceid)])
+    def get_absolute_url(self):
+        return reverse('race-detail', kwargs={'pk': self.pk})
 
 
 class Uitslag(models.Model):
@@ -175,11 +234,15 @@ class CalculatedPoints(models.Model):
     points = models.DecimalField(default=0, max_digits=4, decimal_places=1)
     jpp = models.IntegerField(default=0)
 
-    UniqueConstraint(fields=['rider', 'editie'], name='calculate_per_rider')
+    UniqueConstraint(fields=['rider', 'editie'], name='points_per_edition')
 
     def __str__(self):
         return str(self.rider.name)
-    
+
+    # def points2022(self):
+    #     return 
+
+
     class Meta:
         verbose_name_plural = "Calculated points"
         unique_together = ("rider", "editie")

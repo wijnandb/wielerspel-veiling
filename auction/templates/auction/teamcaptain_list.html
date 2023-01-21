@@ -19,10 +19,11 @@
                         <tr>
                             <td><a href="{% url 'results:ploegleider-detail' ploegleider.pk %}">{{ ploegleider }}</a></td>
                             <td class="text-center">{{ ploegleider.team_size }}</td>
-                            <td class="text-center">{{ ploegleider.amount_left }} ({{ ploegleider.max_allowed_bid }})</td>
+                            <td class=""text-center">{{ ploegleider.earned_points }}</td>
+                            <!--td class="text-center">{{ ploegleider.amount_left }} ({{ ploegleider.max_allowed_bid }})</td>
                             <td class="text-center">{{ ploegleider.riders_proposed }}</td>
                             <td class="text-center">{{ ploegleider.riders_for_auction }}</td>
-                            <!--td class="text-center">{{ ploegleider.next_rider_on_auction }}</td-->
+                            <td class="text-center">{{ ploegleider.next_rider_on_auction }}</td-->
                         </tr>
                     {% endfor %}
                     </tbody>

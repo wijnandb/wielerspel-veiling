@@ -6,7 +6,7 @@
 
             <h1>Stand {{ view.kwargs.year }}</h1>
             <br/><br/>
-            {% if teamcaptain_list %}
+            {% if object_list %}
                 <table class="table" id="renners" data-page-length='25'>
                     <thead>
                         <tr>
@@ -21,12 +21,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for tc in teamcaptain_list %}
+                        {% for tc in object_list %}
                             <tr>
-                                <td></td>
-                                <td><a href="{% url 'results:ploegleider-detail' tc.pk view.kwargs.year %}">{{ tc.get_full_name }}</a></td>
-                                <td></td>
-                                <td></td>
+                                <td>{{ forloop.counter }}.</td>
+                                <td><a href="{{ tc.team_captain__id }}">{{ tc.team_captain__username }}</a> {{ tc }}</td>
+                                <td>{{ tc.earned_points }}</td>
+                                <td>{{ tc.earned_jpp }}</td>
                                 <!--td>{{ rider.team_captain.first_name }}</td-->
                                 <!--td></td>
                                 <td></td-->

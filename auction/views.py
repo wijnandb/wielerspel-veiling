@@ -53,7 +53,7 @@ class ToBeAuctionedListView(generic.ListView):
     context_object_name = 'renners'
     
     def get_queryset(self, **kwargs):
-        return ToBeAuctioned.objects.filter(team_captain=self.request.user).filter(sold=False)
+        return ToBeAuctioned.objects.filter(team_captain=self.request.user).filter(rider__sold=False)
 
 
 @require_POST
@@ -86,6 +86,22 @@ def RemoveRiderToBeAuctioned(request):
         return JsonResponse({'status':'removed rider'})
     except:
         print("Rider not on wishlist")
+
+
+@require_POST
+@login_required
+def SoldRider(request):
+    try:
+        rider = Rider.objects.get(id=request.POST.get('riderID'))
+        print(rider.name)
+        if rider.sold == True:
+            rider.sold = False
+        else:
+            rider.sold = True
+        rider.save()
+        return JsonResponse({'status':'sold rider'})
+    except:
+        print("Rider not found")
 
 
 @require_POST

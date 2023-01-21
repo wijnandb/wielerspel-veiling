@@ -12,11 +12,11 @@
         <p>Andere ploegleiders kunnen jouw lijst niet zien.</p>
     </div>
     <div class="col-md-12">
-            <table width="100%" border="0" class="table thead-dark">
+            <table width="100%" border="0" class="table thead-dark" id="renners">
                 <thead class="thead-dark">
                     <tr>
-                        <th class="text-center">cqriderid</th>
-                        <!--th>vorige</th-->
+                        <!--th class="text-center">cqriderid</th-->
+                        <th>rank</th>
                         <th>renner</th>
                         <th class="text-center">ploeg</th>
                         <th class="text-center">nationaliteit</th>
@@ -28,12 +28,12 @@
                 <tbody id="sortlist">
                     {% for renner in renners %}
                         <tr id={{ renner.rider.pk }} data-lookup="{{ renner.id }}">
-                            <td>{{ renner.rider.cqriderid }}</td>
-                            <!--td class="text-center">{{ renner.rider.rank }}</td-->
+                            <!--td>{{ renner.rider.cqriderid }}</td-->
+                            <td class="text-center">{{ renner.rider.rank }}</td>
                             <!--td>({{ renner.rider.prev }})</td-->
                             <td><a href="{% url 'results:rider-detail' 2022 renner.rider.id %}">{{ renner.rider }}</a></td>
-                            <td class="text-center">{{ renner.rider.team }}</td>
-                            <td class="text-center">{{ renner.rider.nationality }}</td>
+                            <td class="text-center"><a href="{% url 'results:team-detail' renner.rider.team %}">{{ renner.rider.team }}</a></td>
+                            <td class="text-center"><a href="">{{ renner.rider.nationality }}</a></td>
                             <td class="text-center">{{ renner.rider.age }}</td>
                             <td class="text-center">{{ renner.amount }}</td>
                             <!--td><button type="button" class="btn btn-outline-danger" data-rider={{ renner.rider.id }} onclick="removeRider(this)">Verwijder</button></td-->
@@ -104,6 +104,35 @@
         //document.getElementById(rider).fadeToggle(2500);
         //document.getElementById(rider).style.display='none';
     }
+</script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.22/datatables.min.js"></script>
+
+<script>
+    $(document).ready( function () {
+        $('#renners').DataTable( {
+            "dom": '<"top"if>rt<"bottom"lp><"clear">',
+            "pageLength": 50,
+            "language": {
+                "sProcessing": "Bezig...",
+                "sLengthMenu": "_MENU_ resultaten weergeven",
+                "sZeroRecords": "Geen resultaten gevonden",
+                "sInfo": "_START_ tot _END_ van _TOTAL_ resultaten",
+                "sInfoEmpty": "Geen resultaten om weer te geven",
+                "sInfoFiltered": " (gefilterd uit _MAX_ resultaten)",
+                "sInfoPostFix": "",
+                "sSearch": "Zoeken:",
+                "sEmptyTable": "Geen resultaten aanwezig in de tabel",
+                "sInfoThousands": ".",
+                "sLoadingRecords": "Een moment geduld aub - bezig met laden...",
+                "oPaginate": {
+                    "sFirst": "Eerste",
+                    "sLast": "Laatste",
+                    "sNext": "Volgende",
+                    "sPrevious": "Vorige"
+                },
+            }
+        } );
+    } );
 </script>
 {% endblock %}
 

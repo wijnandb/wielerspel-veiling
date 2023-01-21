@@ -17,12 +17,21 @@ class TeamCaptain(models.Model):
     def __str__(self):
         return str(self.team_captain.get_full_name())
 
-    # @property
-    # def team_size(self):
-    #     from auction.models import VirtualTeam
-    #     team_size = VirtualTeam.objects.filter(team_captain=self.team_captain, editie=2022).count()
-    #     return team_size
+    @property
+    def team_size(self):
+        from auction.models import VirtualTeam
+        team_size = VirtualTeam.objects.filter(team_captain=self.team_captain, editie=2023).count()
+        return team_size
     
+    def points2022(self):
+        points = VirtualTeam.objects.filter(editie=2022).filter(team_captain=self.team_captain).aggregate(Sum('points'))
+        return points
+    
+    def points2023(self):
+        points = VirtualTeam.objects.filter(editie=2023).filter(team_captain=self.team_captain).aggregate(Sum('points'))
+        return points
+
+    #self.assert(VirtualTeam.objects.filter(editie=2022).aggregate(Sum('points'))==1400)
     # def riders_needed(self):
     #     if self.team_size < 9:
     #         return (9-self.team_size)
@@ -120,15 +129,15 @@ class Joker(models.Model):
 class VirtualTeam(models.Model):
     rider = models.ForeignKey(Rider, on_delete=models.CASCADE)
     team_captain = models.ForeignKey(User, on_delete=models.CASCADE)
-    editie = models.PositiveIntegerField(default=2022)
+    editie = models.PositiveIntegerField(default=2023)
     price = models.IntegerField(default=0)
-    punten = models.FloatField(default=0)
+    punten = models.DecimalField(default=0, max_digits=4, decimal_places=1)
     jpp = models.IntegerField(default=0)
 
     UniqueConstraint(fields=['rider', 'editie'], name='verkochte_renner') 
 
     class Meta:
-        ordering = ['-editie', '-price']
+        ordering = ['-editie', '-punten', '-price']
         verbose_name_plural = 'Virtual Teams'
 
     def __str__(self):

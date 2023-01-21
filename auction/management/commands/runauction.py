@@ -15,7 +15,7 @@ class Command(BaseCommand):
         This is the function that gets the latest rider that was bid on, finds the
         highest bid on that rider and sells that rider to the highest bidder.
         WIP: check if pause after auctioned rider is working
-        USe a site variable in settings to set the Edition (now hardcoded 2021 or 2022)
+        USe a site variable in settings to set the Edition (now hardcoded 2021 or 2022 or 2023 )
         """
         # the auction is over when all points have been spend
         # no, when there is only one team_captain left with points
@@ -53,7 +53,7 @@ class Command(BaseCommand):
                 if verschil > 20:
                     latestrider = latest[0].rider
                     #print(latestrider.id)
-                    if not VirtualTeam.objects.filter(rider=latestrider, editie=2022).exists():
+                    if not VirtualTeam.objects.filter(rider=latestrider, editie=2023).exists():
                         # print(latestrider)
                         # get the highest bid on that rider
                         # extra sort on created, so we get the Joker bid (same value, later entry)
@@ -74,7 +74,7 @@ class Command(BaseCommand):
                         renner.rider = winner.rider
                         renner.team_captain = winner.team_captain
                         renner.price = winner.amount 
-                        renner.editie = 2022
+                        renner.editie = 2023
                         renner.save()
 
                         sold_rider = Rider.objects.get(id=winner.rider_id)

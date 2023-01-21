@@ -6,7 +6,7 @@
 <div class="row">
   <div class="col-lg-3">
     <div class="card" style="width: 16rem;">
-      <img class="card-img-top" src="{{ rider.image_link }}" alt="{{ rider.renner }}">
+      <img class="card-img-top" src="https://cqranking.com/men/images/Riders/{{ year }}/CQM{{ year }}{{ rider.image_link }}" alt="{{ rider.renner }}">
       <div class="card-body">
         <h5 class="card-title text-center">{{ rider.name }}</h5>
         <ul class="list-group list-group-flush">
@@ -15,7 +15,17 @@
           <li class="list-group-item text-center">{{ rider.current_age }}</li>
           <li class="list-group-item text-center">{{ rider.ucicode }}</li>
           <li class="list-group-item text-center"><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.id }}" target="_blank" class="btn btn-primary">CQranking</a></li>
-        </ul>
+        </ul><br />
+        <div class="text-center">{% if rider.sold %}
+          <button type="button" class="text-center" aria-label="Close"  data-rider={{ rider.id }} onclick="removeRider(this)">
+            <span aria-hidden="true" class="danger" title="Verkoop renner">al verkocht</span>
+          </button>
+        {% else %}
+          <button type="button" class="text-center" aria-label="Close"  data-rider={{ rider.id }} onclick="removeRider(this)">
+            <span aria-hidden="true" class="danger" title="Verkoop renner">verkoop</span>
+          </button>
+        {% endif %}
+      </div>
       </div>
     </div>
 
@@ -48,8 +58,22 @@
     {% endif %}
 
 
-{% if object_list %}
-    <h2>Uitslagen {{ year }}</h2>
+    <div class="row">
+        <div class="col-9"><h2>Uitslagen {{ year }}</h2></div>
+        <div class="col-3">
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Jaar
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              {% for year in years %}
+                <a class="dropdown-item" href="{% url 'results:rider-detail' year.race__editie rider.id %}">{{ year.race__editie }}</a>
+               {% endfor %}
+            </div>
+          </div>
+      </div>
+    </div>
+  {% if object_list %}
     <table class="table table-striped" width="100%">
       <thead>
         <tr>
@@ -64,7 +88,7 @@
         <tr>
           <td width="10%">{{ result.race.startdate| date:"j-n" }}</td>
           <td width="10%">{% if result.rank == 0 %}Leider{% else %}{{ result.rank }}.{% endif %}</td>
-          <td><a href="{% url 'results:uitslag-detail' result.race.id %}">{{ result.race.name }}</a> ({{ result.race.category }})</td>
+          <td><a href="{% url 'results:uitslag-detail' result.race.id %}">{{ result.race.name }}</a> (<a href="{% url 'results:category-detail' result.race.category.id %}">{{ result.race.category }}</a>)</td>
           <td>{{ result.points.points }}</td>
           <td>{{ result.points.jpp }}</td>
         </tr>
@@ -76,4 +100,34 @@
   </div>
 </div>
 {% endblock %}
-
+{% block js %}
+<script>
+  function removeRider(identifier) {
+    let rider = $(identifier).data('rider');
+    $.ajax({
+        url: '{% url "auction:ajax-sold-rider" %}',
+        type: 'POST',
+        headers: {
+            "X-CSRFToken": '{{ csrf_token }}',
+        },
+        data: {'riderID': rider},
+        success: function(json){
+            console.log(json);
+            //make row disappear slowly;
+        },
+        error: function (json) {
+            //location.reload();
+            //alert(json);
+            console.log(json);
+        }
+    });
+    console.log(rider);
+    $('#' + rider).addClass("table-danger");
+    $('#' + rider).fadeToggle(2500);
+    
+    //document.getElementById(rider).className = "danger";
+    //document.getElementById(rider).fadeToggle(2500);
+    //document.getElementById(rider).style.display='none';
+  }
+</script>
+{% endblock %}
