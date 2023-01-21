@@ -3,17 +3,25 @@
 {% block content %}
 
 
-            <h1>Races</h1>
+            <h1>Uitslagen {{ view.kwargs.year }}</h1>
             <br/><br/>
             {% if race_list %}
-                <ul>
+                <table class="table table-striped">
+                    
+                
                     {% for race in race_list %}
-
-                        {{ race.startdate }}<h5><a href="{% url 'uitslag-detail' race.cqraceid %}">{{ race }}</a></h5>
-
+                        <tr>
+                            <td>{{ race.startdate }}</td>
+                            <td>{% if race.startdate != race.enddate %}{{ race.enddate }}{% endif %}</td>
+                            <td>{{ race.category }}</td>  
+                            <td><a href="{% url 'results:uitslag-detail' race.cqraceid %}">{{ race }}</a></td>
+                            <!-- WIP: if first rider isn't sold, this shows the wrong information -->                    
+                            <td>{% if race.uitslag_set.all.first.rank == 0 %}Leider:{% else %}{{ race.uitslag_set.all.first.rank }}.{% endif %} {{ race.uitslag_set.all.first.rider }}</td>
+                            <td>{{ race.uitslag_set.all.first.teamcaptain.team_captain.get_full_name }}</td>
+                        </tr>
                     {% endfor %}
 
-                </ul>
+                </table>
             {% else %}
                 <p>Geen races aanwezig.</p>
             {% endif %}

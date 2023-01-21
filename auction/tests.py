@@ -1,6 +1,6 @@
 from django.test import TestCase
 from auction.views import GetWinner
-from auction.models import Bid, ToBeAuctioned, AuctionOrder, Joker, VirtualTeam
+from auction.models import Bid, ToBeAuctioned, Joker, VirtualTeam
 
 
 """

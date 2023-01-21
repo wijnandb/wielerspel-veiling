@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  
+<div class="row">
+  <div class="col-lg-3">
+    <div class="card" style="width: 16rem;">
+      <img class="card-img-top" src="{{ rider.image_link }}" alt="{{ renner }}">
+      <div class="card-body">
+        <h5 class="card-title text-center">{{ rider }}</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item text-center">Team: <a href="{% url 'results:team-detail' 2022 rider.team %}">{{ rider.team }}</a></li>
+          <li class="list-group-item text-center">Land: <a href="{% url 'results:country-detail' 2022 rider.nationality %}">{{ rider.nationality }}</a></li>
+          <li class="list-group-item text-center">{{ rider.current_age }}</li>
+          <li class="list-group-item text-center">{{ rider.ucicode }}</li>
+          <li class="list-group-item text-center"><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.id }}" target="_blank" class="btn btn-primary">CQranking</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="col-lg-9">
+    {% if rider.virtualteam_set.all %}
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Editie</th>
+            <th>Ploegleider</th>
+            <th>Prijs</th>
+            <th>Punten</th>
+            <th>JPP</th>
+          </tr>
+        </thead>
+        {% for vt in rider.virtualteam_set.all %}
+          <tr>
+            <td>{{ vt.editie }}</td>
+            <td>{{ vt.team_captain.get_full_name }}</td>
+            <td>{{ vt.price }} </td>
+            <td>{{ vt.punten }}</td>
+            <td>{{ vt.jpp }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% endif %}
+
+
+
+    <h2>Uitslagen {{ year }}</h2>
+    <table class="table table-striped" width="100%">
+      <thead>
+        <tr>
+          <th>datum</th>
+          <th>#</th>
+          <th>Race</th>
+          <th>Punten</th>
+          <th>JPP</th>
+        </tr>
+      </thead>
+      {% for result in rider.uitslag_set.all %}
+        <tr>
+          <td width="10%">{{ result.race.startdate| date:"j-n" }}</td>
+          <td width="10%">{{ result.rank }}.</td>
+          <td><a href="{% url 'results:uitslag-detail' result.race.id %}">{{ result.race.name }}</a> ({{ result.race.category }})</td>
+          <td>{{ result.points.points }}</td>
+          <td>{{ result.points.jpp }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}
+

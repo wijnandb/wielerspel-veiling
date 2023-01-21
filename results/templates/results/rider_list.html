@@ -2,37 +2,42 @@
 
 
 {% block content %}
-
-
             <h1>Renners</h1>
             <br/><br/>
             {% if rider_list %}
                 <table class="table" id="renners" data-page-length='25'>
                     <thead>
                         <tr>
-                            <th>#</th>
+                            <th>Rank</th>
                             <th>Renner</th>
                             <th>Land</th>
                             <th>Team</th>
-                            <th>CQriderid</th>
                             <th>Leeftijd</th>
-                            <th>CQ points</th>
-                            <th>Bod</th>
-                            <th>Toevoegen</th>
+                            <th>'20</th>
+                            <th>'21</th>
+                            <th>'22</th>
+                            <th>Gem. 3 jaar</th>
+                            <th></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for rider in rider_list %}
-                            <tr id="row-{{ rider.id }}">
-                                <td>{{ rider.rank }}</td>
-                                <td>{{ rider }}</td>
-                                <td>{{ rider.nationality }}</td>
-                                <td>{{ rider.team }}</td>
-                                <td><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.cqriderid }}" target="_blank">{{ rider.cqriderid }}</a></td>
-                                <td>{{ rider.age }}</td>
-                                <td>{{ rider.cqpoints }} </td>
-                                <td><input type="number" id="value-{{ rider.id }}" min="0" max="92" value="1"  size="2"></td>
-                                <td><input type="button" class="btn btn-outline-primary" name="{{ rider.id }}" id="button-{{ rider.id }}" data-rider="{{ rider.id }}" onclick="addRider(this)" style="cursor:pointer;" value="toevoegen"></td>
+                        <tr id={{ rider.pk }} data-lookup="{{ rider.id }}">
+                                <td><a href="https://cqranking.com/men/asp/gen/rider.asp?riderid={{ rider.pk }}" title="Link naar CQranking pagina van {{ rider }}">{{ rider.rank }}</a></td>
+                                <td><a href="{% url 'results:rider-detail' rider.pk %}">{{ rider }}</a></td>
+                                <td><a href="{% url 'results:country-detail' rider.nationality %}">{{ rider.nationality }}</a></td>
+                                <td><a href="{% url 'results:team-detail' rider.team %}">{{ rider.team }}</a></td>
+                                <td>{{ rider.current_age }}</td>
+                                <td>{{ rider.points2020 }}<br /><small>{{ rider.jpp2020 }}</small></td>
+                                <td>{{ rider.points2021 }}<br /><small>{{ rider.jpp2021 }}</small></td>
+                                <td>{{ rider.calculated_points }}<br /><small>{{ rider.calculated_jpp }}</small></td>
+                                <td>{{ rider.average | floatformat:2 }}<br /><small>{{ rider.averagejpp  | floatformat:0 }}</small></td>
+                                <!--td><input type="number" id="value-{{ rider.id }}" min="0" max="92" value="1"  size="2"></td-->
+                                <td><button type="button" class="btn btn-outline-primary" name="{{ rider.id }}" id="button-{{ rider.id }}" data-rider="{{ rider.id }}" onclick="addRider(this)" style="cursor:pointer;">Toevoegen</button></td>
+                                <td class="text-center"><button type="button" class="close danger" aria-label="Close"  data-rider={{ rider.id }} onclick="removeRider(this)">
+                                <span aria-hidden="true" class="danger" title="Verwijder renner">&times;</span>
+                                </button></td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -52,16 +57,16 @@
             {% endfor %}
 
 {% endblock %}
+
 {% block js %}
-<script type="application/javascript">
+<script>
         function addRider(identifier) {
             //alert('sanity check');
             let riderID = $(identifier).data('rider');
             var amount = document.getElementById("value-"+riderID).value;  
             //alert("Punten:"+amount);
             //alert("rennerID:"+riderID);
-            document.getElementById("button-"+riderID).textContent = "bijwerken";
-            document.getElementById("row-"+riderID).className = "table-success";
+            
             
             $.ajax({
                 url: '{% url "auction:ajax-add-rider-tobeauctioned" %}',
@@ -75,7 +80,8 @@
                 },
                 success: function(json){
                     console.log(json);
-                    //location.reload();
+                    document.getElementById("row-"+riderID).className = "table-success";
+                    document.getElementById("button-"+riderID).textContent = "bijwerken";
                 },
                 error: function (json) {
                     //location.reload();
@@ -83,5 +89,63 @@
                 }
             });
         };
+
+
+    function removeRider(identifier) {
+        let rider = $(identifier).data('rider');
+        $.ajax({
+            url: '{% url "auction:ajax-sold-rider" %}',
+            type: 'POST',
+            headers: {
+                "X-CSRFToken": '{{ csrf_token }}',
+            },
+            data: {'riderID': rider},
+            success: function(json){
+                console.log(json);
+                //make row disappear slowly;
+            },
+            error: function (json) {
+                //location.reload();
+                //alert(json);
+                console.log(json);
+            }
+        });
+        console.log(rider);
+        $('#' + rider).addClass("table-danger");
+        $('#' + rider).fadeToggle(2500);
+        
+        //document.getElementById(rider).className = "danger";
+        //document.getElementById(rider).fadeToggle(2500);
+        //document.getElementById(rider).style.display='none';
+    }
+</script>
+
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.22/datatables.min.js"></script>
+<script>
+    $(document).ready( function () {
+        $('#renners').DataTable( {
+            //scrollY: 500,
+            //paging: false,
+            "language": {
+                "sProcessing": "Bezig...",
+                "sLengthMenu": "_MENU_ resultaten weergeven",
+                "sZeroRecords": "Geen resultaten gevonden",
+                "sInfo": "_START_ tot _END_ van _TOTAL_ resultaten",
+                "sInfoEmpty": "Geen resultaten om weer te geven",
+                "sInfoFiltered": " (gefilterd uit _MAX_ resultaten)",
+                "sInfoPostFix": "",
+                "sSearch": "Zoeken:",
+                "sEmptyTable": "Geen resultaten aanwezig in de tabel",
+                "sInfoThousands": ".",
+                "sLoadingRecords": "Een moment geduld aub - bezig met laden...",
+                "oPaginate": {
+                    "sFirst": "Eerste",
+                    "sLast": "Laatste",
+                    "sNext": "Volgende",
+                    "sPrevious": "Vorige"
+                },
+            }
+        } );
+    } );
 </script>
 {% endblock js %}

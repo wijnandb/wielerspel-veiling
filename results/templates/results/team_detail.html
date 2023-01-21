@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-12">
+    <h2>{{ race }} ({{ race.category }})</h2> {{ editie }}<br />
+    
+    {{ race.startdate }}{% if race.enddate > race.startdate %} - {{ race.enddate }}{% endif %} ({{ race.country }})
+  </div>
+</div>
+<div class="row">
+  <table class="table table-striped" width="100%">
+    <tr>
+      <th>#</th>
+      <th>renner</th>
+      <th></th>
+      <th></th>
+      <th>punten</th>
+      <th>jpp</th>
+    </tr>
+  {% for result in race.uitslag_set.all %}
+    <tr>
+      <td>{% if result.rank == 0 %}Leider:{% else %}{{ result.rank }}.{% endif %}</td>
+      <td><a href="{% url 'results:rider-detail' result.race.editie result.rider.pk %}">{{ result.rider.name }}</a></td>
+      <td>({{ result.rider.nationality }})</td>
+      <td>{{ result.teamcaptain.team_captain.get_full_name }}</td>
+      <td>{{ result.points.points }}</td>
+      <td>{{ result.points.jpp }}</td>
+    </tr>
+  {% endfor %}
+</table>
+</div>
+{% endblock %}

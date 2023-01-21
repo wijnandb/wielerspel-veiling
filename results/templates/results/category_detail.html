@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <h2>{{ object.name }}</h2><br />
+            
+            {{ object.category_description }}
+        </div>
+    </div>
+    <div class="row">
+        <table class="table table-striped" width="100%">
+            <th>rank</th>
+            <th>points</th>
+            <th>jpp</th>
+        {% for points in category.racepoints_set.all %}
+            <tr>
+                <td>{% if points.ranking == 0 %}Leiderstrui{% else %}{{ points.ranking }}{% endif %}</td>
+                <td>{{ points.points }}</td>
+                <td>{{ points.jpp }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+    <div class="row">
+        <table class="table table-striped" width="100%">
+            <th>rank</th>
+            <th>points</th>
+            <th>jpp</th>
+        {% for races in category.race_set.all %}
+            <tr>
+                <td class="">{{ races.startdate }}{% if races.startdate != races.enddate %} - {{ races.enddate }}{% endif %}</td>
+                <td>{{ races.editie }}</td>
+                <td><a href="{% url 'results:race-detail' races.id %}">{{ races.name }}</a> (<a href="{% url 'results:country-detail' races.country  %}">{{ races.country }}</a>)</td>
+                <td>{{ races.category }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+{% endblock %}

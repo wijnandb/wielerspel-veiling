@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+            <h1>Wedstrijdcategorie&euml;en </h1>
+            <br/><br/>
+            {% if object_list %}
+                <table class="table" id="renners" data-page-length='25'>
+                    <thead>
+                        <tr>
+                            <th>Categorie</th>
+                            <th>Beschrijving</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for object in object_list %}
+                            <tr>
+                                <td><a href="{% url 'results:category-detail' object.pk %}">{{ object }}</a></td>
+                                <td>{{ object.category_description }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Geen categorie&euml;en aanwezig.</p>
+            {% endif %}
+
+{% endblock %}

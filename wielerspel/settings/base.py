@@ -15,13 +15,13 @@ BASE_DIR = os.path.dirname(
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG')
+DEBUG = os.environ.get('DEBUG', True)
+REGISTRATION_OPEN = os.environ.get('REGISTRATION_OPEN', False)
 
 ALLOWED_HOSTS = []
 
 # new in Django 3.2: BigAutoField
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
-
 
 # Application definition
 
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'auction',
     'veiling',
     #'veilingeentjes',
+    #'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -74,6 +75,7 @@ WSGI_APPLICATION = 'wielerspel.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+# WIP: remove this, always get DATABASE infor from .env
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',

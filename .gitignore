@@ -116,3 +116,5 @@ target/
 /veiling:USE_AUCTION_INSTEAD
 
 .idea/
+
+*.json

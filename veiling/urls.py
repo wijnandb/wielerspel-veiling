@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import AuctionView, bidding, get_current, biddings, \
-    get_highest, ToBeAuctionedListView, get_rider_on_auction
+    get_highest, get_rider_on_auction
 
 app_name = 'veiling'
 

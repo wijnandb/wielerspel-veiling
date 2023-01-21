@@ -1,1 +1,0 @@
-TRUNCATE TABLE results_rider, results_race, results_uitslag RESTART IDENTITY CASCADE;

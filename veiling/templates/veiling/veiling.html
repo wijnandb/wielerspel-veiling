@@ -26,7 +26,7 @@
     <div class="row">
         <div class="col-md-5">
             <h1 id="rider">RENNER</h1>
-            Aangeboden door <span id="aangeboden_door"></span><br />
+            Aangeboden door <span id="aangeboden_door">{{ team_captain }}</span><br />
             <span id="joker_tc"></span> <span id="joker_value"></span>  <span id="joker"></span>
         </div>
         <div class="col-md-1 text-center align-text-bottom">
@@ -36,7 +36,8 @@
             <h2 id="highest_team_captain"></h2>
         </div>
         <div class="col-md-2">
-            <h3><span id="timer"></span></h3>
+            <h3><span id="timer">{{ max_allowed.max_allowed_bid }}</span></h3><br />
+            Next rider from you: {{ max_allowed.next_rider_on_auction }}
         </div>
     </div>
     <div class="row" id="biddingscreen">
@@ -47,7 +48,7 @@
                     <tr><td>Renner</td><td>Bod</td><td>ploegleider</td></tr>
                     </thead-->
                     <tbody class="biddings-listing">
-
+                        <p>Wacht op openingsbod van {{ team_captain }}</p>
                     </tbody>
                 </table>
             </div>
@@ -56,7 +57,7 @@
             <table id="points" class="table table-bordered">
 
             </table>
-            <!--table class="table table-striped">
+            <table class="table table-striped">
                 <thead>
                 <tr>
                     <td></td>
@@ -68,22 +69,22 @@
                 <tbody>
                     {% for ploegleider in ploegleiders %}
                         <tr>
-                            <td>{{ ploegleider.name }}</td>
+                            <td>{{ ploegleider }}</td>
                             <td>{{ ploegleider.team_size }}</td>
                             <td>{{ ploegleider.max_allowed_bid }}</td>
                             <td>{{ ploegleider.amount_left }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
-            </table-->
+            </table>
         </div>
     </div>
 {% endblock %}
 {% block js %}
     <script type="text/javascript">
         $(document).ready(function(){
-
-            generateBidding();
+            // only trigger generateBidding if there is an opening bid
+            generateBidding("{{ max_allowed.max_allowed_bid }}");
             //getCurrentBid()
             setInterval(() => getUsersBid(), 1000);
             // Detect td click
@@ -96,15 +97,28 @@
 
         });
 
+        function generateBidInterface(){
+            // nw function, not yet used
+            const table = document.querySelector("#points");
+            let points = "";
+            let num = 1;
+            var max_allowed = "{{ max_allowed.max_allowed_bid }}";
+            for(let counter=0; counter<=max_allowed; counter++){
+                if (num % 10 == 0){
+                    let data = "<tr>";
+                    // now generate 10 cells 
+                }
+            }
+        };
 
-        function generateBidding(){
+        function generateBidding(max_allowed){
             // Generate table
             const table = document.querySelector("#points");
             let points = "";
             let num = 1;
             // here we want to limit the available numbers to be equal to 
             // the maximum allowed bid
-            var max_allowed = 80;
+            //var max_allowed = 80;//"{{ max_allowed.max_allowed_bid }}";
             var rows = Math.ceil(max_allowed/10);
             for(let counter=1;counter<=rows; counter++){
                 let data = "<tr>";
@@ -130,6 +144,8 @@
                 success: response => {
                     // effect? To show it was a bid?
                     // briefly color the name of teamcaptain?
+                    //alert(credit);
+
                 },
                 error: err =>{
                     const error = err.responseJSON;
@@ -184,6 +200,9 @@
                     });
                     
                     var time_left = response.timer;
+                    //if time_left < 0 {
+                    //    disableBiddingInterface;
+                    //}
                     countdowntimer(time_left);
 
                     tableBody.innerHTML = "";
@@ -203,11 +222,11 @@
         function countdowntimer(timeleft){
             //console.log (sincelastbid)
             var countdownvalue = timeleft;
-            if (timeleft > 6) {
+            if (timeleft > 4) {
                 // bieding geopend of nieuw bod! 
                 // Toon effect op prijs en ploegleider
                 countdownvalue = timeleft;
-            } else if (timeleft > 3) {
+            } else if (timeleft > 2) {
                 countdownvalue = "eenmaal";
             } else if (timeleft > 0) {
                 countdownvalue = "andermaal...";
